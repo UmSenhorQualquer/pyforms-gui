@@ -172,7 +172,7 @@ def start_app(ClassObject, geometry=None, stylesheet=None):
 
     app = QApplication(sys.argv)
 
-    conf += 'pyforms.gui.settings'
+    conf += 'pyforms_gui.settings'
 
     mainwindow = StandAloneContainer(ClassObject)
 
