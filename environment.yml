@@ -1,0 +1,17 @@
+name: pyforms-web-environment
+channels:
+  - defaults
+dependencies:
+  - python=3.6
+  - pip:
+    - sphinx
+    - sphinx-autobuild
+    - sphinx-rtd-theme
+    - requests
+    - idna
+    - simplejson
+    - opencv-python
+    - numpy
+    - confapp
+    - urllib3
+    - Pillow
