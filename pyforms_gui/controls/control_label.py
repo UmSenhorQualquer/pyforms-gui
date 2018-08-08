@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" pyforms.gui.controls.ControlLabel"""
+""" pyforms_gui.controls.ControlLabel"""
 
 import pyforms_gui.utils.tools as tools
 from confapp import conf

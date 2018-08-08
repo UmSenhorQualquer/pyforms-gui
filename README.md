@@ -1,7 +1,12 @@
 ![Important](https://img.shields.io/badge/Important-Note-red.svg "Screen")  
 If you find this project useful, please, do not forget to ![star it](https://raw.githubusercontent.com/UmSenhorQualquer/pyforms/v1.0.beta/docs/imgs/start.png?raw=true "Screen") it.
 
-![New version available](https://img.shields.io/badge/New%20version%20available-3.0-green.svg "Screen")
+
+# Pyforms GUI
+
+Pyforms **GUI** is a software layer, part of the Pyforms main library. This layer implements the execution of a Pyforms application as Windows GUI.
+
+![Diagram](docs/imgs/pyforms-layers-gui.png "Screen")
 
 
 
@@ -10,18 +15,10 @@ If you find this project useful, please, do not forget to ![star it](https://raw
 <!-- Posicione esta tag onde você deseja que o widget apareça. -->
 <div class="g-follow" data-annotation="bubble" data-height="24" data-rel="publisher"></div>
 
-Pyforms is a Python 2.7.x and 3.x cross-enviroment framework to develop GUI applications, which promotes modular software design and code reusability with minimal effort.
+Pyforms is a Python 3 cross-enviroment framework that aims the boost the developement productivity. The library provides an API in Python to develop applications that can be executed in Windows GUI mode, Web mode, or in Terminal mode.
 
-### It offers:
-* A Python layer of Desktop forms, based on PyQt, OpenGL and other libraries.
-* A Python layer that allow applications to run on Desktop GUI, Web and terminal without requiring code modifications.
-* A group of rules and methodologies that help the developer maintaining his code short, clean, reusable and readable. 
+[More @ ![Diagram](docs/imgs/rtd.png)](https://pyforms.readthedocs.io)
 
-![Diagram](docs/pyforms.png?raw=true "Screen")
-
-Example of an application running in the Desktop, Web and Terminal enviroments:
-
-![Application-Example](docs/example.png?raw=true "Screen")
 
 ## Advantages
 * With a minimal API, interfaces are easily defined using a short Python code.
@@ -37,17 +34,9 @@ Example of an application running in the Desktop, Web and Terminal enviroments:
 * [3D tracking analyser](https://github.com/UmSenhorQualquer/3D-tracking-analyser)
 * [PyBpod](http://pybpod.readthedocs.io)
 
-## Documentation
-
-The documentation is still in development, but you can find a preview on [pyforms.readthedocs.org](http://pyforms.readthedocs.org)
-
 ## Installation
 
-Check the documentation [pyforms.readthedocs.org](http://pyforms.readthedocs.org)
-
-## License
-
-Pyforms is open-source library under the MIT license.
+Check the documentation at [pyforms.readthedocs.org](http://pyforms.readthedocs.org) and [pyforms-terminal.readthedocs.org](http://pyforms-terminal.readthedocs.org)
 
 ## Rationale behind the framework
 
@@ -65,52 +54,73 @@ For the GUIs that I wanted to build for my python scripts, I would like to have 
 The result was the simplicity that we can see in the example below:
 
 ```python
+from pyforms.basewidget import BaseWidget
+from pyforms.controls   import ControlFile
+from pyforms.controls   import ControlText
+from pyforms.controls   import ControlSlider
+from pyforms.controls   import ControlPlayer
+from pyforms.controls   import ControlButton
+
 class ComputerVisionAlgorithm(BaseWidget):
-	
-	def __init__(self):
-		super(ComputerVisionAlgorithm,self).__init__('Computer vision algorithm example')
 
-		#Definition of the forms fields
-		self._videofile 	= ControlFile('Video')
-		self._outputfile 	= ControlText('Results output file')
-		self._threshold 	= ControlSlider('Threshold', 114, 0,255)
-		self._blobsize 		= ControlSlider('Minimum blob size', 100, 100,2000)
-		self._player 		= ControlPlayer('Player')
-		self._runbutton 	= ControlButton('Run')
+    def __init__(self, *args, **kwargs):
+        super().__init__('Computer vision algorithm example')
 
-		#Define the function that will be called when a file is selected
-		self._videofile.changed 	= self.__videoFileSelectionEvent
-		#Define the event that will be called when the run button is processed
-		self._runbutton.value 		= self.__runEvent
-		#Define the event called before showing the image in the player
-		self._player.process_frame_event 	= self.__process_frame
+        #Definition of the forms fields
+        self._videofile     = ControlFile('Video')
+        self._outputfile    = ControlText('Results output file')
+        self._threshold     = ControlSlider('Threshold', 114, 0,255)
+        self._blobsize      = ControlSlider('Minimum blob size', 100, 100,2000)
+        self._player        = ControlPlayer('Player')
+        self._runbutton     = ControlButton('Run')
 
-		#Define the organization of the Form Controls
-		self._formset = [ 
-			('_videofile', '_outputfile'), 
-			'_threshold', 
-			('_blobsize', '_runbutton'), 
-			'_player'
-		]
+        #Define the function that will be called when a file is selected
+        self._videofile.changed     = self.__videoFileSelectionEvent
+        #Define the event that will be called when the run button is processed
+        self._runbutton.value       = self.__runEvent
+        #Define the event called before showing the image in the player
+        self._player.process_frame_event    = self.__process_frame
+
+        #Define the organization of the Form Controls
+        self._formset = [
+            ('_videofile', '_outputfile'),
+            '_threshold',
+            ('_blobsize', '_runbutton'),
+            '_player'
+        ]
 
 
-	def __videoFileSelectionEvent(self):
-		"""
-		When the videofile is selected instanciate the video in the player
-		"""
-		self._player.value = self._videofile.value
+    def __videoFileSelectionEvent(self):
+        """
+        When the videofile is selected instanciate the video in the player
+        """
+        self._player.value = self._videofile.value
 
-	def __process_frame(self, frame):
-		"""
-		Do some processing to the frame and return the result frame
-		"""
-		return frame
+    def __process_frame(self, frame):
+        """
+        Do some processing to the frame and return the result frame
+        """
+        return frame
 
-	def __runEvent(self):
-		"""
-		After setting the best parameters run the full algorithm
-		"""
-		pass
+    def __runEvent(self):
+        """
+        After setting the best parameters run the full algorithm
+        """
+        pass
+
+
+if __name__ == '__main__':
+
+    from pyforms import start_app
+    start_app(ComputerVisionAlgorithm)
 ```
 
-![ScreenShot](tutorials/1.SimpleExamples/ComputerVisionAlgorithmExample/screenshot.png?raw=true "Screen")
+Result of runnning the application in the terminal:
+
+```bash
+
+$> python test.py
+```
+
+
+![ScreenShot](docs/source/_static/imgs/terminal-example-computervisionalgorithm.png "Screen")

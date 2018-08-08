@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" pyforms.gui.controls.ControlList
+""" pyforms_gui.controls.ControlList
 
 """
 import logging

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" pyforms.gui.controls.ControlEventTimeline.__init__
+""" pyforms_gui.controls.ControlEventTimeline.__init__
 
 """
 

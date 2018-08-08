@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" pyforms.gui.controls.ControlPlayer.VideoGLWidget
+""" pyforms_gui.controls.ControlPlayer.VideoGLWidget
 
 """
 import logging, cv2

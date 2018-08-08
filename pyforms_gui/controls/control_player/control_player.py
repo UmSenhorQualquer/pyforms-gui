@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-""" pyforms.gui.controls.ControlPlayer.ControlPlayer
+""" pyforms_gui.controls.ControlPlayer.ControlPlayer
 
 """
 __author__ = "Ricardo Ribeiro"
