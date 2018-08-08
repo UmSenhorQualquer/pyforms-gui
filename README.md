@@ -36,22 +36,23 @@ Pyforms is a Python 3 cross-enviroment framework that aims the boost the develop
 
 ## Installation
 
-Check the documentation at [pyforms.readthedocs.org](http://pyforms.readthedocs.org) and [pyforms-terminal.readthedocs.org](http://pyforms-terminal.readthedocs.org)
+Check the documentation at [pyforms.readthedocs.org](http://pyforms.readthedocs.org) and [pyforms-gui.readthedocs.org](http://pyforms-gui.readthedocs.org)
 
 ## Rationale behind the framework
 
-The development of this library started with the necessity of allowing users with low programming skills to edit parameters of my python scripts.
+The development of this library started with the necessity of allowing users with low programming skills to edit parameters from my python scripts.
 The idea was to transform scripts which had already been developed into GUI applications with a low effort and in a short time.
 
 For example in my computer vision applications in the majority of the times there were variables that had to be set manually in the scripts for each video, to adjust the thresholds, blobs sizes, and other parameters to the environment light conditions... To test each set of parameters the script had to be executed.
 With GUI applications, users would be able to set the parameters using a GUI interface and visualize the results instantly without the need of restarting the script. That was the idea.
 
-After looking into the several python options for GUI interfaces, PyQt was the one that seemed the best tool for a fast development with the QtDesigner, but after a while developing in Qt, switching between the designer and the python IDE was becoming too costly in terms of time, because the interfaces were constantly evolving, and it was tedious, because GUI controls were repeated several times.
+After looking into the several python options for GUI interfaces, PyQt was the one that seemed the best tool for a fast development with the QtDesigner, but after a while developing in Qt, switching between the designer and the python IDE was becoming too costly in terms of time because the interfaces were constantly evolving.
 
 Being a Django developer, I did get inspiration on it for this framework. In the [Django](https://www.djangoproject.com/) Models we just need to define the type of variables and their disposition in the form (in ModelAdmin) to generate a HTML form for data edition.
-For the GUIs that I wanted to build for my python scripts, I would like to have the same simplicity, because I did wanted to focus on the algorithms and not on GUIs developing.
+For the GUIs that I wanted to build in my python scripts, I would like to have the same simplicity, so I could focus on the algorithms and not on GUIs developing.
 
-The result was the simplicity that we can see in the example below:
+
+The result was the simplicity you can see in the example below:
 
 ```python
 from pyforms.basewidget import BaseWidget
