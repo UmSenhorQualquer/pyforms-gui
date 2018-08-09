@@ -6,7 +6,7 @@ If you find this project useful, please, do not forget to ![star it](https://raw
 
 Pyforms **GUI** is a software layer, part of the Pyforms main library. This layer implements the execution of a Pyforms application as Windows GUI.
 
-![Diagram](docs/imgs/pyforms-layers-gui.png "Screen")
+![Diagram](https://raw.githubusercontent.com/UmSenhorQualquer/pyforms-gui/v4/docs/imgs/pyforms-layers-gui.png "Screen")
 
 
 
@@ -17,7 +17,7 @@ Pyforms **GUI** is a software layer, part of the Pyforms main library. This laye
 
 Pyforms is a Python 3 cross-enviroment framework that aims the boost the developement productivity. The library provides an API in Python to develop applications that can be executed in Windows GUI mode, Web mode, or in Terminal mode.
 
-[More @ ![Diagram](docs/imgs/rtd.png)](https://pyforms.readthedocs.io)
+[More @ ![Diagram](https://raw.githubusercontent.com/UmSenhorQualquer/pyforms-gui/v4/docs/imgs/rtd.png)](https://pyforms.readthedocs.io)
 
 
 ## Advantages
@@ -29,7 +29,7 @@ Pyforms is a Python 3 cross-enviroment framework that aims the boost the develop
 * Turn the prototyping much easier and fast.
 * Due to its simplicity it has a low learning curve.
 
-## Examples of applications developed in Pyforms
+## Examples of applications developed in Pyforms GUI
 * [Python Video Annotator](https://github.com/UmSenhorQualquer/pythonVideoAnnotator)
 * [3D tracking analyser](https://github.com/UmSenhorQualquer/3D-tracking-analyser)
 * [PyBpod](http://pybpod.readthedocs.io)
@@ -125,4 +125,4 @@ Result of runnning the application in the terminal:
 $> python test.py
 ```
 
-![ScreenShot](docs/imgs/gui-example-computervisionalgorithm.png "Screen")
+![ScreenShot](https://raw.githubusercontent.com/UmSenhorQualquer/pyforms-gui/v4/docs/imgs/gui-example-computervisionalgorithm.png "Screen")
