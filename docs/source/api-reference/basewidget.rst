@@ -2,7 +2,7 @@
 :mod:`BaseWidget`
 ***************************
 
-.. module:: pyforms_terminal.basewidget
+.. module:: pyforms_gui.basewidget
    :synopsis: Bpod board
 
 
@@ -16,7 +16,7 @@ The BaseWidget class is the base class of all pyforms applications.
 API
 --------------
 
-.. autoclass:: pyforms_terminal.basewidget.BaseWidget
+.. autoclass:: pyforms_gui.basewidget.BaseWidget
     :members:
     :undoc-members:
     :show-inheritance:

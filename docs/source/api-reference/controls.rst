@@ -2,14 +2,14 @@
 :mod:`Controls`
 ***************************
 
-.. module:: pyforms_terminal.controls
+.. module:: pyforms_gui.controls
    :synopsis: Pyforms Controls
 
 
 ControlBase
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_base.ControlBase
+.. autoclass:: pyforms_gui.controls.control_base.ControlBase
     :members:
     :undoc-members:
     :show-inheritance:
@@ -21,7 +21,7 @@ ControlBase
 ControlBoundingSlider
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_boundingslider.ControlBoundingSlider
+.. autoclass:: pyforms_gui.controls.control_boundingslider.ControlBoundingSlider
     :members:
     :undoc-members:
     :show-inheritance:
@@ -32,7 +32,7 @@ ControlBoundingSlider
 ControlButton
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_button.ControlButton
+.. autoclass:: pyforms_gui.controls.control_button.ControlButton
     :members:
     :undoc-members:
     :show-inheritance:
@@ -43,7 +43,7 @@ ControlButton
 ControlCheckBox
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_checkbox.ControlCheckBox
+.. autoclass:: pyforms_gui.controls.control_checkbox.ControlCheckBox
     :members:
     :undoc-members:
     :show-inheritance:
@@ -54,7 +54,7 @@ ControlCheckBox
 ControlCombo
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_combo.ControlCombo
+.. autoclass:: pyforms_gui.controls.control_combo.ControlCombo
     :members:
     :undoc-members:
     :show-inheritance:
@@ -65,7 +65,7 @@ ControlCombo
 ControlDir
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_dir.ControlDir
+.. autoclass:: pyforms_gui.controls.control_dir.ControlDir
     :members:
     :undoc-members:
     :show-inheritance:
@@ -77,7 +77,7 @@ ControlDir
 ControlEmptyWidget
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_emptywidget.ControlEmptyWidget
+.. autoclass:: pyforms_gui.controls.control_emptywidget.ControlEmptyWidget
     :members:
     :undoc-members:
     :show-inheritance:
@@ -88,7 +88,7 @@ ControlEmptyWidget
 ControlFile
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_file.ControlFile
+.. autoclass:: pyforms_gui.controls.control_file.ControlFile
     :members:
     :undoc-members:
     :show-inheritance:
@@ -100,7 +100,7 @@ ControlFile
 ControlImage
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_image.ControlImage
+.. autoclass:: pyforms_gui.controls.control_image.ControlImage
     :members:
     :undoc-members:
     :show-inheritance:
@@ -111,7 +111,7 @@ ControlImage
 ControlLabel
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_label.ControlLabel
+.. autoclass:: pyforms_gui.controls.control_label.ControlLabel
     :members:
     :undoc-members:
     :show-inheritance:
@@ -122,7 +122,7 @@ ControlLabel
 ControlPlayer
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_player.ControlPlayer
+.. autoclass:: pyforms_gui.controls.control_player.ControlPlayer
     :members:
     :undoc-members:
     :show-inheritance:
@@ -133,7 +133,7 @@ ControlPlayer
 ControlProgress
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_progress.ControlProgress
+.. autoclass:: pyforms_gui.controls.control_progress.ControlProgress
     :members:
     :undoc-members:
     :show-inheritance:
@@ -144,7 +144,7 @@ ControlProgress
 ControlSlider
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_slider.ControlSlider
+.. autoclass:: pyforms_gui.controls.control_slider.ControlSlider
     :members:
     :undoc-members:
     :show-inheritance:
@@ -155,7 +155,7 @@ ControlSlider
 ControlText
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_text.ControlText
+.. autoclass:: pyforms_gui.controls.control_text.ControlText
     :members:
     :undoc-members:
     :show-inheritance:
@@ -166,7 +166,7 @@ ControlText
 ControlTextArea
 ----------------------------
 
-.. autoclass:: pyforms_terminal.controls.control_textarea.ControlTextArea
+.. autoclass:: pyforms_gui.controls.control_textarea.ControlTextArea
     :members:
     :undoc-members:
     :show-inheritance:

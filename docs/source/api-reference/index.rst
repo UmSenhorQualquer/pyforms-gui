@@ -10,3 +10,4 @@ Python
 
    basewidget
    controls
+   settings
