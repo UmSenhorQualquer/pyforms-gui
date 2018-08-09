@@ -72,8 +72,8 @@ class ComputerVisionAlgorithm(BaseWidget):
         #Definition of the forms fields
         self._videofile  = ControlFile('Video')
         self._outputfile = ControlText('Results output file')
-        self._threshold  = ControlSlider('Threshold', 114, 0,255)
-        self._blobsize   = ControlSlider('Minimum blob size', 100, 100,2000)
+        self._threshold  = ControlSlider('Threshold', default=114, minimum=0, maximum=255)
+        self._blobsize   = ControlSlider('Minimum blob size', default=110, minimum=100, maximum=2000)
         self._player     = ControlPlayer('Player')
         self._runbutton  = ControlButton('Run')
 

@@ -10,6 +10,6 @@ __email__       = "ricardojvr@gmail.com"
 __status__      = "Development"
 
 
-from pyforms 			import BaseWidget
+from pyforms.basewidget import BaseWidget
 from pyforms.controls 	import *
 import pyforms
