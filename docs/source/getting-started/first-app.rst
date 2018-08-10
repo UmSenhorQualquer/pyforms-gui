@@ -92,4 +92,3 @@ Now execute in the terminal the next command:
 You will visualize the next result:
 
 .. image:: /_static/imgs/gui-example-computervisionalgorithm.png
-    :align: left

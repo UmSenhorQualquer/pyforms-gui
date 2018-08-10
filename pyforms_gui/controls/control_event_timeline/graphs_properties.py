@@ -1,16 +1,17 @@
 import csv, time, datetime, decimal, logging, sys, numpy as np
 from pyforms_gui.basewidget import BaseWidget
-from pyforms_gui.allcontrols import ControlProgress
-from pyforms_gui.allcontrols import ControlButton
-from pyforms_gui.allcontrols import ControlList
-from pyforms_gui.allcontrols import ControlNumber
-from pyforms_gui.allcontrols import ControlSlider
-from pyforms_gui.allcontrols import ControlText
-from pyforms_gui.allcontrols import ControlLabel
+from pyforms_gui.controls.control_progress import ControlProgress
+from pyforms_gui.controls.control_button import ControlButton
+from pyforms_gui.controls.control_list import ControlList
+from pyforms_gui.controls.control_number import ControlNumber
+from pyforms_gui.controls.control_slider import ControlSlider
+from pyforms_gui.controls.control_textarea import ControlTextArea
+from pyforms_gui.controls.control_text import ControlText
+from pyforms_gui.controls.control_number import ControlNumber
+from pyforms_gui.controls.control_label import ControlLabel
 from confapp import conf
 
-if conf.PYFORMS_MODE=='GUI':
-	from AnyQt.QtWidgets import QColorDialog
+from AnyQt.QtWidgets import QColorDialog
 
 logger = logging.getLogger(__name__)
 

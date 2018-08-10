@@ -14,11 +14,7 @@ The framework aims the boost the developement productivity by providing an API i
 Source code
    https://github.com/UmSenhorQualquer/pyforms-gui
 
-
-
 .. image:: /_static/imgs/gui-example-computervisionalgorithm.png
-    :align: left
-
 
 .. note:: 
 

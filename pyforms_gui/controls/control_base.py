@@ -9,13 +9,23 @@ from AnyQt.QtGui     import QIcon, QKeySequence
 
 class ControlBase(object):
     """
-    This class represents the most basic control that can exist
-    A Control is a Widget or a group of widgets that can be reused from application to application
+    All the Controls inherit from this Control, therefore you can find its functions and properties in all the other controls listed below.
 
-    @undocumented: __repr__
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        :param str label: Control label. Default = ''.
+        :param str helptext: Text shown when the mouse is over the control. Default = None.
+        :param str default: Initial value of the control. Default = None.
+
+        :param bool visible: Flag to set the control visible or hidden. Default = True.
+        :param bool enabled: Flag to set the control enabled or Disabled. Default = True.
+        :param bool readonly: Flag to set the control readonly. Default = False.
+        :param function changed_event: Function to call whenever the control value is updated. Default = None.  
+
+        """
+
         self._form       = None  # Qt widget
         self._parent     = None  # Parent window
         self._popup_menu = None
@@ -23,14 +33,6 @@ class ControlBase(object):
         self._help          = kwargs.get('helptext', None)
         self._value         = kwargs.get('default',  None)
         self._label         = kwargs.get('label', args[0] if len(args)>0 else '')
-        """
-        self._visible       = kwargs.get('visible', True)
-        self._error         = kwargs.get('error', False)
-        self._css           = kwargs.get('css', None)
-        self._enabled       = kwargs.get('enabled', True)
-        self._readonly      = kwargs.get('readonly', False)
-        self._label_visible = kwargs.get('label_visible', True)
-        """
 
         self.init_form()
 
@@ -48,7 +50,7 @@ class ControlBase(object):
 
     def init_form(self):
         """
-        Load Control and initiate the events
+        Load the control UI and initiate all the events.
         """     
         if self.help: self.form.setToolTip(self.help)
    
@@ -56,16 +58,20 @@ class ControlBase(object):
 
     def load_form(self, data, path=None):
         """
-        Load a value from the dict variable
-        @param data: dictionary with the value of the Control
+        Loads the value of the control.
+
+        :param dict data: It is a dictionary with the required information to load the control. 
+        :param str path: Optional parameter that can be used to save the data.  
         """
         if 'value' in data:
             self.value = data['value']
 
     def save_form(self, data, path=None):
         """
-        Save a value to dict variable
-        @param data: dictionary with to where the value of the Control will be added
+        Save a value of the control to a dictionary.  
+
+        :param dict data: Dictionary where the control value should be saved.  
+        :param str path: Optional parameter that can be used to load the data.  
         """
         data['value'] = self.value
         return data
@@ -101,19 +107,34 @@ class ControlBase(object):
             self._popup_menu.aboutToShow.connect( self.about_to_show_contextmenu_event)
 
     def add_popup_submenu(self, label, submenu=None):
+        """
+        It returns a new sub popup menu. If submenu is open the menu is added to the main popup menu.
+
+        :param str label: Label of the option  
+        :param QMenu submenu: Parent submenu to which the option should be added. If no value is set, then the option will be added to the main popup menu.  
+        """
         self.__create_popup_menu()
         menu = submenu if submenu else self._popup_menu
         submenu = QMenu(label, menu)
         menu.addMenu(submenu)
         return submenu
 
-    def add_popup_menu_option(self, label, function_action=None, key=None, icon=None, submenu=None):
+    def add_popup_menu_option(self, label, function_action=None, key=None, icon=None, menu=None):
         """
-        Add an option to the Control popup menu
-        @param label:           label of the option.
-        @param function_action:  function called when the option is selected.
-        @param key:             shortcut key
-        @param icon:            icon
+        Add an option to the Control popup menu.  
+
+        :param str label: Label of the option  
+        :param function function_action: The function that should be executed when the menu is selected.  
+        :param str key: Short key.  
+        :param QIcon or str icon: Icon.  
+        :param QMenu submenu: Parent submenu to which the option should be added. If no value is set, then the option will be added to the main popup menu.  
+        
+        .. code:: python
+
+            control.add_popup_menu_option('option 0', function_action=self._do_something)
+            submenu1 = control.add_popup_submenu('menu 1')
+            submenu2 = control.add_popup_submenu('menu 2', submenu=submenu1)
+            control.add_popup_menu_option('option 1', function_action=self._do_something, key='Control+Q', submenu=submenu2)
         """
         self.__create_popup_menu()
 
@@ -140,13 +161,14 @@ class ControlBase(object):
 
     def changed_event(self):
         """
-        Function called when ever the Control value is changed
+        Function called when ever the Control value is changed. The event function should return True if the data was saved with success.
+
         """
         return True
 
     def about_to_show_contextmenu_event(self):
         """
-        Function called before open the Control popup menu
+        Function called before the Control popup menu is opened.
         """
         pass
 
@@ -163,11 +185,13 @@ class ControlBase(object):
 
     @property
     def enabled(self):
+        """
+        Returns or set if the control is enable or disable.
+        """
         return self.form.isEnabled()
 
     @enabled.setter
     def enabled(self, value):
-        """@type  value: boolean"""
         self.form.setEnabled(value)
 
     ##########################################################################
@@ -175,14 +199,13 @@ class ControlBase(object):
 
     @property
     def value(self):
+        """
+        This property returns or set what the control should manage or store.
+        """
         return self._value
 
     @value.setter
     def value(self, value):
-        """
-        This property return and set what the control should manage or store.
-        @type  value: string
-        """
         oldvalue = self._value
         self._value = value
         if oldvalue != value:
@@ -190,14 +213,14 @@ class ControlBase(object):
 
     
     @property
-    def name(self): return self.form.objectName()
+    def name(self): 
+        """
+        This property returns or set the name of the control.
+        """
+        return self.form.objectName()
 
     @name.setter
     def name(self, value):
-        """
-        This property return and set the name of the control
-        @type  value: string
-        """
         self.form.setObjectName(value)
 
     ##########################################################################
@@ -205,35 +228,42 @@ class ControlBase(object):
 
     @property
     def label(self):
+        """
+        Returns or sets the label of the control.
+        """
         return self._label
 
     @label.setter
     def label(self, value):
-        """
-        Label of the control, if applies
-        @type  value: string
-        """
         self._label = value
 
     ##########################################################################
     # Parent window
 
     @property
-    def parent(self): return self._parent
+    def parent(self):
+        """
+        Returns or set the parent basewidget where the Control is.
+        """
+        return self._parent
 
     @parent.setter
     def parent(self, value):
-        """
-        Returns or set the parent basewidget where the Control is
-        @type  value: BaseWidget
-        """
         self._parent = value
 
     @property
-    def visible(self): return self.form.isVisible()
+    def visible(self):
+        """
+        Return the control visibility.
+        """
+        return self.form.isVisible()
 
     @property
-    def help(self): return self._help if self._help else ''
+    def help(self):
+        """
+        Returns or set the tip box of the control.
+        """
+        return self._help if self._help else ''
 
     @property
     def error(self): return None
@@ -250,7 +280,11 @@ class ControlBase(object):
         pass
 
     @property
-    def readonly(self): return None
+    def readonly(self):
+        """
+        Set and return the control readonly state.
+        """
+        return None
 
     @readonly.setter
     def readonly(self, value):
@@ -274,7 +308,6 @@ class ControlBase(object):
     @property
     def form(self):
         """
-        Returns the Widget of the control. 
-        This property will be deprecated in a future version.
+        Returns the QWidget of the control.
         """
         return self._form

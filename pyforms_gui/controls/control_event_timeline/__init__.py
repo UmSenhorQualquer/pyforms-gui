@@ -13,9 +13,3 @@ __version__ = "0.0"
 __maintainer__ = "Ricardo Ribeiro"
 __email__ = "ricardojvr@gmail.com"
 __status__ = "Development"
-
-__all__ = ['ControlEventTimeline',
-           'TimelineWidget',
-           'TimelineDelta',
-           'TimelinePointer',
-           'TimelinePopupWindow']

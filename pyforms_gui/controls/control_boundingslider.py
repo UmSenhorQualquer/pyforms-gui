@@ -255,6 +255,13 @@ class GaugeWidgetHorizontal(GaugeWidgetVertical):
 
 
 class ControlBoundingSlider(ControlBase):
+    """
+    .. image:: https://raw.githubusercontent.com/UmSenhorQualquer/pyforms/master/tutorials/Controls4Docs/ControlBoundingSlider.png  
+
+    |
+
+    """
+
     def __init__(self, *args, **kwargs):
         self._horizontal     = kwargs.get('horizontal', True)
         self._show_spinboxes = kwargs.get('show_spinboxes', True)
