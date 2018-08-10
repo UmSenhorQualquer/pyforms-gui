@@ -15,3 +15,10 @@ dependencies:
     - confapp
     - urllib3
     - Pillow
+    - anyqt
+    - pyqt5
+    - QScintilla
+    - visvis
+    - matplotlib
+    - python-dateutil
+    - numpy
