@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
 from confapp import conf
 
 from AnyQt 			 import uic
@@ -14,6 +12,13 @@ from pyforms_gui.controls.control_base import ControlBase
 
 class ControlButton(ControlBase):
 	def __init__(self, *args, **kwargs):
+		"""
+		...
+
+		:param str icon: Button icon
+        :param bool checkable: Flag to set the button checkable.
+        
+		"""
 		self._checkable = kwargs.get('checkable', False)
 		super(ControlButton, self).__init__(*args, **kwargs)
 
@@ -31,6 +36,9 @@ class ControlButton(ControlBase):
 		self._form.setToolTip(self.help)
 
 	def click(self):
+		"""
+		Trigger a click event
+		"""
 		self._form.click()
 
 	def load_form(self, data, path=None):
@@ -52,6 +60,9 @@ class ControlButton(ControlBase):
 
 	@property
 	def icon(self):
+		"""
+		Sets and gets the icon of the button.
+		"""
 		return self._form.icon()
 
 	@icon.setter
@@ -65,6 +76,9 @@ class ControlButton(ControlBase):
 
 	@property
 	def value(self):
+		"""
+		Sets and gets the value of the Button. The value should be a function
+		"""
 		return None
 
 	@value.setter
@@ -78,6 +92,9 @@ class ControlButton(ControlBase):
 
 	@property
 	def checked(self):
+		"""
+		Sets and gets the button checked state
+		"""
 		return self._form.isChecked()
 
 	@checked.setter

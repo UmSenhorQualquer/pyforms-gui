@@ -30,7 +30,7 @@ ControlBoundingSlider
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: init_form, serialize, deserialize
+    :exclude-members: css, error, label_visible, changed_event, load_form, save_form, init_form
 
 ----------------------------
 
@@ -41,7 +41,7 @@ ControlButton
     :members:
     :undoc-members:
     :show-inheritance:
-    :exclude-members: init_form, serialize, deserialize
+    :exclude-members: css, error, label_visible, changed_event, load_form, save_form, init_form, label
 
 ----------------------------
 

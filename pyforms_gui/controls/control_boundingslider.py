@@ -258,11 +258,20 @@ class ControlBoundingSlider(ControlBase):
     """
     .. image:: https://raw.githubusercontent.com/UmSenhorQualquer/pyforms/master/tutorials/Controls4Docs/ControlBoundingSlider.png  
 
-    |
-
+    
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        
+        :param tupple default: The default value is a list containing in the first element the lower value and in the second element the upper value. Default = [20,40].
+        :param bool horizontal: Flag indicating if the Bounding slider should be draw horizontally or vertically. Default = True.
+        :param bool show_spinboxes: Show or hide the spinboxes. Default = True
+        :param float minimum: Defines the minimum value that can be selected.
+        :param float maximum: Defines the maximum value that can be selected.  
+        :param bool convert_2_int: Flag to define if the control should return floats or integers.
+        
+        """
         self._horizontal     = kwargs.get('horizontal', True)
         self._show_spinboxes = kwargs.get('show_spinboxes', True)
         ControlBase.__init__(self,  *args, **kwargs)
@@ -270,6 +279,7 @@ class ControlBoundingSlider(ControlBase):
         self.min = kwargs.get('min', kwargs.get('minimum', 0))
         self.max = kwargs.get('max', kwargs.get('maximum', 100))
         self.value = kwargs.get('default', [10,20])
+        self.convert_2_int = kwargs.get('convert_2_int', False)
         self.__update()
 
     def init_form(self):
@@ -380,6 +390,9 @@ class ControlBoundingSlider(ControlBase):
 
     @property
     def value(self):
+        """
+        Sets and gets the control value. It should be a list or tuple of 2 values.
+        """
         return self._boundingbox._minVal, self._boundingbox._maxVal
 
     @value.setter
@@ -393,6 +406,9 @@ class ControlBoundingSlider(ControlBase):
 
     @property
     def min(self):
+        """
+        Sets and gets the minimum value possible.
+        """
         return self._boundingbox._lower
 
     @min.setter
@@ -404,6 +420,9 @@ class ControlBoundingSlider(ControlBase):
 
     @property
     def max(self):
+        """
+        Sets and gets the maximum value possible.
+        """
         return self._boundingbox._higher
 
     @max.setter
@@ -415,6 +434,9 @@ class ControlBoundingSlider(ControlBase):
 
     @property
     def scale(self):
+        """
+        Sets and gets the scale value.
+        """
         return self._boundingbox.scale
 
     @scale.setter
@@ -423,6 +445,9 @@ class ControlBoundingSlider(ControlBase):
 
     @property
     def convert_2_int(self):
+        """
+        Flag to define if the control should return floats or integers.
+        """
         return not self._boundingbox._use_float
 
     @convert_2_int.setter
