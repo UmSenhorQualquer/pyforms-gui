@@ -146,11 +146,9 @@ class ImportWindow(BaseWidget):
                 except:
                     timestr = row[1]
                     try:
-                        print(timestr)
                         cvttime = datetime.datetime.strptime(timestr, "%H:%M:%S")
                     except:
                         timestr = timestr.replace('T', ' ')
-                        print(timestr)
                         cvttime = dateutil.parser.parse(timestr)
 
                 seconds = (cvttime - datetime.datetime(1900, 1, 1)).total_seconds()

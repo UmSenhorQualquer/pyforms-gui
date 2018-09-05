@@ -106,11 +106,9 @@ def zipdir(path, zippath):
         for filename in files: zippath.write(os.path.join(root, filename))
     """
     execStr = ['zip', '-r',zippath, path]
-    print(' '.join(execStr))
     proc = subprocess.Popen(execStr, stdout=PIPE, stderr=PIPE)
     (output, error) = proc.communicate()
     if error: print ('error: '+ error)
-    print('output: '+ output)
         
 
 def zipfiles(files, zippath):

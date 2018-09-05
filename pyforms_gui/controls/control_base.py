@@ -141,7 +141,7 @@ class ControlBase(object):
         """
         self.__create_popup_menu()
 
-        menu = submenu if submenu else self._popup_menu
+        menu = menu if menu else self._popup_menu
 
         if label == "-":
             return menu.addSeparator()
