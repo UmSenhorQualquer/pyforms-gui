@@ -11,6 +11,7 @@ __status__ = "Development"
 
 from AnyQt.QtWebEngineWidgets 			import QWebEngineView as QWebView
 from AnyQt.QtCore 						import QUrl
+from AnyQt.QtWidgets                    import QSizePolicy
 from pyforms_gui.controls.control_base 	import ControlBase
 
 
@@ -30,6 +31,8 @@ class ControlWeb(ControlBase, QWebView):
         ControlBase.init_form(self)
         if self._value: QWebView.load(self, QUrl(self._value))
         if self.help: self.form.setToolTip(self.help)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding);
     ############################################################################
     ############ Properties ####################################################
     ############################################################################
@@ -47,6 +50,13 @@ class ControlWeb(ControlBase, QWebView):
     def value(self, value):
         ControlBase.value.fset(self, value)
         QWebView.load(self, QUrl(value))
+
+    @property
+    def html(self): return None
+
+    @html.setter
+    def html(self, value):
+        QWebView.setHtml(self, value)
 
     @property
     def form(self):

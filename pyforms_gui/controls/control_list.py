@@ -76,6 +76,7 @@ class ControlList(ControlBase, QWidget):
             self.minusButton.pressed.connect(minusFunction)
 
         
+        super().init_form()
 
     def __repr__(self):
         return "ControlList " + str(self._value)

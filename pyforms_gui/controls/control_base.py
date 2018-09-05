@@ -33,6 +33,7 @@ class ControlBase(object):
         self._help          = kwargs.get('helptext', None)
         self._value         = kwargs.get('default',  None)
         self._label         = kwargs.get('label', args[0] if len(args)>0 else '')
+        self._style         = kwargs.get('style', None)
 
         self.init_form()
 
@@ -53,6 +54,8 @@ class ControlBase(object):
         Load the control UI and initiate all the events.
         """     
         if self.help: self.form.setToolTip(self.help)
+
+        if self._style: self.form.setStyleSheet(self._style)
    
 
 

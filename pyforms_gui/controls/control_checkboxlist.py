@@ -24,6 +24,7 @@ class ControlCheckBoxList(ControlBase):
         self._form.listWidget.itemSelectionChanged.connect(self.__itemSelectionChanged)
 
         if self.help: self.form.setToolTip(self.help)
+        super().init_form()
 
 
 

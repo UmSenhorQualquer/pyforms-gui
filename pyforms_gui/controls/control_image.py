@@ -53,6 +53,7 @@ class ControlImage(ControlBase):
         self._form = uic.loadUi(control_path)
         self._imageWidget = VideoGLWidget()
         self._form.imageLayout.addWidget(self._imageWidget)
+        super().init_form()
  
     def save_form(self, data, path=None):
         if type(self.value) is np.ndarray: data['value'] = self._value

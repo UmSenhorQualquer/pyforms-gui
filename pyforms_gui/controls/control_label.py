@@ -26,6 +26,7 @@ class ControlLabel(ControlBase):
         control_path = tools.getFileInSameDirectory(__file__, "label.ui")
         self._form = uic.loadUi(control_path)
         self._form.label.setText(self._label)
+        super().init_form()
 
     def load_form(self, data, path=None): pass
 
