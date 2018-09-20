@@ -13,6 +13,12 @@ from pyforms_gui.controls.control_base import ControlBase
 
 class ControlNumber(ControlBase):
     def __init__(self, *args, **kwargs):
+        """
+        :param int minimum: Minimum value.
+        :param int maximum: Maximum value.
+        :param float default: Set the value. Default = 0.
+        :param int decimals: Decimals precision.
+        """
         self._min = kwargs.get('minimum', 0)
         self._max = kwargs.get('maximum', 100)
         if 'default' not in kwargs: kwargs['default'] = 0
