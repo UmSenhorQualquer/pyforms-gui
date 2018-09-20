@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from confapp                      import conf
-from pyforms_gui.controls.control_text import ControlText
+from pyforms_gui.controls.control_base import ControlBase
 
 import pyforms_gui.utils.tools as tools
 
@@ -11,7 +11,7 @@ from AnyQt           import uic, _api
 from AnyQt.QtWidgets import QFileDialog
 
 
-class ControlFile(ControlText):
+class ControlFile(ControlBase):
 
     def __init__(self, *args, **kwargs):
 
@@ -46,3 +46,21 @@ class ControlFile(ControlText):
 
         if value and len(value)>0: self.value = value
 
+
+    @property
+    def value(self):
+        self._value = str(self._form.lineEdit.text())
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._form.lineEdit.setText(value)
+        ControlBase.value.fset(self, value)
+
+    @property
+    def label(self): return self.form.label.text()
+
+    @label.setter
+    def label(self, value):
+        self.form.label.setText(value)
+        ControlBase.label.fset(self, value)
