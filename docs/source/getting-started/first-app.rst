@@ -42,7 +42,7 @@ Create the file **example.py** and add the next code to it.
             self._runbutton     = ControlButton('Run')
 
             #Define the function that will be called when a file is selected
-            self._videofile.changed     = self.__videoFileSelectionEvent
+            self._videofile.changed_event     = self.__videoFileSelectionEvent
             #Define the event that will be called when the run button is processed
             self._runbutton.value       = self.__runEvent
             #Define the event called before showing the image in the player
