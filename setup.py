@@ -23,7 +23,7 @@ with open('README.md', 'r') as fd:
 setup(
     name='PyForms GUI',
     version=version,
-    description="""Pyforms is a Python 2.7 and 3.4 framework to develop GUI applications based on pyqt""",
+    description="""Pyforms is a Python framework to develop GUI applications based on pyqt""",
     author='Ricardo Ribeiro',
     author_email='ricardojvr@gmail.com',
     license=license,
