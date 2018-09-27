@@ -12,7 +12,13 @@ __maintainer__ = "Ricardo Ribeiro"
 __email__ = "ricardojvr@gmail.com"
 __status__ = "Development"
 
-import logging, platform, os, math, cv2
+import logging, platform, os, math
+
+try:
+    import cv2
+except:
+    raise Exception('OpenCV is not available. ControlPlayer will not be working')
+
 
 from confapp 	 import conf
 from AnyQt 			 import uic, _api

@@ -4,7 +4,15 @@
 """ pyforms_gui.controls.ControlPlayer.VideoGLWidget
 
 """
-import logging, cv2
+__author__      = "Ricardo Ribeiro"
+__credits__     = ["Ricardo Ribeiro"]
+__license__     = "MIT"
+__version__     = "0.0"
+__maintainer__  = "Ricardo Ribeiro"
+__email__       = "ricardojvr@gmail.com"
+__status__      = "Development"
+
+import logging
 
 from confapp     import conf
 from AnyQt           import QtGui, QtCore, _api
@@ -13,13 +21,13 @@ from AnyQt.QtWidgets import QApplication
 import OpenGL.GL  as GL
 import OpenGL.GLU as GLU
 
-__author__      = "Ricardo Ribeiro"
-__credits__     = ["Ricardo Ribeiro"]
-__license__     = "MIT"
-__version__     = "0.0"
-__maintainer__  = "Ricardo Ribeiro"
-__email__       = "ricardojvr@gmail.com"
-__status__      = "Development"
+ 
+try:
+    import cv2
+except:
+    raise Exception('OpenCV is not available. Any Control using AbstractGLWidget will not be working')
+
+
 
 class MouseEvent:
 

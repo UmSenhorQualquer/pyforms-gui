@@ -13,7 +13,7 @@ from pyforms_gui.utils import tools
 try:
     import cv2
 except:
-    logger.debug("OpenCV not available")
+    raise Exception('OpenCV is not available. ControlImage will not be working')
  
 import OpenGL.GL  as GL
 import OpenGL.GLU as GLU
