@@ -21,6 +21,7 @@ from .controls.control_progress import ControlProgress
 from .controls.control_slider import ControlSlider
 from .controls.control_tableview import ControlTableView
 from .controls.control_text import ControlText
+from .controls.control_password import ControlPassword
 from .controls.control_textarea import ControlTextArea
 from .controls.control_toolbox import ControlToolBox
 from .controls.control_toolbutton import ControlToolButton

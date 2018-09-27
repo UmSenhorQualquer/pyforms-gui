@@ -343,8 +343,9 @@ class ControlBoundingSlider(ControlBase):
     def __update(self):
         l, h = self._boundingbox._minVal, self._boundingbox._maxVal
         self._is_updating_spinboxes = True
-        self._min_spinbox.setValue(l)
-        self._max_spinbox.setValue(h)
+        if self._show_spinboxes:
+            self._min_spinbox.setValue(l)
+            self._max_spinbox.setValue(h)
         del self._is_updating_spinboxes
         self.changed_event()
 

@@ -248,6 +248,17 @@ ControlNumber
 ----------------------------
 
 
+ControlPassword
+----------------------------
+
+.. autoclass:: pyforms_gui.controls.control_password.ControlPassword
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members: init_form, serialize, deserialize
+
+----------------------------
+
 ControlOpenGL
 ----------------------------
 
