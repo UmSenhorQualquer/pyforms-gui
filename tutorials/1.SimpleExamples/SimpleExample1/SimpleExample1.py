@@ -43,7 +43,7 @@ class SimpleExample1(BaseWidget):
 		x 	 = range(len(data))
 		
 		axes = figure.add_subplot(111)
-		axes.bar(left=x, height=data)
+		axes.bar(x, height=data)
 
 		
 		axes = figure.add_subplot(222, projection='3d')
