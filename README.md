@@ -15,7 +15,7 @@ Pyforms **GUI** is a software layer, part of the Pyforms main library. This laye
 <!-- Posicione esta tag onde você deseja que o widget apareça. -->
 <div class="g-follow" data-annotation="bubble" data-height="24" data-rel="publisher"></div>
 
-Pyforms is a Python 3 cross-enviroment framework that aims the boost the developement productivity. The library provides an API in Python to develop applications that can be executed in Windows GUI mode, Web mode, or in Terminal mode.
+Pyforms is a Python 3 cross-enviroment framework that aims the boost the development productivity. The library provides an API in Python to develop applications that can be executed in Windows GUI mode, Web mode, or in Terminal mode.
 
 [More @ ![Diagram](https://raw.githubusercontent.com/UmSenhorQualquer/pyforms-gui/v4/docs/imgs/rtd.png)](https://pyforms.readthedocs.io)
 

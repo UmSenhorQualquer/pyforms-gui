@@ -11,7 +11,7 @@ First application
         * :class:`pyforms_gui.controls.control_base.ControlBase`
 
 
-Here it is shown how to create the first pyforms app for a django project.
+Here it is shown how to create the first pyforms app.
 
 
 Create the first app
