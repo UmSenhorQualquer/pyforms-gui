@@ -34,7 +34,7 @@ class ControlNumber(ControlBase):
         self.value = self._value
         self.form.label.setAccessibleName('ControlNumber-label')
         self.form.spinBox.valueChanged.connect(self.update_event)
-        super().init_form()
+        super(ControlNumber, self).init_form()
 
         
     def update_event(self, value):

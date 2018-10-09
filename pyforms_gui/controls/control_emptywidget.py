@@ -25,9 +25,6 @@ class ControlEmptyWidget(ControlBase, QWidget):
         ControlBase.__init__(self, *args, **kwargs)
         self.value = kwargs.get('default', None)
 
-    def init_form(self):
-        pass
-        super().init_form()
 
     ############################################################################
     ############ Properties ####################################################

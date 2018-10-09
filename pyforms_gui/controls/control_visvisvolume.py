@@ -43,7 +43,7 @@ class ControlVisVisVolume(ControlBase):
 
         self._colorMap = vv.CM_AUTUMN
         self._colors_limits = None
-        super().init_form()
+        super(ControlVisVisVolume, self).init_form()
 
     ############################################################################
     ############ Properties ####################################################

@@ -50,7 +50,7 @@ class ControlMatplotlib(ControlBase, QWidget):
         vbox.addWidget(self.canvas)
         vbox.addWidget(self.mpl_toolbar)
         self.setLayout(vbox)
-        super().init_form()
+        super(ControlMatplotlib, self).init_form()
 
     @property
     def value(self): return None

@@ -25,7 +25,7 @@ class ControlProgress(ControlBase):
         self._form.horizontalSlider.setMaximum(self._max)
         self._form.horizontalSlider.setValue(self._value)
         self._form.horizontalSlider.setFormat(self._label)
-        super().init_form()
+        super(ControlProgress, self).init_form()
 
     @property
     def label(self): return self._label

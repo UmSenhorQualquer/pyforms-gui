@@ -12,7 +12,7 @@ from AnyQt.QtWidgets import QTreeView, QFileSystemModel
 class ControlFilesTree(ControlBase):
     def init_form(self):
         self._form = QTreeView()
-        super().init_form()
+        super(ControlFilesTree, self).init_form()
 
     @property
     def value(self): return self._value

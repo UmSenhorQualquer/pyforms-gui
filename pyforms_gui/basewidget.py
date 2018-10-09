@@ -390,8 +390,8 @@ class BaseWidget(QFrame):
                 btns=b
             else: btns |= b 
 
-        m = QMessageBox(QMessageBox.Question, title, msg, btns) 
-        reply = m.exec()
+        m = QMessageBox(QMessageBox.Question, title, msg, btns)
+        reply = m.exec_()
 
         if reply==QMessageBox.Cancel: return 'cancel'
         elif reply==QMessageBox.No:   return 'no'
@@ -415,7 +415,7 @@ class BaseWidget(QFrame):
         else:
             m = QMessageBox(QMessageBox.NoIcon, title, msg)
 
-        m.exec()
+        m.exec_()
 
     def success(self,   msg, title=None):   self.message(msg, title, msg_type='success')
     def info(self,      msg, title=None):   self.message(msg, title, msg_type='info')

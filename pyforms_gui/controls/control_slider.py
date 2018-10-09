@@ -30,7 +30,7 @@ class ControlSlider(ControlBase):
         self._form.horizontalSlider.setMinimum(self._min)
         self._form.horizontalSlider.setMaximum(self._max)
         self._form.horizontalSlider.setValue(self._value)
-        super().init_form()
+        super(ControlSlider, self).init_form()
 
     def valueChanged(self, value):
         self._updateSlider = False

@@ -31,7 +31,7 @@ class ControlTreeView(ControlBase, QTreeView):
         self.mouseDoubleClickEvent  = self.__itemDoubleClicked
 
         self.selectionModel().selectionChanged.connect(self.__selectionChanged)
-        super().init_form()
+        super(ControlTreeView, self).init_form()
 
     def item_selection_changed_event(self, selected, deselected):
         pass

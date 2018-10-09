@@ -56,7 +56,7 @@ class ControlCombo(ControlBase, QWidget):
         
         self._items = {}
         self._addingItem = False
-        super().init_form()
+        super(ControlCombo, self).init_form()
 
         
 

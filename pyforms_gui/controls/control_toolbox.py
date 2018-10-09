@@ -15,7 +15,7 @@ from pyforms_gui.controls.control_base import ControlBase
 class ControlToolBox(ControlBase):
     def init_form(self):
         self._form = QToolBox()
-        super().init_form()
+        super(ControlToolBox, self).init_form()
 
     # self.form.layout().setMargin(0)
 

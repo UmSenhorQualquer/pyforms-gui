@@ -251,7 +251,7 @@ class OpenglGLWidget(QGLWidget):
 class ControlOpenGL(ControlBase):
     def init_form(self):
         self._form = OpenglGLWidget()
-        super().init_form()
+        super(ControlOpenGL, self).init_form()
 
     def repaint(self): self._form.repaint()
 

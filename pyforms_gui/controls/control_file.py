@@ -25,7 +25,7 @@ class ControlFile(ControlBase):
         self._form.pushButton.clicked.connect(self.click)
         self.form.lineEdit.editingFinished.connect(self.finishEditing)
         self._form.pushButton.setIcon(conf.PYFORMS_ICON_FILE_OPEN)
-        super().init_form()
+        super(ControlFile, self).init_form()
 
     def finishEditing(self):
         """Function called when the lineEdit widget is edited"""

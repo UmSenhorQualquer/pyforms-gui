@@ -34,7 +34,7 @@ class ControlButton(ControlBase):
         self._form.setCheckable(self._checkable)
         self.label = self._label
         self._form.setToolTip(self.help)
-        super().init_form()
+        super(ControlButton, self).init_form()
 
     def click(self):
         """

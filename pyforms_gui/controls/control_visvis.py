@@ -40,7 +40,7 @@ class ControlVisVis(ControlBase):
         widget.setSizePolicy(policy)
 
         layout.addWidget(widget)
-        super().init_form()
+        super(ControlVisVis, self).init_form()
 
         
     def refresh(self):

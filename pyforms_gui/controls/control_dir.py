@@ -20,7 +20,7 @@ class ControlDir(ControlBase):
         self._form.pushButton.clicked.connect(self.click)
         self.form.lineEdit.editingFinished.connect(self.finishEditing)
         self._form.pushButton.setIcon(conf.PYFORMS_ICON_FILE_OPEN)
-        super().init_form()
+        super(ControlDir, self).init_form()
 
 
     def click(self):

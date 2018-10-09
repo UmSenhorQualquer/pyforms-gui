@@ -25,7 +25,7 @@ class ControlTree(ControlBase, QTreeWidget):
 
         self.selectionChanged = self.selectionChanged
         self._items = {}
-        super().init_form()
+        super(ControlTree, self).init_form()
 
     def __repr__(self):
         return QTreeWidget.__repr__(self)
