@@ -18,13 +18,15 @@ class ControlNumber(ControlBase):
         :param int maximum: Maximum value.
         :param float default: Set the value. Default = 0.
         :param int decimals: Decimals precision.
+        :param float step: Step jump value.
         """
-        self._min = kwargs.get('minimum', 0)
-        self._max = kwargs.get('maximum', 100)
+        self._min  = kwargs.get('minimum', 0)
+        self._max  = kwargs.get('maximum', 100)
         if 'default' not in kwargs: kwargs['default'] = 0
         ControlBase.__init__(self, *args, **kwargs)
         self.decimals = kwargs.get('decimals', 0)
-
+        self.step     = kwargs.get('step', 1)
+        
     def init_form(self):
         control_path = tools.getFileInSameDirectory(__file__, "number.ui")
         self._form = uic.loadUi(control_path)
@@ -79,3 +81,9 @@ class ControlNumber(ControlBase):
 
     @decimals.setter
     def decimals(self, value): self.form.spinBox.setDecimals(value)
+
+    @property
+    def step(self): return self.form.spinBox.singleStep()
+
+    @step.setter
+    def step(self, value): self.form.spinBox.setSingleStep(value)   
