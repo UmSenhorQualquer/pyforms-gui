@@ -66,7 +66,6 @@ class ControlTreeView(ControlBase, QTreeView):
         for index in self.selectedIndexes():
             res = []
             while index.isValid():
-                print( index.data() )
                 res.append( index.data() )
                 index = index.parent()
             return list(reversed(res))

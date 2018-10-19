@@ -47,8 +47,6 @@ class SimpleExample(BaseWidget):
 			self._control.add_event( s, s+o, track=random.randint(0,4) )
 			self._control.value = s+o
 
-			print('Add event', s, s+o)
-		
 		self._control.repaint()
 		#self._control.value = 5013
 

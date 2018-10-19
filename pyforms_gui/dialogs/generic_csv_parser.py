@@ -5,6 +5,7 @@ from pyforms_gui.allcontrols import ControlButton
 from pyforms_gui.allcontrols import ControlFile
 from pyforms_gui.allcontrols import ControlList
 from pyforms_gui.allcontrols import ControlNumber
+from pyforms_gui.allcontrols import ControlCombo
 
 
 class GenericCsvParserDialog(BaseWidget):
