@@ -71,11 +71,11 @@ class ControlEventTimeline(ControlBase, QWidget):
 
         clean_menu = self.add_popup_submenu('Clean')
 
-        self.add_popup_menu_option('The current row', function_action=self.__cleanLine, submenu=clean_menu)
+        self.add_popup_menu_option('The current row', function_action=self.__cleanLine, menu=clean_menu)
         self.add_popup_menu_option('-')
-        self.add_popup_menu_option('All graphs', function_action=self.__cleanCharts, submenu=clean_menu)
+        self.add_popup_menu_option('All graphs', function_action=self.__cleanCharts, menu=clean_menu)
         self.add_popup_menu_option('-')
-        self.add_popup_menu_option('Everything', function_action=self.clean, submenu=clean_menu)
+        self.add_popup_menu_option('Everything', function_action=self.clean, menu=clean_menu)
 
     def init_form(self):
         # Get the current path of the file

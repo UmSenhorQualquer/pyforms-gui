@@ -22,7 +22,7 @@ Import the pyforms library, the BaseWidget and the Controls classes that you wil
 .. code:: python 
     
     import pyforms
-    from   pyforms import BaseWidget
+    from   pyforms.basewidget import BaseWidget
     from   pyforms.controls import ControlText
     from   pyforms.controls import ControlButton
 

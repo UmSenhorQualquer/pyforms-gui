@@ -117,7 +117,7 @@ This window should inherit from the BaseWidget and People classes.
 .. code:: python
 
     import pyforms
-    from pyforms                import BaseWidget
+    from pyforms.basewidget     import BaseWidget
     from pyforms.controls       import ControlList
     from People                 import People
     from PersonWindow           import PersonWindow
