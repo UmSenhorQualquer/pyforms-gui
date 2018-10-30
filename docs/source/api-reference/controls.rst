@@ -204,7 +204,7 @@ ControlList
 ControlPlayer
 ----------------------------
 
-.. autoclass:: pyforms_gui.controls.control_player.ControlPlayer
+.. autoclass:: pyforms_gui.controls.control_player.control_player.ControlPlayer
     :members:
     :undoc-members:
     :show-inheritance:
