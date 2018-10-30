@@ -4,7 +4,7 @@
 __author__      = "Ricardo Ribeiro"
 __credits__     = ["Ricardo Ribeiro"]
 __license__     = "MIT"
-__version__     = "4.0.8"
+__version__     = "4.0.9"
 __maintainer__  = "Ricardo Ribeiro"
 __email__       = "ricardojvr@gmail.com"
 __status__      = "Development"
