@@ -88,6 +88,7 @@ class AbstractGLWidget(object):
         self._helpText = None
 
         self.setMinimumHeight(100)
+        self.setMinimumWidth(100)
 
         self._point = None
         self._pending_frames = []

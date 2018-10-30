@@ -57,3 +57,21 @@ class ControlImage(ControlBase):
  
     def save_form(self, data, path=None):
         if type(self.value) is np.ndarray: data['value'] = self._value
+
+
+    @property
+    def value(self):
+        """
+        This property returns or set what the control should manage or store.
+        """
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        oldvalue = self._value
+        self._value = value
+        self._imageWidget.paint([value])
+        if  (type(oldvalue) is np.ndarray and type(value) is np.ndarray and oldvalue.any()!=value.any()) or \
+            (type(oldvalue) is np.ndarray and type(value) is not np.ndarray) or \
+            (type(oldvalue) is not np.ndarray and type(value) is np.ndarray):
+            self.changed_event()
