@@ -54,7 +54,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         self.add_popup_menu_option("-")
 
         # General righ click popup menus
-        self.add_popup_menu_option("Rows", self.__setLinePropertiesEvent,
+        self.add_popup_menu_option("Row properties", self.__setLinePropertiesEvent,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE)
         self.add_popup_menu_option("-")
 
