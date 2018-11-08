@@ -235,5 +235,8 @@ class ControlCombo(ControlBase, QWidget):
     def _currentIndexChanged(self, index):
         if not self._addingItem:
             item = self._combo.currentText()
-            ControlBase.value.fset(self, self._items[ str(item) ] )
-            self.current_index_changed_event(index)
+            item = str(item)
+
+            if item in self._items:
+                ControlBase.value.fset(self, self._items[ str(item) ] )
+                self.current_index_changed_event(index)
