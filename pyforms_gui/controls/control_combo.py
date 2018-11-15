@@ -10,6 +10,7 @@ from AnyQt.QtWidgets import QLabel, QWidget, QComboBox, QHBoxLayout, QSizePolicy
 
 from pyforms_gui.controls.control_base import ControlBase
 
+class ValueNotSet: pass
 
 class ControlCombo(ControlBase, QWidget):
     """This class represents a wrapper to the combo box"""
@@ -65,9 +66,10 @@ class ControlCombo(ControlBase, QWidget):
         self._value = None
         self._combo.clear()
 
-    def add_item(self, label, value=None):
+    def add_item(self, label, value=ValueNotSet):
         self._addingItem = True
-        if value is not None:
+        
+        if value is not ValueNotSet:
             if not (value in self._items.values()):
                 self._combo.addItem(label)
         else:
@@ -78,7 +80,7 @@ class ControlCombo(ControlBase, QWidget):
         if self._items == {}:
             firstValue = True
 
-        if value is None:
+        if value is ValueNotSet:
             self._items[str(label)] = label
         else:
             self._items[str(label)] = value
@@ -233,6 +235,8 @@ class ControlCombo(ControlBase, QWidget):
     def _currentIndexChanged(self, index):
         if not self._addingItem:
             item = self._combo.currentText()
-            if len(item) >= 1:
-                ControlBase.value.fset(self, self._items[str(item)])
+            item = str(item)
+
+            if item in self._items:
+                ControlBase.value.fset(self, self._items[ str(item) ] )
                 self.current_index_changed_event(index)
