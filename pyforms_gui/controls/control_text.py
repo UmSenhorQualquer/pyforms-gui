@@ -64,3 +64,12 @@ class ControlText(ControlBase):
 	def label(self, value):
 		self.form.label.setText(value)
 		ControlBase.label.fset(self, value)
+
+	@property
+	def readonly(self):
+		return self._form.lineEdit.isReadOnly()
+
+	@readonly.setter
+	def readonly(self, value):
+		self._form.lineEdit.setReadOnly(value)
+		self._form.lineEdit.setEnabled(not value)
