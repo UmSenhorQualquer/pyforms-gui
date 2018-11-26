@@ -24,8 +24,8 @@ setup(
     name='PyForms GUI',
     version=version,
     description="""Pyforms is a Python framework to develop GUI applications based on pyqt""",
-    author='Ricardo Ribeiro',
-    author_email='ricardojvr@gmail.com',
+    author='Ricardo Ribeiro, Luís Teixeira',
+    author_email='ricardojvr@gmail.com, micboucinha@gmail.com',
     license=license,
     url='https://github.com/UmSenhorQualquer/pyforms-gui',
     
