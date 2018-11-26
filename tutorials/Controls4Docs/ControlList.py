@@ -20,7 +20,7 @@ class SimpleExample(BaseWidget):
 		super(SimpleExample,self).__init__('Simple example')
 
 		#Definition of the forms fields
-		self._control 	= ControlList('List')
+		self._control 	= ControlList('List',horizontal_headers=[] )
 		
 		self.formset = [' ',(' ', '_control', ' '),' ']
 
@@ -28,8 +28,8 @@ class SimpleExample(BaseWidget):
 
 		self._control += ('Elem5', 'Elem6')
 
-		self._control.horizontalHeaders = ['col1','col2','col3']
-		self._control.horizontalHeaders = ['col4',]
+		self._control.horizontal_headers = ['col1','col2','col3']
+		self._control.horizontal_headers = ['col4',]
 		
 		
 

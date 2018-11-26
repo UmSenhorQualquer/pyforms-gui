@@ -22,14 +22,11 @@ __status__ = "Development"
 
 class ControlLabel(ControlBase):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.selectable = kwargs.get('selectable', False)
-
     def init_form(self):
         control_path = tools.getFileInSameDirectory(__file__, "label.ui")
         self._form = uic.loadUi(control_path)
         self._form.label.setText(self._label)
+        self._selectable = False
         super(ControlLabel, self).init_form()
 
     def load_form(self, data, path=None): pass
@@ -41,8 +38,7 @@ class ControlLabel(ControlBase):
 
     @selectable.setter
     def selectable(self, value):
-        self._selectable = value
-        if self._selectable:
+        if value:
             self._form.label.setTextInteractionFlags(QtCore.Qt.TextSelectableByMouse)
             self._form.label.setCursor(QtGui.QCursor(QtCore.Qt.IBeamCursor))
         else:
@@ -51,6 +47,7 @@ class ControlLabel(ControlBase):
 
     @property
     def form(self): return self._form
+
 
     @property
     def value(self): return ControlBase.value.fget(self)

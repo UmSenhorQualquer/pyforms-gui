@@ -15,12 +15,7 @@ from pyforms_gui.controls.control_base import ControlBase
 from AnyQt.QtWidgets import QLineEdit
 from AnyQt 			 import uic
 
-
 class ControlText(ControlBase):
-
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.readonly = kwargs.get('readonly', False)
 
 	def init_form(self):
 		control_path = tools.getFileInSameDirectory(__file__, "textInput.ui")
