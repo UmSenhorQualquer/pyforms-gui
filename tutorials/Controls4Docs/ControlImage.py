@@ -28,7 +28,7 @@ class SimpleExample(BaseWidget):
 		self._open.value = self.__open
 		
 	def __open(self):
-		self._control.value = '/home/ricardo/Desktop/lena_color.png'
+		self._control.value = cv2.imread('../2.ControlsExamples/lena.png')
 
 
 
