@@ -75,3 +75,45 @@ class ControlImage(ControlBase):
             (type(oldvalue) is np.ndarray and type(value) is not np.ndarray) or \
             (type(oldvalue) is not np.ndarray and type(value) is np.ndarray):
             self.changed_event()
+
+    ##########################################################################
+    ############ EVENTS ######################################################
+    ##########################################################################
+    
+    @property
+    def double_click_event(self):
+        return self._imageWidget.onDoubleClick
+
+    @double_click_event.setter
+    def double_click_event(self, value):
+        self._imageWidget.onDoubleClick = value
+
+    @property
+    def click_event(self):
+        return self._imageWidget.onClick
+
+    @click_event.setter
+    def click_event(self, value):
+        self._imageWidget.onClick = value
+
+    @property
+    def drag_event(self):
+        return self._imageWidget.onDrag
+
+    @drag_event.setter
+    def drag_event(self, value):
+        self._imageWidget.onDrag = value
+
+    @property
+    def end_drag_event(self):
+        return self._imageWidget.onEndDrag
+
+    @end_drag_event.setter
+    def end_drag_event(self, value):
+        self._imageWidget.onEndDrag = value
+
+    @property
+    def key_release_event(self): return self._imageWidget.on_key_release
+
+    @key_release_event.setter
+    def key_release_event(self, value): self._imageWidget.on_key_release = value
