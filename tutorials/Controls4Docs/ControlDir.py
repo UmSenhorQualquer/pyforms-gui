@@ -1,5 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+import pyforms
+from pyforms_gui.basewidget import BaseWidget
+from pyforms_gui.controls.control_dir import ControlDir
 
 __author__      = "Ricardo Ribeiro"
 __credits__     = ["Ricardo Ribeiro"]
@@ -28,7 +31,7 @@ class SimpleExample(BaseWidget):
 
 		
 	def __print_value(self):
-		print self._control.value
+		print(self._control.value)
 
 
 
