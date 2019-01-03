@@ -375,27 +375,38 @@ class BaseWidget(QFrame):
         else:
             return None
 
-
     def question(self, msg, title=None, buttons=['no', 'yes']):
         btns = None
         for btn in buttons:
-            if btn.lower()=='cancel':
+            if btn.lower() == 'cancel':
                 b = QMessageBox.Cancel
-            elif btn.lower()=='no':
+            elif btn.lower() == 'no':
                 b = QMessageBox.No
-            elif btn.lower()=='yes':
+            elif btn.lower() == 'yes':
                 b = QMessageBox.Yes
+            elif btn.lower() == 'no_all':
+                b = QMessageBox.NoToAll
+            elif btn.lower() == 'yes_all':
+                b = QMessageBox.YesToAll
 
             if btns is None: 
-                btns=b
-            else: btns |= b 
+                btns = b
+            else:
+                btns |= b
 
         m = QMessageBox(QMessageBox.Question, title, msg, btns)
         reply = m.exec_()
 
-        if reply==QMessageBox.Cancel: return 'cancel'
-        elif reply==QMessageBox.No:   return 'no'
-        elif reply==QMessageBox.Yes:  return 'yes'
+        if reply == QMessageBox.Cancel:
+            return 'cancel'
+        elif reply == QMessageBox.No:
+            return 'no'
+        elif reply == QMessageBox.Yes:
+            return 'yes'
+        elif reply == QMessageBox.NoToAll:
+            return 'no_all'
+        elif reply == QMessageBox.YesToAll:
+            return 'yes_all'
 
         return None
 
