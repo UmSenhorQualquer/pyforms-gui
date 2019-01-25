@@ -167,14 +167,19 @@ def execute_test_file(myapp):
         exec(code, global_vars, local_vars)
 
 
-def start_app(ClassObject, geometry=None, stylesheet=None):
+def start_app(ClassObject, geometry=None, stylesheet=None, user_settings=None):
     from confapp import conf
 
     app = QApplication(sys.argv)
 
     conf += 'pyforms_gui.settings'
+    if user_settings:
+        conf += user_settings
 
     mainwindow = StandAloneContainer(ClassObject)
+    
+    if hasattr( conf, 'PYFORMS_MAIN_WINDOW_ICON_PATH'):
+        mainwindow.setWindowIcon(QIcon(conf.PYFORMS_MAIN_WINDOW_ICON_PATH))
 
     myapp = mainwindow.centralWidget()
 
