@@ -345,6 +345,13 @@ class ControlEventTimeline(ControlBase, QWidget):
     @property
     def graphs(self): return self._time.graphs
 
+    @property
+    def key_release_event(self):
+        return self._time.key_release_event
+    @key_release_event.setter
+    def key_release_event(self, value):
+        self._time.key_release_event = value
+
     ##########################################################################
     #### PRIVATE FUNCTIONS ###################################################
     ##########################################################################

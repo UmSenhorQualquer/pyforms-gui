@@ -71,8 +71,9 @@ class AbstractGLWidget(object):
 
         self._lastGlX = 0.0 #Last 
         self._lastGlY = 0.0
-        
-        self._move_img  = False
+
+
+        self._move_img  = False # flag used to move the image with the mouse click button
         self._width     = 1.0
         self._height    = 1.0
         self._x = 0
@@ -417,7 +418,11 @@ class AbstractGLWidget(object):
         super(AbstractGLWidget, self).keyPressEvent(event)
 
         #Set the flag move_img to true, for the image position to be updated
-        if event.key() == QtCore.Qt.Key_M: self._move_img = True
+        if event.key() == QtCore.Qt.Key_M:
+            self._move_img = True
+
+        self.on_key_press(event)
+
 
     def keyReleaseEvent(self, event):
         super(AbstractGLWidget, self).keyReleaseEvent(event)
@@ -430,65 +435,65 @@ class AbstractGLWidget(object):
             else:
                 self._control.play()
 
-        # Jumps 1 frame forward
-        if event.key() == QtCore.Qt.Key_D:
-            self._control.video_index += 1
-            self._control.update_frame()
-
         # Jumps 1 frame backwards
-        if event.key() == QtCore.Qt.Key_A:
-            self._control.video_index -= 1
-            self._control.update_frame()
+        elif event.key() == QtCore.Qt.Key_A:
+            self._control.video_index -= 2
+            self._control.call_next_frame()
 
-        # Jumps 20 seconds forward
-        if event.key() == QtCore.Qt.Key_C:
-            self._control.video_index += 20*self._control.fps
-            self._control.update_frame()
+        # Jumps 1 frame forward
+        elif event.key() == QtCore.Qt.Key_D:
+            self._control.video_index += 1
+            self._control.call_next_frame()
 
         # Jumps 20 seconds backwards
-        if event.key() == QtCore.Qt.Key_Z:
-            self._control.video_index -= 20*self._control.fps
-            self._control.update_frame()
+        elif event.key() == QtCore.Qt.Key_Z:
+            self._control.jump_backward()
+            self._control.call_next_frame()
 
-        if event.key() == QtCore.Qt.Key_M: self._move_img = False
+        # Jumps 20 seconds forward
+        elif event.key() == QtCore.Qt.Key_C:
+            self._control.jump_forward()
+            self._control.call_next_frame()
 
-        if event.key() == QtCore.Qt.Key_1: 
+        elif event.key() == QtCore.Qt.Key_M:
+            self._move_img = False
+
+        elif event.key() == QtCore.Qt.Key_1:
             self._control.next_frame_step = 1
             self.show_tmp_msg('Speed: 1x')
 
-        if event.key() == QtCore.Qt.Key_2: 
+        elif event.key() == QtCore.Qt.Key_2:
             self._control.next_frame_step = 2
             self.show_tmp_msg('Speed: 2x')
 
-        if event.key() == QtCore.Qt.Key_3: 
+        elif event.key() == QtCore.Qt.Key_3:
             self._control.next_frame_step = 3
             self.show_tmp_msg('Speed: 3x')
 
-        if event.key() == QtCore.Qt.Key_4: 
+        elif event.key() == QtCore.Qt.Key_4:
             self._control.next_frame_step = 4
             self.show_tmp_msg('Speed: 4x')
 
-        if event.key() == QtCore.Qt.Key_5: 
+        elif event.key() == QtCore.Qt.Key_5:
             self._control.next_frame_step = 5
             self.show_tmp_msg('Speed: 5x')
 
-        if event.key() == QtCore.Qt.Key_6: 
+        elif event.key() == QtCore.Qt.Key_6:
             self._control.next_frame_step = 6
             self.show_tmp_msg('Speed: 6x')
 
-        if event.key() == QtCore.Qt.Key_7: 
+        elif event.key() == QtCore.Qt.Key_7:
             self._control.next_frame_step = 7
             self.show_tmp_msg('Speed: 7x')
 
-        if event.key() == QtCore.Qt.Key_8: 
+        elif event.key() == QtCore.Qt.Key_8:
             self._control.next_frame_step = 8
             self.show_tmp_msg('Speed: 8x')
 
-        if event.key() == QtCore.Qt.Key_9: 
+        elif event.key() == QtCore.Qt.Key_9:
             self._control.next_frame_step = 9
             self.show_tmp_msg('Speed: 9x')
 
-        
         self.on_key_release(event)
 
 
@@ -505,6 +510,8 @@ class AbstractGLWidget(object):
     def onEndDrag(self, startPoint, endPoint): pass
 
     def on_key_release(self, event): pass
+
+    def on_key_press(self, event): pass
 
     @property
     def rotateX(self): return self._rotateX
