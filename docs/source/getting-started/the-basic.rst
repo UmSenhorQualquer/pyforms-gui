@@ -167,6 +167,17 @@ Try now:
     #Use the sign '=' for a vertical splitter
     #Use the signs '||' for a horizontal splitter
 
+.. note::
+
+    In the name of each tab use the format **a:Tab1** and **b:Tab2** to define the order of the tabs. Example:
+
+    .. code::
+
+        self.formset = [ {
+            'a:Tab1':['_firstname','||','_middlename','||','_lastname'],
+            'b:Tab2':['_fullname']
+        }
+
 
 ## **Add a main menu**
 ***************************

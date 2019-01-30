@@ -320,7 +320,7 @@ class TimelineWidget(QWidget):
 			self._selected.draw(painter, showvalues=True)
 
 		# Draw the time pointer
-		self._pointer.draw(painter)
+		self._pointer.draw(painter, highlight=self._creating_event)
 
 		painter.end()
 
@@ -413,7 +413,7 @@ class TimelineWidget(QWidget):
 
 				return
 
-			if event.key() == QtCore.Qt.Key_S and self._creating_event:
+			elif event.key() == QtCore.Qt.Key_S and self._creating_event:
 				# End, must be followed right after Start key and have no
 				# effect otherwise
 				self._creating_event_end = self._pointer.frame
@@ -428,6 +428,17 @@ class TimelineWidget(QWidget):
 					self._creating_event = False
 				else:
 					self._creating_event = False
+
+			# walk backwards 1 step
+			elif event.key() == QtCore.Qt.Key_A:
+				self.position = self.position - 1
+
+			# forward 1 step
+			elif event.key() == QtCore.Qt.Key_D:
+				self.position = self.position + 1
+
+
+
 
 	def mousePressEvent(self, event):
 		# Select the track

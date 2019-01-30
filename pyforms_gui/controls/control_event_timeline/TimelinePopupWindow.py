@@ -32,7 +32,7 @@ class TimelinePopupWindow(QDialog):
 		control_path = tools.getFileInSameDirectory(
 			__file__, "TimelinePopupWindow.ui")
 		self._ui = uic.loadUi(control_path)
-		self._ui.setWindowTitle("Track {:d} properties".format(track_id + 1))
+		self._ui.setWindowTitle("Row {:d} properties".format(track_id + 1))
 
 		# Dialog variables
 		self.behaviors = []

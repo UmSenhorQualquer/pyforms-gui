@@ -54,7 +54,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         self.add_popup_menu_option("-")
 
         # General righ click popup menus
-        self.add_popup_menu_option("Rows", self.__setLinePropertiesEvent,
+        self.add_popup_menu_option("Row properties", self.__setLinePropertiesEvent,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE)
         self.add_popup_menu_option("-")
 
@@ -344,6 +344,13 @@ class ControlEventTimeline(ControlBase, QWidget):
 
     @property
     def graphs(self): return self._time.graphs
+
+    @property
+    def key_release_event(self):
+        return self._time.key_release_event
+    @key_release_event.setter
+    def key_release_event(self, value):
+        self._time.key_release_event = value
 
     ##########################################################################
     #### PRIVATE FUNCTIONS ###################################################

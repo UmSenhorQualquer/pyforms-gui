@@ -9,6 +9,9 @@ from pyforms_gui.controls.control_textarea import ControlTextArea
 from pyforms_gui.controls.control_text import ControlText
 from pyforms_gui.controls.control_number import ControlNumber
 from pyforms_gui.controls.control_label import ControlLabel
+from pyforms_gui.controls.control_combo import ControlCombo
+from pyforms_gui.controls.control_emptywidget import ControlEmptyWidget
+from pyforms_gui.controls.control_file import ControlFile
 
         
 import time

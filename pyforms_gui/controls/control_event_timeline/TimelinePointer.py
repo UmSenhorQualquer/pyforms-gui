@@ -15,15 +15,21 @@ class TimelinePointer(object):
 		self._position = position
 		self._parent = parent
 
-	def draw(self, painter, showvalues=False):
+	def draw(self, painter, showvalues=False, highlight=False):
 		"""
 		
 		:param painter: 
 		:param showvalues: 
 		:return: 
 		"""
-		painter.setPen(QColor(0, 255, 0))
-		painter.setBrush(QColor(0, 255, 0))
+		if highlight:
+			painter.setPen(QColor(0, 150, 150))
+			painter.setBrush(QColor(0, 150, 150))
+		else:
+			painter.setPen(QColor(0, 255, 0))
+			painter.setBrush(QColor(0, 255, 0))
+
+
 		painter.drawLine(
 			self.xposition, 8, self.xposition, self._parent.height())
 		painter.drawEllipse(QtCore.QPoint(self.xposition, 8), 5, 5)
