@@ -18,9 +18,9 @@ from pyforms_gui.controls.control_base 	import ControlBase
 class ControlWeb(ControlBase, QWebView):
     def __init__(self, *args, **kwargs):
         QWebView.__init__(self)
-        if 'load_finnished_event' in kwargs: 
-            self.load_finnished_event=kwargs['load_finnished_event']
-        self.loadFinished.connect(self.__load_finnished_evt)
+        if 'load_finished_event' in kwargs: 
+            self.load_finished_event=kwargs['load_finished_event']
+        self.loadFinished.connect(self.__load_finished_evt)
         ControlBase.__init__(self, *args, **kwargs)
 
         
@@ -37,10 +37,10 @@ class ControlWeb(ControlBase, QWebView):
     ############ Properties ####################################################
     ############################################################################
 
-    def __load_finnished_evt(self, ok):
-        self.load_finnished_event(ok)
+    def __load_finished_evt(self, ok):
+        self.load_finished_event(ok)
 
-    def load_finnished_event(self,ok):
+    def load_finished_event(self,ok):
         pass
 
     @property
