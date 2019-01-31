@@ -98,7 +98,7 @@ color: #FFF;</string>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>24</height>
+       <height>30</height>
       </size>
      </property>
      <property name="frameShape">
