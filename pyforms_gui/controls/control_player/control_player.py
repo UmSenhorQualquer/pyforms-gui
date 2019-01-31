@@ -335,6 +335,9 @@ class ControlPlayer(ControlBase, QFrame):
 
 
 	def __detach_player_evt(self):
+		"""
+		Called by the detach button
+		"""
 		self._old_layout = self.parentWidget().layout()
 		self._old_layout_index = self._old_layout.indexOf(self)
 		self._detach_win = QMainWindow(parent=self.parent)
@@ -345,6 +348,9 @@ class ControlPlayer(ControlBase, QFrame):
 		self._detach_win.show()
 
 	def __detach_win_closed_evt(self, event):
+		"""
+		Called when the detached window is closed
+		"""
 		self._old_layout.insertWidget(self._old_layout_index, self)
 		self.detach_btn.show()
 		self._detach_win.close()
