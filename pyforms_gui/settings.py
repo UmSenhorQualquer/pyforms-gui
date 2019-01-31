@@ -20,6 +20,9 @@ PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY.addPixmap(qApp.style().standardPixmap(QStyle
 PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY.addPixmap(qApp.style().standardPixmap(QStyle.SP_MediaPause), mode=QIcon.Normal,
                                               state=QIcon.On)
 
+PYFORMS_ICON_VIDEOPLAYER_DETACH = QIcon()
+PYFORMS_ICON_VIDEOPLAYER_DETACH.addPixmap(qApp.style().standardPixmap(QStyle.SP_TitleBarMaxButton), mode=QIcon.Normal )
+
 PYFORMS_ICON_CODEEDITOR_SAVE = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogSaveButton))
 PYFORMS_ICON_CODEEDITOR_DISCART = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogDiscardButton))
 

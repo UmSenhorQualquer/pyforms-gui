@@ -25,6 +25,8 @@ from AnyQt 			 import uic, _api
 from AnyQt 			 import QtCore
 from AnyQt.QtWidgets import QFrame	
 from AnyQt.QtWidgets import QApplication
+from AnyQt.QtWidgets import QMainWindow
+
 from pyforms_gui.controls.control_base import ControlBase
 
 if _api.USED_API == _api.QT_API_PYQT5:
@@ -71,6 +73,9 @@ class ControlPlayer(ControlBase, QFrame):
 		# Define the icon for the Play button
 		
 		self.videoPlay.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY)
+		self.detach_btn.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_DETACH)
+
+		self.detach_btn.clicked.connect(self.__detach_player_evt)
 
 		self._video_widget = VideoGLWidget()
 		self._video_widget._control = self
@@ -329,6 +334,21 @@ class ControlPlayer(ControlBase, QFrame):
 		self.form.setUpdatesEnabled(True)
 
 
+	def __detach_player_evt(self):
+		self._old_layout = self.parentWidget().layout()
+		self._old_layout_index = self._old_layout.indexOf(self)
+		self._detach_win = QMainWindow(parent=self.parent)
+		self._detach_win.setWindowTitle('Player')
+		self._detach_win.setCentralWidget(self)
+		self.detach_btn.hide()
+		self._detach_win.closeEvent = self.__detach_win_closed_evt
+		self._detach_win.show()
+
+	def __detach_win_closed_evt(self, event):
+		self._old_layout.insertWidget(self._old_layout_index, self)
+		self.detach_btn.show()
+		self._detach_win.close()
+		del self._detach_win
 
 	def videoPlay_clicked(self):
 		"""Slot for Play/Pause functionality."""

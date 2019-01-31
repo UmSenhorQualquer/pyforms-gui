@@ -105,6 +105,7 @@ class StandAloneContainer(QMainWindow):
                 if not widget._show: dock.hide()
 
         if conf.PYFORMS_STYLESHEET:
+
             stylesheet_files = [conf.PYFORMS_STYLESHEET]
 
             p = platform.system()
