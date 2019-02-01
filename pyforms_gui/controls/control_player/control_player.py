@@ -186,7 +186,10 @@ class ControlPlayer(ControlBase, QFrame):
 	def video_index(self, value): self._value.set(1, value)
 
 	@property
-	def max(self): return int(self._value.get(7))
+	def max(self):
+		if self._value is None or self._value=='':
+			return 0
+		return int(self._value.get(7))
 
 	@property
 	def frame(self): return self._current_frame
