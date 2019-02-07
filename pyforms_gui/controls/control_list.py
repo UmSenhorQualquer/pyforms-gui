@@ -7,10 +7,9 @@
 import logging
 import os
 
-from confapp import conf
 
 from AnyQt           import QtCore, uic
-from AnyQt.QtWidgets import QTableWidgetItem, QWidget, QAbstractItemView
+from AnyQt.QtWidgets import QTableWidgetItem, QWidget, QAbstractItemView, QTableWidgetSelectionRange
 from AnyQt.QtGui     import QIcon
 
 from pyforms_gui.basewidget import BaseWidget
@@ -37,6 +36,13 @@ class ControlList(ControlBase, QWidget):
         self.resizecolumns      = kwargs.get('resizecolumns',       True)
         self.select_entire_row  = kwargs.get('select_entire_row',   False)
         self.horizontal_headers = kwargs.get('horizontal_headers',  None)
+
+        self.item_selection_changed_event   = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
+        self.data_changed_event             = kwargs.get('data_changed_event', self.data_changed_event)
+        self.item_selection_changed_event   = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
+        self.current_cell_changed_event     = kwargs.get('current_cell_changed_event', self.current_cell_changed_event)
+        self.current_item_changed_event     = kwargs.get('current_item_changed_event', self.current_item_changed_event)
+        self.cell_double_clicked_event      = kwargs.get('cell_double_clicked_event', self.cell_double_clicked_event)
 
     ##########################################################################
     ############ FUNCTIONS ###################################################
@@ -296,6 +302,7 @@ class ControlList(ControlBase, QWidget):
     def value(self):
         if hasattr(self, 'tableWidget'):
             results = []
+
             for row in range(self.tableWidget.rowCount()):
                 r = []
                 for col in range(self.tableWidget.columnCount()):
@@ -330,6 +337,19 @@ class ControlList(ControlBase, QWidget):
             return indexes[0]
         else:
             return None
+
+    @selected_row_index.setter
+    def selected_row_index(self, row):
+        self.tableWidget.setRangeSelected(
+            QTableWidgetSelectionRange(0, 0, len(self)-1, 0),
+            False
+        )
+
+        if row is not None and row >= 0:
+            self.tableWidget.setRangeSelected(
+                QTableWidgetSelectionRange(row, 0, row, 0),
+                True
+            )
 
     @property
     def label(self):
