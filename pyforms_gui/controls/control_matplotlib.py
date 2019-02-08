@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+
 __author__      = "Ricardo Ribeiro"
 __credits__     = ["Ricardo Ribeiro"]
 __license__     = "MIT"
@@ -9,14 +10,10 @@ __maintainer__  = "Ricardo Ribeiro"
 __email__       = "ricardojvr@gmail.com"
 __status__      = "Development"
 
-
-from confapp import conf
-
-from AnyQt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
-
+from AnyQt.QtCore import QMargins
+from AnyQt.QtWidgets import QWidget, QVBoxLayout
 from pyforms_gui.controls.control_base import ControlBase
-
-
+from matplotlib.figure import Figure
 from AnyQt import _api
 
 if _api.USED_API == _api.QT_API_PYQT5:
@@ -25,11 +22,6 @@ if _api.USED_API == _api.QT_API_PYQT5:
 elif _api.USED_API == _api.QT_API_PYQT4:
     from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.backends.backend_qt4agg import NavigationToolbar2QT as NavigationToolbar
-
-from matplotlib.figure import Figure
-from mpl_toolkits.mplot3d import Axes3D
-
-
 
 class ControlMatplotlib(ControlBase, QWidget):
 
@@ -49,6 +41,7 @@ class ControlMatplotlib(ControlBase, QWidget):
         vbox = QVBoxLayout()
         vbox.addWidget(self.canvas)
         vbox.addWidget(self.mpl_toolbar)
+        vbox.setContentsMargins(QMargins(0,0,0,0))
         self.setLayout(vbox)
         super(ControlMatplotlib, self).init_form()
 
