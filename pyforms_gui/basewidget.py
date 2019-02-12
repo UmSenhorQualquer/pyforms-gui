@@ -57,6 +57,8 @@ class BaseWidget(QFrame):
         self.toolbar    = []
         self._mainmenu  = []
         self._splitters = []
+        self.vlayouts   = []
+        self.hlayouts   = []
         self._tabs = []
         self._formset = None
         self._formLoaded = False
@@ -143,6 +145,7 @@ class BaseWidget(QFrame):
         layout = None
         if isinstance(formset, (tuple, no_columns)):
             layout = QHBoxLayout()
+            self.hlayouts.append(layout)
             for row in formset:
                 if isinstance(row, (list, tuple, vsplitter, hsplitter, no_columns, segment) ):
                     panel = self.generate_panel(row)
@@ -216,6 +219,7 @@ class BaseWidget(QFrame):
                         layout.addWidget(param.form)
         elif isinstance(formset, (list, segment)):
             layout = QVBoxLayout()
+            self.vlayouts.append(layout)
             for row in formset:
                 if isinstance(row, (list, tuple, vsplitter, hsplitter, segment, no_columns) ):
                     panel = self.generate_panel(row)

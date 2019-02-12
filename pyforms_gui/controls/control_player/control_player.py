@@ -13,6 +13,7 @@ __email__ = "ricardojvr@gmail.com"
 __status__ = "Development"
 
 import logging, platform, os, math
+from .multiple_videocapture import MultipleVideoCapture
 
 try:
     import cv2
@@ -26,6 +27,7 @@ from AnyQt 			 import QtCore
 from AnyQt.QtWidgets import QFrame	
 from AnyQt.QtWidgets import QApplication
 from AnyQt.QtWidgets import QMainWindow
+from AnyQt.QtWidgets import QMessageBox
 
 from pyforms_gui.controls.control_base import ControlBase
 
@@ -49,6 +51,8 @@ class ControlPlayer(ControlBase, QFrame):
 		QFrame.__init__(self)
 		ControlBase.__init__(self, *args, **kwargs)
 
+		self._multiple_files = kwargs.get('multiple_files', False)
+
 		self._current_frame = None  # current frame image
 		self._current_frame_index = None # current frame index
 
@@ -71,7 +75,6 @@ class ControlPlayer(ControlBase, QFrame):
 
 
 		# Define the icon for the Play button
-		
 		self.videoPlay.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY)
 		self.detach_btn.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_DETACH)
 
@@ -244,7 +247,33 @@ class ControlPlayer(ControlBase, QFrame):
 		if value == 0:
 			self._value = cv2.VideoCapture(0)
 		elif isinstance(value, str) and value:
-			self._value = cv2.VideoCapture(value)
+
+			open_multiplefiles = self._multiple_files
+
+			if open_multiplefiles:
+				open_multiplefiles = len(MultipleVideoCapture.search_files(value))>0
+
+			if open_multiplefiles:
+				msg = "Multiple files were found with the same name, do you wish to combine then in a single video?\n\n"
+				for filepath in MultipleVideoCapture.search_files(value):
+					msg += "- {filename}\n".format(filename=os.path.basename(filepath))
+
+				reply = QMessageBox(
+					QMessageBox.Question,
+					'Open multiple files',
+					msg,
+					QMessageBox.No | QMessageBox.Yes
+				).exec_()
+
+				if reply == QMessageBox.Yes:
+					open_multiplefiles = True
+				else:
+					open_multiplefiles = False
+
+			if open_multiplefiles:
+				self._value = MultipleVideoCapture(value)
+			else:
+				self._value = cv2.VideoCapture(value)
 		else:
 			self._value = value
 

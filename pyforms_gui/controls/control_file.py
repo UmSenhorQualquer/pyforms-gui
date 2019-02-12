@@ -14,7 +14,7 @@ from AnyQt.QtWidgets import QFileDialog
 class ControlFile(ControlBase):
 
     def __init__(self, *args, **kwargs):
-
+        self.__exec_changed_event = True
         super(ControlFile, self).__init__(*args, **kwargs)
         self.use_save_dialog = kwargs.get('use_save_dialog', False)
 
@@ -25,11 +25,12 @@ class ControlFile(ControlBase):
         self._form.pushButton.clicked.connect(self.click)
         self.form.lineEdit.editingFinished.connect(self.finishEditing)
         self._form.pushButton.setIcon(conf.PYFORMS_ICON_FILE_OPEN)
-        super(ControlFile, self).init_form()
+        super().init_form()
 
     def finishEditing(self):
         """Function called when the lineEdit widget is edited"""
-        self.changed_event()
+        if self.__exec_changed_event:
+            self.changed_event()
 
     def click(self):
 
@@ -54,7 +55,9 @@ class ControlFile(ControlBase):
 
     @value.setter
     def value(self, value):
+        self.__exec_changed_event = False
         self._form.lineEdit.setText(value)
+        self.__exec_changed_event = True
         ControlBase.value.fset(self, value)
 
     @property

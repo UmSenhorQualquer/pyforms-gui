@@ -28,6 +28,8 @@ class ControlList(ControlBase, QWidget):
     def __init__(self, *args, **kwargs):
         QWidget.__init__(self)
 
+        self._height = kwargs.get('height', None)
+
         self._plusFunction  = kwargs.get('add_function', None)
         self._minusFunction = kwargs.get('remove_function', None)
         ControlBase.__init__(self, *args, **kwargs)
@@ -36,6 +38,7 @@ class ControlList(ControlBase, QWidget):
         self.resizecolumns      = kwargs.get('resizecolumns',       True)
         self.select_entire_row  = kwargs.get('select_entire_row',   False)
         self.horizontal_headers = kwargs.get('horizontal_headers',  None)
+
 
         self.item_selection_changed_event   = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
         self.data_changed_event             = kwargs.get('data_changed_event', self.data_changed_event)
@@ -56,6 +59,9 @@ class ControlList(ControlBase, QWidget):
         rootPath = os.path.dirname(__file__)
         # Load the UI for the self instance
         uic.loadUi(os.path.join(rootPath, "list.ui"), self)
+
+        if self._height:
+            self.height = self._height
 
         self.label = self._label
 
@@ -233,6 +239,13 @@ class ControlList(ControlBase, QWidget):
     ############ PROPERTIES ##################################################
     ##########################################################################
 
+    @property
+    def height(self):
+        return self._height
+    @height.setter
+    def height(self, value):
+        self._height = value
+        self.setMaximumHeight(value)
 
     @property
     def horizontal_headers(self):

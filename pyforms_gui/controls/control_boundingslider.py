@@ -6,6 +6,7 @@ from confapp import conf
 from AnyQt           import QtCore, _api
 from AnyQt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSpinBox
 from AnyQt.QtGui     import QFont, QColor, QCursor, QPainter
+from AnyQt.QtWidgets import QLabel, QSizePolicy
 
 from pyforms_gui.controls.control_base import ControlBase
 
@@ -18,6 +19,8 @@ class GaugeWidgetVertical(QWidget):
         self.setMinimumHeight(30)
         self.setMinimumWidth(30)
         self.setMaximumWidth(50)
+
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         self._step = 0
         self._lower = 0
@@ -299,6 +302,14 @@ class ControlBoundingSlider(ControlBase):
             elif _api.USED_API == _api.QT_API_PYQT4:
                 hlayout.setMargin(0)
 
+            if self._label is not None:
+                self._controllabel = QLabel(self.form)
+                hlayout.addWidget(self._controllabel)
+                self._controllabel.setAccessibleName('ControlBoundingSlider-label')
+                self.label = self._label
+            else:
+                self._controllabel = None
+
 
             hwidget.setLayout(hlayout)
             self._min_spinbox = QSpinBox()
@@ -388,6 +399,13 @@ class ControlBoundingSlider(ControlBase):
     ##########################################################################
     ############ Properties ##################################################
     ##########################################################################
+
+    @property
+    def label(self):
+        return self._controllabel.getText()
+    @label.setter
+    def label(self, value):
+        self._controllabel.setText(value)
 
     @property
     def value(self):
