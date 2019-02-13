@@ -103,6 +103,8 @@ class ImportWindow(BaseWidget):
 
 
     def __importData(self):
+        if not self._file.value: return
+
         if self._filetype.value == 0:
             separator = ','
             with open(self._file.value, 'rU') as csvfile:
