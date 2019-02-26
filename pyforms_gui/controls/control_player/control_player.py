@@ -42,6 +42,7 @@ elif _api.USED_API == _api.QT_API_PYQT4:
 	from pyforms_gui.controls.control_player.VideoGLWidget 		 import VideoGLWidget
 
 
+logger = logging.getLogger(__name__)
 
 class ControlPlayer(ControlBase, QFrame):
 
@@ -101,9 +102,13 @@ class ControlPlayer(ControlBase, QFrame):
 	############ FUNCTIONS ###################################################
 	##########################################################################
 
-	def play(self): 
-		self.videoPlay.setChecked(True)
-		self._timer.start( 1000.0/float(self.fps+1) )
+	def play(self):
+		try:
+			self.videoPlay.setChecked(True)
+			self._timer.start( 1000.0/float(self.fps+1) )
+		except Exception as e:
+			self.videoPlay.setChecked(False)
+			logger.error(e, exc_info=True)
 
 	def stop(self):
 		self.videoPlay.setChecked(False)

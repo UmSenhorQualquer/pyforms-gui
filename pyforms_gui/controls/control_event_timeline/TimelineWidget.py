@@ -3,8 +3,9 @@
 
 
 from AnyQt.QtWidgets import QWidget, QMessageBox
-from AnyQt.QtGui import QColor, QPainter, QFont, QCursor
+from AnyQt.QtGui import QColor, QPainter, QFont, QCursor, QBrush
 from AnyQt import QtCore
+
 
 from pyforms_gui.controls.control_event_timeline.Track import Track
 from pyforms_gui.controls.control_event_timeline.TimelinePointer import TimelinePointer
@@ -16,19 +17,21 @@ class TimelineWidget(QWidget):
 	"""
 	Timeline widget definition to be used in the ControlEventTimeline
 	"""
+	TOPTRACK_HEIGHT 	   = 20
+	TRACK_HEIGHT 		   = 30
+	TRACK_HEIGHTWITHMARGIN = 34
+	TRACK_TOP_TEXT 		   = 12
+
+	PERIOD_TEXT_TOP 	   = 19
+	PERIOD_RANGE_TOP       = 44
 
 	_defautcolor = QColor(100, 100, 255)
 
 	def __init__(self, parent_control):
 		super(TimelineWidget, self).__init__()
-
 		self.parent_control = parent_control
-
-		# self.setFocusPolicy(QtCore.Qt.StrongFocus)
-		# self.grabKeyboard()
 		self.setMouseTracking(True)
 		self.setMinimumWidth(300000)
-		# self.setMinimumHeight(30)
 
 		# Timeline background color
 		palette = self.palette()
@@ -49,23 +52,24 @@ class TimelineWidget(QWidget):
 			QColor(116, 10, 255), QColor(153, 0, 0),
 			QColor(255, 255, 0), QColor(255, 80, 5)
 		]
+
 		self._charts = []
-		self._tracks = [Track(parent=self)]
+		self._tracks = []
 
 		self._scale = 1.0
-		self._lastMouseY = None
+		self._last_mousex = None
 		self._mouse_current_pos = None
 
 		self._moving = False
-		self._resizingBegin = False
-		self._resizingEnd = False
+		self._resizing_began = False
+		self._resizing_ended = False
 		self._creating_event = False
 		self._creating_event_start = None
 		self._creating_event_end = None
 		self._n_tracks = 1
 
 		self._selected = None
-		self._selected_track = 0
+		self._selected_track = None
 		self._pointer = TimelinePointer(0, self)
 
 		# Video playback controls
@@ -75,16 +79,24 @@ class TimelineWidget(QWidget):
 		self._video_fps_max = None
 		self._video_fps_inc = None
 
+		self._repainting = False
+
 	##########################################################################
 	#### HELPERS/FUNCTIONS ###################################################
 	##########################################################################
 
 	def __add__(self, other):
-		self.parent_control.__add__(other)
+		if isinstance(other, Track):
+			self._tracks.append( other )
+		else:
+			self.parent_control.__add__(other)
 		return self
 
 	def __sub__(self, other):
-		self.parent_control.__sub__(other)
+		if isinstance(other, Track):
+			self._tracks.remove( other )
+		else:
+			self.parent_control.__sub__(other)
 		return self
 
 	def x2frame(self, x):
@@ -114,9 +126,9 @@ class TimelineWidget(QWidget):
 			self._selected.lock = not self._selected.lock
 			self.repaint()
 
-	def selectDelta(self, x, y):
+	def select_period(self, x, y):
 		# Check if the timeline pointer was selected
-		if y <= 20:
+		if y <= self.TOPTRACK_HEIGHT:
 			if self._pointer.collide(x, y):
 				return self._pointer
 			else:
@@ -126,22 +138,18 @@ class TimelineWidget(QWidget):
 		if i >= len(self._tracks):
 			return None
 
-		return self._tracks[i].selectDelta(x, y)
+		return self._tracks[i].select_period(x, y)
 
-	def __drawTrackLines(self, painter, start, end):
+	def __draw_track_lines(self, painter, start, end):
 		# Draw only from pixel start to end
 		painter.setPen(QtCore.Qt.DashLine)
 		painter.setOpacity(0.3)
-		# Draw horizontal lines
-		# for track in range(0, self.numberoftracks + 1):
-		#    y = (track * 34) + 18
-		#    painter.drawLine(start, y, end, y)
 		for i, track in enumerate(self._tracks):
-			track.draw(painter, start, end, i)
+			track.draw(painter, start, end)
 
 		# Draw vertical lines
 		for x in range(start - (start % 100), end, 100):
-			painter.drawLine(x, 20, x, self.height())
+			painter.drawLine(x, self.TOPTRACK_HEIGHT, x, self.height())
 			string = "{0}".format(int(round(x / self._scale)))
 			boundtext = painter.boundingRect(QtCore.QRectF(), string)
 			painter.drawText(x - boundtext.width() / 2, 15, string)
@@ -152,9 +160,6 @@ class TimelineWidget(QWidget):
 				painter.drawText(x - boundtext.width() / 2, 30, string)
 
 		painter.setOpacity(1.0)
-
-		for index, track in enumerate(self._tracks):
-			track.drawLabels(painter, index)
 
 
 
@@ -185,14 +190,23 @@ class TimelineWidget(QWidget):
 		self._tracks = []
 		self._selected = None
 
+		track = self.tracks[0] if len(self.tracks)>0 else None
 		for row in csvfileobject:
-			if len(row) == 0: continue
+			if len(row) == 0:
+				continue
+
 			if row[0] == "T":
-				track = self.add_track()
-				track.properties = row
+				track = self.add_track( title = row[1], color = QColor(row[2]) )
+
 			elif row[0] == "P":
-				period = self.add_period([0, 1, '-'])
-				period.properties = row
+				self.add_period(
+					int(row[2]),
+					int(row[3]),
+					title = row[4],
+					color = QColor(row[5]),
+					lock  = row[1]=='True',
+					track = track
+				)
 
 	def export_csv(self, csvfileobject):
 		"""
@@ -269,18 +283,42 @@ class TimelineWidget(QWidget):
 			QMessageBox.about(self, "Error", "You must select a timebar first")
 			return
 
-	def add_track(self):
-		t = Track(parent=self)
+	def add_track(self, title='', color=None):
+		t = Track(self, title=title, color=color)
 		self._tracks.append(t)
 		self.setMinimumHeight(Track.whichTop(len(self._tracks)))
 		return t
 
-	def add_period(self, value, row=0, color=None):
+	def add_period(self, begin, end, title='', track=None, lock=False, color=None):
 		"""Adds an annotated interval."""
-		begin, end, title = value
-		period = TimelineDelta(begin, end, title=title, parent=self, top=Track.whichTop(row))
-		self._tracks[period.track].periods.append(period)
+		period = TimelineDelta(
+			begin,
+			end,
+			title  = title,
+			lock   = lock,
+			color  = color,
+			track  = track,
+			widget = self,
+		)
 		return period
+
+	def find_track(self, ycoord):
+		"""
+		Find a track.
+		:param int ycoord: Y coordinate in pixels of the track to find.
+		:return: Track object
+		"""
+		if ycoord<=self.TOPTRACK_HEIGHT: return self._selected_track
+
+		track_index = (ycoord - self.TOPTRACK_HEIGHT) // self.TRACK_HEIGHTWITHMARGIN
+		ntracks 	= len(self.tracks)
+
+		# if the track does not exists yet, create it
+		if track_index >= ntracks:
+			for i in range(ntracks, track_index+1):
+				self.add_track()
+
+		return self.tracks[track_index]
 
 	##########################################################################
 	#### EVENTS ##############################################################
@@ -288,12 +326,13 @@ class TimelineWidget(QWidget):
 
 	def paintEvent(self, e):
 		super(TimelineWidget, self).paintEvent(e)
-
 		painter = QPainter()
 		painter.begin(self)
+
 		painter.setRenderHint(QPainter.Antialiasing)
 		painter.setFont(QFont('Decorative', 8))
 
+		# find the start and end X coordinate to draw
 		start = self._scroll.horizontalScrollBar().sliderPosition()
 		end = start + self.parent().width() + 50
 
@@ -308,11 +347,16 @@ class TimelineWidget(QWidget):
 			chart.draw(painter, start, end, 0, self.height())
 		# End draw graph #######################################################
 
+		for track in self.tracks:
+			track.draw_title(painter, start, end)
 
-		self.__drawTrackLines(painter, start, end)
+		self.__draw_track_lines(painter, start, end)
 
-		for track in self._tracks:
-			track.drawPeriods(painter, start, end)
+		if self._selected_track is not None:
+			self._selected_track.draw_background(painter, start, end)
+
+		for track in self.tracks:
+			track.draw_periods(painter, start, end)
 
 		# Draw the selected element
 		if self._selected != None:
@@ -321,23 +365,34 @@ class TimelineWidget(QWidget):
 
 		# Draw the time pointer
 		self._pointer.draw(painter, highlight=self._creating_event)
-
 		painter.end()
 
-	def mouseDoubleClickEvent(self, event):
-		if self._selected is not None and self._selected != self._pointer and self._selected.collide(event.x(),
-		                                                                                             event.y()):
-			self._selected.showEditWindow()
-		elif event.y() > 20:
-			top = (event.y() - 20) // 34
-			y = top * 34 + 20
-			x = event.x() / self._scale
-			# time = TimelineDelta(x, x + 50 / self._scale, title='', top=y, parent=self)
-			time = TimelineDelta(x, x + 10, title='', top=y, parent=self)
-			self._tracks[time.track].periods.append(time)
+		self.update()
 
+	def mouseDoubleClickEvent(self, event):
+		"""
+
+		:param event:
+		:return:
+		"""
+		xcoord = event.x()
+		ycoord = event.y()
+
+		if  self._selected is not None and \
+			self._selected != self._pointer and \
+			self._selected.collide( xcoord, ycoord ):
+			# check if a period event is selected,
+			# if so open the properties window
+			self._selected.open_properties()
+
+		elif ycoord > self.TOPTRACK_HEIGHT:
+			# check if click was bellow the time track
+			# if so create a new event
+			track = self.find_track( ycoord )
+			x     = xcoord / self._scale
+			time  = TimelineDelta(x, x + 10, title='', track=track, widget=self)
 			self._selected = time
-			self._selected_track = self._selected.track
+			self._selected_track = track
 			self.repaint()
 
 	def key_release_event(self, event):
@@ -371,12 +426,12 @@ class TimelineWidget(QWidget):
 
 				# Move the event up
 				if modifier == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Up:
-					self._selected.move(0, self._selected._top - 34)
+					self._selected.move(0, self._selected.top_coordinate - self.TRACK_HEIGHTWITHMARGIN)
 					self.repaint()
 
 				# Move the event down
 				if modifier == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Down:
-					self._selected.move(0, self._selected._top + 34)
+					self._selected.move(0, self._selected.top_coordinate + self.TRACK_HEIGHTWITHMARGIN)
 					self.repaint()
 
 				# Move the event end left
@@ -423,7 +478,13 @@ class TimelineWidget(QWidget):
 				comment = ""
 
 				if end > start:
-					self.add_period((start, end, comment), self._selected_track)
+					track = self._selected_track
+					if track is None and len(self.tracks)>0:
+						track = self.tracks[0]
+					if track is None:
+						track = self.add_track()
+
+					self.add_period(start, end, comment, track=track )
 					self.repaint()
 					self._creating_event = False
 				else:
@@ -441,72 +502,103 @@ class TimelineWidget(QWidget):
 
 
 	def mousePressEvent(self, event):
-		# Select the track
-		selected_track = Track.whichTrack(event.y())
-		if selected_track <= len(self._tracks):
-			self._selected_track = selected_track
+		"""
+		Event called when the mouse buttons are pressed
+		:param event: Mouse event
+		"""
+		xcoord = event.x()
+		ycoord = event.y()
+
+		self._selected_track = self.find_track(ycoord)
 
 		# Select the period bar
-		self._selected = self.selectDelta(event.x(), event.y())
-		self._moving = False
-		self._resizingBegin = False
-		self._resizingEnd = False
+		self._selected = self.select_period(xcoord, ycoord)
+		self._moving   = False
+		self._resizing_began = False
+		self._resizing_ended = False
 
 		if self._selected is not None:
-			# Select the action
+			# if no event is selected
+
 			if event.buttons() == QtCore.Qt.LeftButton:
-				if self._selected.canSlideEnd(event.x(), event.y()):
-					self._resizingEnd = True
-				elif self._selected.canSlideBegin(event.x(), event.y()):
-					self._resizingBegin = True
-				elif self._selected.collide(event.x(), event.y()):
+				# check the action to execute
+
+				if self._selected.can_slide_end(xcoord, ycoord):
+					# Resize the event at the end
+					self._resizing_ended = True
+
+				elif self._selected.can_slide_begin(xcoord, ycoord):
+					# Resize the event at the beginning
+					self._resizing_began = True
+
+				elif self._selected.collide(xcoord, ycoord):
+					# Move the period
 					self._moving = True
-		if event.y() <= 20 and not self._moving:
-			self._pointer.position = self.x2frame(event.x())
+
+		if ycoord <= self.TOPTRACK_HEIGHT and not self._moving:
+			# move the time pointer
+			self._pointer.position = self.x2frame(xcoord)
 
 		self.repaint()
 
 	def mouseMoveEvent(self, event):
+		"""
+		Event called when the mouse is moved
+		:param event: Mouse move event.
+		"""
 		super(TimelineWidget, self).mouseMoveEvent(event)
 		self.parent_control.mouse_moveover_timeline_event(event)
-		
-		self._mouse_current_pos = event.x(), event.y()
 
-		
+		xcoord, ycoord = event.x(), event.y()
+		self._mouse_current_pos = xcoord, ycoord
+
+
 
 		# Do nothing if no event bar is selected
 		if self._selected is None:
 			return
 
-		# Set cursors
-		if self._selected.canSlideBegin(event.x(), event.y()) or self._selected.canSlideEnd(event.x(), event.y()):
+		# set cursors
+		if  self._selected.can_slide_begin(xcoord, ycoord) or \
+			self._selected.can_slide_end(xcoord, ycoord):
+			# resize cursor.
 			self.setCursor(QCursor(QtCore.Qt.SizeHorCursor))
-		elif self._selected.collide(event.x(), event.y()):
+
+		elif self._selected.collide(xcoord, ycoord):
+			# move cursor
 			self.setCursor(QCursor(QtCore.Qt.SizeAllCursor))
+
 		else:
+			# normal cursor
 			self.setCursor(QCursor(QtCore.Qt.ArrowCursor))
 
-		if self._selected is None:
-			return
-
 		if event.buttons() == QtCore.Qt.LeftButton:
-			if self._lastMouseY is not None:
-				diff = event.x() - self._lastMouseY
+			# move the period
+			if self._last_mousex is not None:
+				diff = xcoord - self._last_mousex
 				if diff != 0:
 					if self._moving:
-						self._selected.move(diff, event.y())
-					elif self._resizingBegin:
-						self._selected.moveBegin(diff)
-					elif self._resizingEnd:
-						self._selected.moveEnd(diff)
+						# move the selected period
+						self._selected.move(diff, ycoord)
+
+					elif self._resizing_began:
+						# resize the beginning of the period
+						self._selected.move_begin(diff)
+
+					elif self._resizing_ended:
+						# resize the end of the period
+						self._selected.move_end(diff)
+
 					self.repaint()
-			self._lastMouseY = event.x()
+			self._last_mousex = xcoord
+
+
 
 	def mouseReleaseEvent(self, event):
-		self._lastMouseY = None
+		self._last_mousex = None
 
 	def trackInPosition(self, x, y):
-		return (y - 30) // 34
+		return (y - self.TRACK_HEIGHT) // self.TRACK_HEIGHTWITHMARGIN
 
 	def fpsChangeEvent(self):
 		pass
@@ -574,7 +666,7 @@ class TimelineWidget(QWidget):
 		if value < len(self._tracks):
 			for i in range(value, self._tracks + 1):
 				self.add_track()
-		y = value * 34 + 20
+		y = value * self.TRACK_HEIGHTWITHMARGIN + self.TOPTRACK_HEIGHT
 		if y + 40 > self.height():
 			self.setMinimumHeight(y + 40)
 

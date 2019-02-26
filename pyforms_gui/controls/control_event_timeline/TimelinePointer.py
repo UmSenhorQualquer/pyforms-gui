@@ -53,9 +53,9 @@ class TimelinePointer(object):
 		:param y: 
 		:return: 
 		"""
-		return (self.position - 5) <= x <= (self.position + 5) and 3 <= y <= 11
+		return self.begin <= x <= self.end and 0 <= y <= self._parent.TOPTRACK_HEIGHT
 
-	def canSlideBegin(self, x, y):
+	def can_slide_begin(self, x, y):
 		"""
 		
 		:param x: 
@@ -64,7 +64,7 @@ class TimelinePointer(object):
 		"""
 		return False
 
-	def canSlideEnd(self, x, y):
+	def can_slide_end(self, x, y):
 		"""
 		
 		:param x: 
@@ -103,3 +103,11 @@ class TimelinePointer(object):
 
 	@property
 	def frame(self): return self._position
+
+	@property
+	def begin(self):
+		return self._position * self._parent.scale - 5
+
+	@property
+	def end(self):
+		return self._position * self._parent.scale + 5

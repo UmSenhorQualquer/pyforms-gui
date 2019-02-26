@@ -98,10 +98,12 @@ class ControlEventTimeline(ControlBase, QWidget):
 
         # Add scroll area
         scrollarea = QScrollArea()
+        self._scrollArea = scrollarea
         scrollarea.setMinimumHeight(140)
         scrollarea.setWidgetResizable(True)
         scrollarea.keyPressEvent = self.__scrollAreaKeyPressEvent
         scrollarea.keyReleaseEvent = self.__scrollAreaKeyReleaseEvent
+
         vlayout.addWidget(scrollarea)
         # vlayout.setContentsMargins(5, 5, 5, 5)
 
@@ -161,7 +163,8 @@ class ControlEventTimeline(ControlBase, QWidget):
         vlayout.addLayout(hlayout)
 
         self._time = widget
-        self._scrollArea = scrollarea
+
+
 
     ##########################################################################
     #### HELPERS/PUBLIC FUNCTIONS ############################################
@@ -186,15 +189,14 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._graphsgenerator_win.rename_graph(graph_index, newname)
         self._graph2event_win.rename_graph(graph_index, newname)
 
-    def add_period(self, value, row=0, color=None):
+    def add_period(self, begin, end, title='', row=0):
         """
-        
-        :param value: 
-        :param row: 
-        :param color: 
-        :return: 
+        :param begin: Initial frame
+        :param end: Last frame
+        :param title: Event title
+        :param row: Row to which the event should be added.
         """
-        self._time.add_period(value, row, color)
+        self._time.add_period(begin, end, title=title, row=row)
         self._time.repaint()
 
     def add_graph(self, name, data):

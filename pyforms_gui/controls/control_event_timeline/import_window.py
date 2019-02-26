@@ -180,7 +180,7 @@ class ImportWindow(BaseWidget):
             for index in range(0, len(pointEventValues)):
                 pointEventValue = pointEventValues[index]
                 eventsTypes[pointEventValue[0]] = currentTrack
-                self._timeline.add_period([pointEventValue[1], pointEventValue[1] + 50, pointEventValue[0]], row=currentTrack)
+                self._timeline.add_period(pointEventValue[1], pointEventValue[1] + 50, title=pointEventValue[0], row=currentTrack)
 
             currentTrack = 1
 
@@ -195,7 +195,7 @@ class ImportWindow(BaseWidget):
                 else:
                     track = eventsTypes[row0[0]]
 
-                self._timeline.add_period([row0[1], row1[1], row0[0]], row=track)
+                self._timeline.add_period(row0[1], row1[1], title=row0[0], row=track)
 
 
 
@@ -259,7 +259,7 @@ class ImportWindow(BaseWidget):
                 for index in range(0, len(points_events)):
                     eventtype, frame, eventname = points_events[index]
                     events_types[eventname] = current_track
-                    self._timeline.add_period([frame, frame+2, eventname], row=current_track)
+                    self._timeline.add_period(frame, frame+2, title=eventname, row=current_track)
 
                 current_track = 1
 
@@ -273,7 +273,7 @@ class ImportWindow(BaseWidget):
                     else:
                         track = events_types[eventname]
 
-                    self._timeline.add_period([frame_begin, frame_end, eventname], row=track)
+                    self._timeline.add_period(frame_begin, frame_end, title=eventname, row=track)
 
 
         except Exception as e:

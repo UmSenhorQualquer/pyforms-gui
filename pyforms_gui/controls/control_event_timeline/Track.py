@@ -3,6 +3,8 @@
 
 from AnyQt.QtGui import QColor
 from AnyQt import QtCore
+from .TimelineDelta import TimelineDelta
+
 
 class Track(object):
 	"""
@@ -11,14 +13,25 @@ class Track(object):
 
 	DEFAULT_COLOR = QColor(100, 100, 255)
 
-	def __init__(self, parent):
-		self._title = ''
-		self._color = self.DEFAULT_COLOR
-		self._parent = parent
+	def __init__(self, widget, title='', color=None):
+		self._title   = title
+		self._color   = self.DEFAULT_COLOR if color is None else color
+		self._widget  = widget
+		self._index   = len(widget.tracks)
 		self._periods = []
 
 	def __len__(self):
 		return len(self._periods)
+
+	def __add__(self, other):
+		if isinstance(other, TimelineDelta):
+			self._periods.append(other)
+		return self
+
+	def __sub__(self, other):
+		if isinstance(other, TimelineDelta):
+			self._periods.remove(other)
+		return self
 
 	@staticmethod
 	def whichTrack(y):
@@ -52,7 +65,12 @@ class Track(object):
 	def events(self):
 		return self._events
 
-	def draw(self, painter, start, end, index):
+	def draw_background(self, painter, start, end):
+		painter.setOpacity(0.1)
+		painter.fillRect(start, self.top_coordinate, end-start, self._widget.TRACK_HEIGHTWITHMARGIN, QtCore.Qt.black)
+		painter.setOpacity(1.0)
+
+	def draw(self, painter, start, end):
 		"""
 		
 		:param painter: 
@@ -61,10 +79,9 @@ class Track(object):
 		:param index: 
 		:return: 
 		"""
-		y = (index * 34) + 18
-		painter.drawLine(start, y, end, y)
+		painter.drawLine(start, self.top_coordinate, end, self.top_coordinate)
 
-	def drawPeriods(self, painter, start, end):
+	def draw_periods(self, painter, start, end):
 		"""
 		
 		:param painter: 
@@ -76,7 +93,7 @@ class Track(object):
 			painter.setBrush(time.color)
 			time.draw(painter)
 
-	def drawLabels(self, painter, index):
+	def draw_title(self, painter, start, end):
 		"""
 		
 		:param painter: 
@@ -85,17 +102,10 @@ class Track(object):
 		"""
 		painter.setPen(QtCore.Qt.black)
 		painter.setOpacity(0.5)
-
-		x0 = self._parent.visibleRegion().boundingRect().x()
-		xmax = self._parent.visibleRegion().boundingRect().width()
-		text_length = painter.fontMetrics().width(self.title)
-		x = 10
-		y = (index * 34) + 30
-		painter.drawText(x, y, self.title)
-
+		painter.drawText(start+10, self.top_coordinate + painter.fontMetrics().height(), self.title)
 		painter.setOpacity(1.0)
 
-	def selectDelta(self, x, y):
+	def select_period(self, x, y):
 		"""
 		
 		:param x: 
@@ -106,9 +116,6 @@ class Track(object):
 			if delta.collide(x, y): return delta
 		return None
 
-	def periods_in_range(self, begin, end):
-		for delta in self._periods:
-			if delta.collide(x, y): return delta
 
 	def clear(self):
 		"""
@@ -121,13 +128,16 @@ class Track(object):
 	def properties(self):
 		return ['T', self.title, self.color.name()]
 
-	@properties.setter
-	def properties(self, value):
-		self.title = value[1]
-		self.color = QColor(value[2])
+	@property
+	def top_coordinate(self):
+		"""
+		:return: Top pixel coordinate
+		"""
+		return self._index*self._widget.TRACK_HEIGHTWITHMARGIN + self._widget.TOPTRACK_HEIGHT
 
 	@property
-	def track_index(self):
-		for i, track in enumerate(self._parent._tracks):
-			if track == self: return i
-		return -1
+	def bottom_coordinate(self):
+		"""
+		:return: Bottom pixel coordinate
+		"""
+		return self.top_coordinate + self._widget.TRACK_HEIGHTWITHMARGIN

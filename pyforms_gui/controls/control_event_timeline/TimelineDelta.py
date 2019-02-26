@@ -1,22 +1,11 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from AnyQt.QtWidgets import QInputDialog
 from AnyQt.QtGui import QColor
-
-from pyforms_gui.controls.control_event_timeline.Track import Track
-
 from pyforms_gui.basewidget import BaseWidget
-from pyforms_gui.controls.control_progress import ControlProgress
 from pyforms_gui.controls.control_button import ControlButton
-from pyforms_gui.controls.control_list import ControlList
-from pyforms_gui.controls.control_number import ControlNumber
-from pyforms_gui.controls.control_slider import ControlSlider
-from pyforms_gui.controls.control_textarea import ControlTextArea
 from pyforms_gui.controls.control_text import ControlText
 from pyforms_gui.controls.control_number import ControlNumber
-from pyforms_gui.controls.control_label import ControlLabel
-
 
 class DeltaEditWindow(BaseWidget):
 
@@ -76,120 +65,122 @@ class DeltaEditWindow(BaseWidget):
 
 class TimelineDelta(object):
 	"""
-	
+	Class representing a time period \ event.
 	"""
 
-	def __init__(self, begin, end=30, title=None, height=30, top=0, parent=None):
+	def __init__(self, begin, end=30, title=None, lock=False, color=None, track=None, widget=None):
 		"""
+		Constructor
 		
-		:param begin: 
-		:param end: 
-		:param title: 
-		:param height: 
-		:param top: 
-		:param parent: 
+		:param int begin: First frame
+		:param int end: Last frame
+		:param str title: Event title
+		:param bool lock: Flag to set the event lock
+		:param AnyQt.QtGui.QColor color: Color of the event
+		:param Track track: Track to witch the period will be added
+		:param TimelineWidget widget: Parent timeline widget
 		"""
-		self._top = top
-		self._height = height
-		self._parent = parent
-		self._title = title
-		self._lock = False
-		self._begin = begin
-		self._end = end
-
-		self.checkNumberOfTracks()
-
-		self._defautcolor = parent._tracks[self.track].color
+		self._track  = track
+		self._widget = widget
+		self._title  = title
+		self._lock 	 = lock
+		self._begin  = begin
+		self._end 	 = end
+		self._color  = track.color if color is None else color
+		
+		track.periods.append(self)
 
 	##########################################################################
 	#### HELPERS/FUNCTIONS ###################################################
 	##########################################################################
 
-	def checkNumberOfTracks(self):
-		"""
-		
-		:return: 
-		"""
-		if self.track >= (self._parent.numberoftracks - 1):
-			for i in range(self._parent.numberoftracks - 1, self.track + 1):
-				self._parent.add_track()
 
-	def collide(self, x, y):
+	def collide(self, xcoord, ycoord):
 		"""
-		
-		:param x: 
-		:param y: 
-		:return: 
+		Check if the x,y coordinate collides with the time period
+		:param int xcoord: X coordinate in pixels.
+		:param int ycoord: Y coordinate in pixels.
+		:return: True if collide, False otherwise.
 		"""
-		return self.begin <= x <= self.end and self._top <= y <= (self._top + self._height)
+		return self.begin <= xcoord <= self.end and self.top_coordinate <= ycoord <= self.bottom_coordinate
 
 	def in_range(self, start, end):
 		"""
-		:param start: 
-		:param end: 
-		:return: 
+		Check if the period is within the limits [start;end]
+		:param int start: Initial X coordinate
+		:param int end: Final X coordinate
+		:return: True if in range, False otherwise
 		"""
 		return start <= self.begin and end >= self.end or \
 			   self.begin <= start <= self.end or \
 			   self.begin <= end <= self.end
 
-	def canSlideBegin(self, x, y):
+	def can_slide_begin(self, xcoord, ycoord):
 		"""
-		
-		:param x: 
-		:param y: 
-		:return: 
+		Checks if xcoord and ycoord pixel coordinate can slide the beginning of the period.
+		:param int xcoord: X coordinate in pixels.
+		:param int ycoord: Y coordinate in pixels.
+		:return boolean: True if the event can be slided, false if not.
 		"""
+		# if locked does nothing
+		if self._lock: return
+
 		begin = int(round(self.begin))
 		end   = int(round(self.end))
-		return not self._lock and begin <= x <= (begin+10) and self._top <= y <= (self._top + self._height) and (x-end)**2 > (x-begin)**2 
+		return begin <= xcoord <= (begin+10) and \
+			   self.top_coordinate <= ycoord <= self.bottom_coordinate and \
+			   (xcoord-end)**2 > (xcoord-begin)**2
 
-	def canSlideEnd(self, x, y):
+	def can_slide_end(self, x, y):
 		"""
-		
-		:param x: 
-		:param y: 
-		:return: 
+		Checks if x,y pixel coordinate can slide the end of the period.
+		:param int x: X coordinate in pixels.
+		:param int y: Y coordinate in pixels.
+		:return boolean: True if the event can be slided, false if not.
 		"""
+		# if locked does nothing
+		if self._lock: return
+
 		begin = int(round(self.begin))
 		end   = int(round(self.end))
 		#check if the delta is not locked
 		#check if the x is inside an range of 10 pixels
 		#check if the y is within the boundaries of the delta
-		return not self._lock and (end-10) <= x <= end and self._top <= y <= (self._top + self._height) and (x-end)**2 < (x-begin)**2 
+		return not self._lock and \
+		   (end-10) <= x <= end and \
+		   self.top_coordinate <= y <= self.bottom_coordinate and \
+		   (x-end)**2 < (x-begin)**2
 
-	def moveEnd(self, x):
+	def move_end(self, xdelta):
 		"""
-		Move the right edge of the event rectangle.
-		:param x: 
+		Move the right edge of the period rectangle.
+		:param int xdelta: X delta coordinate in pixels to move
 		"""
-		jump = x/self._parent._scale
-
 		# Do nothing if locked
-		if self._lock:
-			return
+		if self._lock: return
+
+		jump = xdelta / self._widget.scale
 
 		# Do nothing if trying to go over the pther edge
-		if (self._end+jump) <= self._begin and jump < 0:
+		if (self.end+jump) <= self.begin and jump < 0:
 			return
 
 		# Increment accordingly
 		self._end += jump
 
 		# Minimum begin position is at 0
-		if self._end > (self._parent.width() / self._parent._scale):
-			self._end = (self._parent.width() / self._parent._scale)
+		if self._end > (self._widget.width() / self._widget.scale):
+			self._end = (self._widget.width() / self._widget.scale)
 
-	def moveBegin(self, x):
+	def move_begin(self, xcoord):
 		"""
-		Move the left edge of the event rectangle.
-		:param x: 
+		Move the left edge of the period rectangle.
+		:param int xdelta: X delta coordinate in pixels to move
 		"""
-		jump = x/self._parent._scale
-
 		# Do nothing if locked
-		if self._lock:
-			return
+		if self._lock: return
+
+		jump = xcoord/self._widget.scale
 
 		# Do nothing if trying to go over the other edge
 		if (self._begin+jump) >= self._end and jump > 0:
@@ -201,51 +192,34 @@ class TimelineDelta(object):
 		# Minimum begin position is at 0
 		if self._begin < 0: self._begin = 0
 
-	def move(self, x, y):
+
+
+	def move(self, xdelta, ycoord):
 		"""
-		
-		:param x: 
-		:param y: 
-		:return: 
+		Move the event period more X and Y coordinates
+		:param int xdelta: X delta to move in pixels
+		:param int ycoord: Y coordinate to which the period should be moved
 		"""
+		# The period is locked, do nothing.
 		if self._lock: return
 
-		if (self.begin + x) >= 0 and (self.end + x) <= self._parent.width():
-			self._begin += x / self._parent._scale
-			self._end += x / self._parent._scale
-		current_track = self.track
-		new_track = Track.whichTrack(y)
+		# if the new positions are within the 0 and maximum position,
+		# then update the period positions
+		if  (self.begin + xdelta) >= 0 and \
+			(self.end + xdelta) <= self._widget.width():
+			# update the positions
+			self._begin += xdelta / self._widget.scale
+			self._end   += xdelta / self._widget.scale
 
-		if current_track != new_track and new_track >= 0 and new_track <= self._parent.numberoftracks:
-			self.track = new_track
-			self.checkNumberOfTracks()
+		if not (self.track.bottom_coordinate <= ycoord <= self.track.top_coordinate):
+			self.track = self._widget.find_track(ycoord)
 
-	def showEditWindow(self):
-		"""
-		
-		:return: 
-		"""
-		"""
-		text, ok = QInputDialog.getText(
-			self._parent, 'Edit event', 'Comment:', text=self._title)
-		"""
-		if hasattr(self, 'edit_form'):
-			self.edit_form.comment 	= self._title
-			self.edit_form.begin 	= self._begin
-			self.edit_form.end 		= self._end			
-			self.edit_form.show()
-		else:
-			self.edit_form = DeltaEditWindow(self._parent, self._title, self._begin, self._end)
-			self.edit_form.apply_function = self.__apply_changes
-			self.edit_form.show()
+
+
+
 		
 		
-	def __apply_changes(self):
-		self._title = self.edit_form.comment
-		self._begin = self.edit_form.begin
-		self._end   = self.edit_form.end
-		self._parent.repaint()
-		self.edit_form.hide()
+
 
 	def draw(self, painter, showvalues=False):
 		"""
@@ -254,31 +228,50 @@ class TimelineDelta(object):
 		:param showvalues: 
 		:return: 
 		"""
-		start, end = self.begin, self.end
-		if self._lock:
-			transparency = 0.1
-		else:
-			transparency = 0.5
+		start, end 	 = self.begin, self.end
+		transparency = 0.1 if self._lock else 0.5
+
 		painter.setPen(QColor(0, 0, 0))
 		painter.setOpacity(transparency)
-		painter.drawRoundedRect(
-			start, self._top, end - start, self._height, 3, 3)
-		painter.setOpacity(1.0)
+		painter.drawRoundedRect( start, self.top_coordinate, end-start, self._widget.TRACK_HEIGHT, 3, 3)
 
-		painter.drawText(start + 3, self._top + 19, self._title)
+		painter.setOpacity(1.0)
+		painter.drawText(start + 3, self.top_coordinate + self._widget.PERIOD_TEXT_TOP, self.title)
 		if showvalues:
 			painter.drawText(
-				start, self._top + 44, "[%d;%d] delta:%d" % (self._begin, self._end, self._end - self._begin))
+				start, self.top_coordinate + self._widget.PERIOD_RANGE_TOP,
+				"[{};{}] delta:{}".format( int(self.begin), int(self.end), int(self.end-self.begin) )
+			)
 
 	def remove(self):
 		"""
-		
-		:return: 
+		Remove the period from the tracks
 		"""
-		try:
-			self._parent._tracks[self.track].periods.remove(self)
-		except:
-			pass
+		self.track = None
+
+	def open_properties(self):
+		"""
+		Open the properties window
+		"""
+		if hasattr(self, 'edit_form'):
+			self.edit_form.comment = self.title
+			self.edit_form.begin   = self.begin
+			self.edit_form.end 	   = self.end
+		else:
+			self.edit_form = DeltaEditWindow(self._widget, self.title, self.begin, self.end)
+			self.edit_form.apply_function = self.__apply_properties_evt
+		self.edit_form.show()
+
+	def __apply_properties_evt(self):
+		"""
+		Event called to apply the properties values in the Perido window
+		:return:
+		"""
+		self._title = self.edit_form.comment
+		self._begin = self.edit_form.begin
+		self._end   = self.edit_form.end
+		self._widget.repaint()
+		self.edit_form.hide()
 
 	##########################################################################
 	#### PROPERTIES ##########################################################
@@ -298,52 +291,68 @@ class TimelineDelta(object):
 
 	@property
 	def begin(self):
-		return self._begin * self._parent._scale
+		return self._begin * self._widget.scale
 
 	@begin.setter
 	def begin(self, value):
 		if self._lock: return
-		self._begin = value / self._parent._scale
+		self._begin = value / self._widget.scale
 		if self._begin < 0: self._begin = 0
 
 	@property
 	def end(self):
-		return self._end * self._parent._scale
+		return self._end * self._widget.scale
 
 	@end.setter
 	def end(self, value):
 		if self._lock: return
-		self._end = value / self._parent._scale
-		if self._end > (self._parent.width() / self._parent._scale):
-			self._end = (self._parent.width() / self._parent._scale)
+		self._end = value / self._widget.scale
+		if self._end > (self._widget.width() / self._widget.scale):
+			self._end = (self._widget.width() / self._widget.scale)
 
 	@property
 	def track(self):
-		return Track.whichTrack(self._top)
+		"""
+		:return: The current track
+		"""
+		return self._track
 
 	@track.setter
 	def track(self, value):
-		# if the object exists in other track remove it
-		if self.track < len(self._parent._tracks) and self in self._parent._tracks[self.track].periods: self.remove()
+		"""
+		Set the current track.
+		:param value:
+		"""
+		# check if the new track is different from the previous.
+		# if so update the tracks periods lists
+		if self._track != value:
+			self._track -= self
 
-		# Verify if the new track exists. In case not create it
-		self._top = Track.whichTop(value)
-		if self.track >= len(self._parent._tracks): self._parent.add_track()
+			if value is not None:
+				value += self
 
-		# if do not exists in the track add it
-		if self not in self._parent._tracks[self.track].periods: self._parent._tracks[self.track].periods.append(self)
+		self._track = value
+
+	@property
+	def top_coordinate(self):
+		return self._track.top_coordinate + 2
+
+	@property
+	def bottom_coordinate(self):
+		return self._track.bottom_coordinate - 2
+
 
 	@property
 	def color(self):
-		return self._defautcolor
+		return self._color
 
 	@color.setter
 	def color(self, value):
-		self._defautcolor = QColor(value) if (type(value) == str) else value
+		self._color = QColor(value) if (type(value) == str) else value
 
 	@property
 	def bgrcolor(self):
-		return self._defautcolor.blue(), self._defautcolor.green(), self._defautcolor.red()
+		return self._color.blue(), self._color.green(), self._color.red()
 
 	@property
 	def properties(self):
@@ -352,16 +361,16 @@ class TimelineDelta(object):
 		        int(round(self._begin)),
 		        int(round(self._end)),
 		        self._title,
-		        self._defautcolor.name(),
+		        self._color.name(),
 		        self.track]
 
 	@properties.setter
 	def properties(self, value):
-		self._lock = value[1] == 'True'
+		self._lock 	= value[1] == 'True'
 		self._begin = int(value[2])
-		self._end = int(value[3])
+		self._end 	= int(value[3])
 		self._title = value[4]
-		self._defautcolor = QColor(value[5])
-		self.track = int(value[6])
+		self._color = QColor(value[5])
+		self.track 	= int(value[6])
 
 		self.checkNumberOfTracks()

@@ -127,7 +127,7 @@ class TimelineChart(object):
 
 		if diff_max_min <= 0: diff_max_min = 1
 
-		last_coordenate   = None
+		last_coordinate   = None
 		last_real_x_coord = None
 
 		for i, y in enumerate(self._data[start:end]):
@@ -135,12 +135,12 @@ class TimelineChart(object):
 				x = i + start
 				if y == None: continue
 				y = self._top + ((top + y) * fov_height) // diff_max_min
-				if last_coordenate:
+				if last_coordinate:
 					diff_frames = abs(x - last_real_x_coord)
-					draw_from_coord = last_coordenate if diff_frames == 1 else (self._widget.frame2x(x), fov_height - y)
+					draw_from_coord = last_coordinate if diff_frames == 1 else (self._widget.frame2x(x), fov_height - y)
 					painter.drawLine(draw_from_coord[0], draw_from_coord[1], self._widget.frame2x(x), fov_height - y)
 
-				last_coordenate = self._widget.frame2x(x), fov_height - y
+				last_coordinate = self._widget.frame2x(x), fov_height - y
 				last_real_x_coord = x
 
 		painter.setOpacity(1.0)
@@ -172,9 +172,9 @@ class TimelineChart(object):
 
 		# no value
 		if self[frame] is None: 
-			self._widget.graphs_properties.coordenate_text = None
+			self._widget.graphs_properties.coordinate_text = None
 		else:
-			self._widget.graphs_properties.coordenate_text = "Frame: {0} Value: {1}".format(frame, self[frame])
+			self._widget.graphs_properties.coordinate_text = "Frame: {0} Value: {1}".format(frame, self[frame])
 
 
 	def export_2_file(self, filename):
