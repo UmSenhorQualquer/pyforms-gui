@@ -63,7 +63,7 @@ class DeltaEditWindow(BaseWidget):
 	def apply_function(self, value): self._applybtn.value = value
 
 
-class TimelineDelta(object):
+class Event(object):
 	"""
 	Class representing a time period \ event.
 	"""
@@ -233,13 +233,13 @@ class TimelineDelta(object):
 
 		painter.setPen(QColor(0, 0, 0))
 		painter.setOpacity(transparency)
-		painter.drawRoundedRect( start, self.top_coordinate, end-start, self._widget.TRACK_HEIGHT, 3, 3)
+		painter.drawRoundedRect( start, self.top_coordinate, end-start, self._widget.EVENT_HEIGHT, 3, 3)
 
 		painter.setOpacity(1.0)
-		painter.drawText(start + 3, self.top_coordinate + self._widget.PERIOD_TEXT_TOP, self.title)
+		painter.drawText(start + 3, self.top_coordinate + self._widget.EVENT_TITLE_TOP_POS, self.title)
 		if showvalues:
 			painter.drawText(
-				start, self.top_coordinate + self._widget.PERIOD_RANGE_TOP,
+				start, self.top_coordinate + self._widget.EVENT_RANGE_TOP_POS,
 				"[{};{}] delta:{}".format( int(self.begin), int(self.end), int(self.end-self.begin) )
 			)
 
@@ -247,6 +247,7 @@ class TimelineDelta(object):
 		"""
 		Remove the period from the tracks
 		"""
+		self.track -= self
 		self.track = None
 
 	def open_properties(self):

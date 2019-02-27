@@ -113,7 +113,7 @@ class GraphsEventsGenerator(BaseWidget):
                     value = None
 
                 data.append( (i, value) )
-            self._timeline.add_chart(self._graphname.value, data)
+            self._timeline.add_graph(self._graphname.value, data)
 
             self._graphname.value = "generated-graph-{0}".format( len(self._timeline.graphs)) 
         except Exception as e:

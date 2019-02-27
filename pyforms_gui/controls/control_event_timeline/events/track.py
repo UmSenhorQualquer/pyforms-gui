@@ -3,7 +3,7 @@
 
 from AnyQt.QtGui import QColor
 from AnyQt import QtCore
-from .TimelineDelta import TimelineDelta
+from .event import Event
 
 
 class Track(object):
@@ -24,12 +24,12 @@ class Track(object):
 		return len(self._periods)
 
 	def __add__(self, other):
-		if isinstance(other, TimelineDelta):
+		if isinstance(other, Event):
 			self._periods.append(other)
 		return self
 
 	def __sub__(self, other):
-		if isinstance(other, TimelineDelta):
+		if isinstance(other, Event):
 			self._periods.remove(other)
 		return self
 
@@ -38,7 +38,7 @@ class Track(object):
 		return (y - 20) // 34
 
 	@staticmethod
-	def whichTop(track):
+	def which_top(track):
 		return track * 34 + 20
 
 	@property
@@ -62,12 +62,19 @@ class Track(object):
 		self._title = value
 
 	@property
+	def index(self):
+		"""
+		:return: Index of the track in the timeline.
+		"""
+		return self._index
+
+	@property
 	def events(self):
 		return self._events
 
 	def draw_background(self, painter, start, end):
 		painter.setOpacity(0.1)
-		painter.fillRect(start, self.top_coordinate, end-start, self._widget.TRACK_HEIGHTWITHMARGIN, QtCore.Qt.black)
+		painter.fillRect(start, self.top_coordinate, end-start, self._widget.TRACK_HEIGHT, QtCore.Qt.black)
 		painter.setOpacity(1.0)
 
 	def draw(self, painter, start, end):
@@ -105,7 +112,7 @@ class Track(object):
 		painter.drawText(start+10, self.top_coordinate + painter.fontMetrics().height(), self.title)
 		painter.setOpacity(1.0)
 
-	def select_period(self, x, y):
+	def select_event(self, x, y):
 		"""
 		
 		:param x: 
@@ -133,11 +140,11 @@ class Track(object):
 		"""
 		:return: Top pixel coordinate
 		"""
-		return self._index*self._widget.TRACK_HEIGHTWITHMARGIN + self._widget.TOPTRACK_HEIGHT
+		return self._index*self._widget.TRACK_HEIGHT + self._widget.TOPTRACK_HEIGHT
 
 	@property
 	def bottom_coordinate(self):
 		"""
 		:return: Bottom pixel coordinate
 		"""
-		return self.top_coordinate + self._widget.TRACK_HEIGHTWITHMARGIN
+		return self.top_coordinate + self._widget.TRACK_HEIGHT

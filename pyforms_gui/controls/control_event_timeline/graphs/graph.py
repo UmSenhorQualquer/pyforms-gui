@@ -3,7 +3,7 @@
 from AnyQt.QtGui import QColor
 
 
-class TimelineChart(object):
+class Graph(object):
 	"""
 	"""
 
@@ -46,23 +46,16 @@ class TimelineChart(object):
 	
 	def import_data(self, data):
 		"""
-		
-		:param data: 
-		:return: 
+		Import the data from an array
+		:param list(tuple(int,float)) data: List of coordinates (frame, value).
 		"""
 		self._graph_max = 0
 		self._graph_min = 100000000000
 		self._data 		= []
 		for x, y in data:
-			self[int(round(x))] = y
+			self[int(x)] = y
 
-	def import_csv(self, csvfileobject):
-		"""
-		
-		:param csvfileobject: 
-		:return: 
-		"""
-		self.import_data([map(float, row) for row in csvfileobject])
+
 
 	#####################################################################################
 	###### PROPERTIES ###################################################################

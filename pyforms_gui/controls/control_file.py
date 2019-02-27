@@ -33,13 +33,11 @@ class ControlFile(ControlBase):
             self.changed_event()
 
     def click(self):
-
         if self.use_save_dialog:
             value, _ = QFileDialog.getSaveFileName(self.parent, self._label, self.value)
         else:
-            value = QFileDialog.getOpenFileName(self.parent, self._label, self.value)
+            value = QFileDialog.getOpenFileName(self.parent, self._label, self.value, options=conf.PYFORMS_DIALOGS_OPTIONS)
 
-        
         if _api.USED_API == _api.QT_API_PYQT5:
             value = value[0]
         elif _api.USED_API == _api.QT_API_PYQT4:

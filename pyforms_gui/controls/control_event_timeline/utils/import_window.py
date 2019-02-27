@@ -39,10 +39,10 @@ class BonsaiImportFileDlg(BaseWidget):
 
 class ImportWindow(BaseWidget):
 
-    def __init__(self, timeline=None):
-        super(ImportWindow, self).__init__('Import file', parent_win=timeline)
+    def __init__(self, control):
+        super(ImportWindow, self).__init__('Import file', parent_win=control.parent)
         self.setContentsMargins(10, 10, 10, 10)
-        self._timeline = timeline
+        self._timeline = control
 
         # Definition of the forms fields
         self._filetype      = ControlCombo('Please select the type of file you would like to import:')
@@ -67,7 +67,7 @@ class ImportWindow(BaseWidget):
         self._importButton.value = self.__importData
 
         from pyforms_gui.dialogs.csv_parser import CsvParserDialog
-        self._graphCsvParserDlg = CsvParserDialog()
+        self._graphCsvParserDlg = CsvParserDialog(control)
         self._graphCsvParserDlg.xField.label = "Value column"
         self._graphCsvParserDlg.yField.hide()
         self._graphCsvParserDlg.zField.hide()
@@ -113,11 +113,11 @@ class ImportWindow(BaseWidget):
                     separator = ';'
             with open(self._file.value, 'rU') as csvfile:
                 csvfile = csv.reader(csvfile, delimiter=separator)
-                self._timeline._time.import_csv(csvfile)
+                self._timeline._time.import_events_from_csvreader(csvfile)
 
         elif self._filetype.value == 1:
             self._timeline._time.importchart_csv(self._graphCsvParserDlg)
-            self._timeline.show_graphs_properties()
+            self._timeline.open_graphs_properties()
 
         elif self._filetype.value == 2:
             self.__import_bonsai_events()
@@ -180,7 +180,7 @@ class ImportWindow(BaseWidget):
             for index in range(0, len(pointEventValues)):
                 pointEventValue = pointEventValues[index]
                 eventsTypes[pointEventValue[0]] = currentTrack
-                self._timeline.add_period(pointEventValue[1], pointEventValue[1] + 50, title=pointEventValue[0], row=currentTrack)
+                self._timeline.add_event(pointEventValue[1], pointEventValue[1] + 50, title=pointEventValue[0], row=currentTrack)
 
             currentTrack = 1
 
@@ -195,7 +195,7 @@ class ImportWindow(BaseWidget):
                 else:
                     track = eventsTypes[row0[0]]
 
-                self._timeline.add_period(row0[1], row1[1], title=row0[0], row=track)
+                self._timeline.add_event(row0[1], row1[1], title=row0[0], row=track)
 
 
 
@@ -259,7 +259,7 @@ class ImportWindow(BaseWidget):
                 for index in range(0, len(points_events)):
                     eventtype, frame, eventname = points_events[index]
                     events_types[eventname] = current_track
-                    self._timeline.add_period(frame, frame+2, title=eventname, row=current_track)
+                    self._timeline.add_event(frame, frame+2, title=eventname, row=current_track)
 
                 current_track = 1
 
@@ -273,7 +273,7 @@ class ImportWindow(BaseWidget):
                     else:
                         track = events_types[eventname]
 
-                    self._timeline.add_period(frame_begin, frame_end, title=eventname, row=track)
+                    self._timeline.add_event(frame_begin, frame_end, title=eventname, row=track)
 
 
         except Exception as e:

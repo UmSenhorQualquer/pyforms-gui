@@ -1,24 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import csv
-import os
-
+import csv, os
 from confapp import conf
-
-
-from AnyQt.QtWidgets import QWidget, QScrollArea, QColorDialog, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
 from AnyQt import QtCore, _api
-
-from pyforms_gui.controls.control_event_timeline.TimelineChart import TimelineChart
+from AnyQt.QtWidgets import QWidget, QScrollArea, QColorDialog, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
 from pyforms_gui.controls.control_base import ControlBase
-from pyforms_gui.controls.control_event_timeline.TimelineWidget import TimelineWidget
-from pyforms_gui.controls.control_event_timeline.TimelinePopupWindow import TimelinePopupWindow
-from pyforms_gui.controls.control_event_timeline.import_window import ImportWindow
-
-from pyforms_gui.controls.control_event_timeline.graphs_graph2event import Graph2Event
-from pyforms_gui.controls.control_event_timeline.graphs_properties  import GraphsProperties
-from pyforms_gui.controls.control_event_timeline.graphs_eventsgenerator import GraphsEventsGenerator
+from pyforms_gui.controls.control_event_timeline.utils.import_window import ImportWindow
+from pyforms_gui.controls.control_event_timeline.timeline_widget import TimelineWidget
+from pyforms_gui.controls.control_event_timeline.events.win_track import TimelinePopupWindow
+from pyforms_gui.controls.control_event_timeline.graphs.graph import Graph
+from pyforms_gui.controls.control_event_timeline.graphs.win_graph_to_event import Graph2Event
+from pyforms_gui.controls.control_event_timeline.graphs.win_graph_properties  import GraphsProperties
+from pyforms_gui.controls.control_event_timeline.graphs.win_events_generator import GraphsEventsGenerator
 
 
 
@@ -45,7 +39,7 @@ class ControlEventTimeline(ControlBase, QWidget):
 
         self.add_popup_menu_option("-")
 
-        self.add_popup_menu_option("Graphs", self.show_graphs_properties, icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
+        self.add_popup_menu_option("Graphs", self.open_graphs_properties, icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         self.add_popup_menu_option("Apply a function to the graphs", self.__generate_graphs_events,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         self.add_popup_menu_option("Convert graph to events", self.__graph2event_event,
@@ -77,6 +71,11 @@ class ControlEventTimeline(ControlBase, QWidget):
         self.add_popup_menu_option('-')
         self.add_popup_menu_option('Everything', function_action=self.clean, menu=clean_menu)
 
+        self._importwin = None # import window.
+
+    def __repr__(self):
+        return "Timeline "+str(self.name)
+
     def init_form(self):
         # Get the current path of the file
         rootPath = os.path.dirname(__file__)
@@ -90,9 +89,6 @@ class ControlEventTimeline(ControlBase, QWidget):
         elif _api.USED_API == _api.QT_API_PYQT4:
             hlayout.setMargin(0)
             vlayout.setMargin(0)
-        
-        
-            
 
         self.setLayout(vlayout)
 
@@ -105,23 +101,11 @@ class ControlEventTimeline(ControlBase, QWidget):
         scrollarea.keyReleaseEvent = self.__scrollAreaKeyReleaseEvent
 
         vlayout.addWidget(scrollarea)
-        # vlayout.setContentsMargins(5, 5, 5, 5)
 
         # The timeline widget
-        widget = TimelineWidget(self)
+        self._time = widget = TimelineWidget(self)
         widget._scroll = scrollarea
-        # widget.setMinimumHeight(1000)
         scrollarea.setWidget(widget)
-
-        # TODO Options buttons
-        # btn_1 = QtGui.QPushButton("?")
-        # btn_2 = QtGui.QPushButton("?")
-        # vlayout_options = QtGui.QVBoxLayout()
-        # vlayout_options.addWidget(btn_1)
-        # vlayout_options.addWidget(btn_2)
-        # hlayout.addLayout(vlayout_options)
-        # hlayout.addWidget(btn_1)
-        # hlayout.addWidget(btn_2)
 
         # Timeline zoom slider
         slider = QSlider(QtCore.Qt.Horizontal)
@@ -143,27 +127,20 @@ class ControlEventTimeline(ControlBase, QWidget):
         hlayout.addWidget(slider_label_zoom_out)
         hlayout.addWidget(slider)
         hlayout.addWidget(slider_label_zoom_in)
-        # hlayout.setContentsMargins(5, 0, 5, 5)
+
         # Import/Export Buttons
         btn_import = QPushButton("Import")
 
         btn_import.setIcon(conf.PYFORMS_ICON_EVENTTIMELINE_IMPORT)
-        btn_import.clicked.connect(self.__import)
+        btn_import.clicked.connect(self.__open_import_win_evt)
         btn_export = QPushButton("Export")
 
         btn_export.setIcon(conf.PYFORMS_ICON_EVENTTIMELINE_EXPORT)
         btn_export.clicked.connect(self.__export)
-        # importexport_vlayout = QtGui.QVBoxLayout()
-        # importexport_vlayout.adimdWidget(btn_import)
-        # importexport_vlayout.addWidget(btn_export)
-        # hlayout.addLayout(importexport_vlayout)
         hlayout.addWidget(btn_import)
         hlayout.addWidget(btn_export)
 
         vlayout.addLayout(hlayout)
-
-        self._time = widget
-
 
 
     ##########################################################################
@@ -171,7 +148,7 @@ class ControlEventTimeline(ControlBase, QWidget):
     ##########################################################################
 
     def __add__(self, other):
-        if isinstance(other, TimelineChart): 
+        if isinstance(other, Graph):
             self._graphs_prop_win     += other
             self._graphsgenerator_win += other
             self._graph2event_win     += other
@@ -184,19 +161,14 @@ class ControlEventTimeline(ControlBase, QWidget):
             self._graph2event_win     -= other
         return self
 
-    def rename_graph(self, graph_index, newname):
-        self._graphs_prop_win.rename_graph(graph_index, newname)
-        self._graphsgenerator_win.rename_graph(graph_index, newname)
-        self._graph2event_win.rename_graph(graph_index, newname)
-
-    def add_period(self, begin, end, title='', row=0):
+    def add_event(self, begin, end, title='', row=0):
         """
         :param begin: Initial frame
         :param end: Last frame
         :param title: Event title
         :param row: Row to which the event should be added.
         """
-        self._time.add_period(begin, end, title=title, row=row)
+        self._time.add_event(begin, end, title=title, row=row)
         self._time.repaint()
 
     def add_graph(self, name, data):
@@ -206,45 +178,48 @@ class ControlEventTimeline(ControlBase, QWidget):
         :param data: 
         :return: 
         """
-        self._time.add_chart(name, data)
+        self._time.add_graph(name, data)
 
-    def import_graph(self, filename, frame_col=0, val_col=1):
+    def rename_graph(self, graph_index, newname):
         """
-        
-        :param filename: 
-        :param frame_col: 
-        :param val_col: 
-        :return: 
+        Rename a graph by index.
+        :param int graph_index: Index of the graph to rename.
+        :param str newname: New name
         """
-        self.__import()
-        self._import_window.import_chart(filename, frame_col, val_col)
+        self._time.graphs[graph_index].name = newname
+        self._graphs_prop_win.rename_graph(graph_index, newname)
+        self._graphsgenerator_win.rename_graph(graph_index, newname)
+        self._graph2event_win.rename_graph(graph_index, newname)
 
-    def import_graph_file(self, filename, separator=';', ignore_rows=0):
+
+    def import_graph_csv(self, filepath, separator=';', ignore_rows=0):
         """
-        
+        Import a new graph from a csv file.
         :param filename: 
         :param separator: 
         :param ignore_rows: 
         :return: 
         """
-        csvfile = open(filename, 'U')
-        spamreader = csv.reader(csvfile, delimiter=separator)
-        for i in range(ignore_rows): next(spamreader, None)
-        chart = self._time.importchart_csv(spamreader)
-        chart.name = os.path.basename(filename).replace('.csv', '').replace('.CSV', '')
-        csvfile.close()
+        with open(filepath, 'U') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=separator)
+            for i in range(ignore_rows): next(spamreader, None)
+            chart = self._time.importchart_csv(spamreader)
+            chart.name = os.path.basename(filepath).replace('.csv', '').replace('.CSV', '')
 
-    def show_graphs_properties(self):
-        """
-        
-        """
-        self._graphs_prop_win.show()
-        self._time.repaint()
+    def export_csv_file(self, filename):
+        with open(filename, 'w') as csvfile:
+            spamwriter = csv.writer(csvfile, dialect='excel')
+            self._time.export_events_to_csvwriter(spamwriter)
+
+    def import_csv_file(self, filename):
+        with open(filename, 'r') as csvfile:
+            spamreader = csv.reader(csvfile, dialect='excel')
+            self._time.import_events_from_csvreader(spamreader)
 
     def import_csv(self, csvfile):
         """
-        
-        :param csvfile: 
+
+        :param csvfile:
         """
         # If there are annotation in the timeline, show a warning
         if len(self._time._tracks) > 0:  # dict returns True if not empty
@@ -262,17 +237,26 @@ class ControlEventTimeline(ControlBase, QWidget):
             if reply != QMessageBox.Yes:
                 return
 
-        self._time.import_csv(csvfile)
+        self._time.import_events_from_csvreader(csvfile)
 
-    def export_csv_file(self, filename):
-        with open(filename, 'w') as csvfile:
-            spamwriter = csv.writer(csvfile, dialect='excel')
-            self._time.export_csv(spamwriter)
+    def open_graphs_properties(self):
+        """
+        Opens the graphs properties.
+        """
+        self._graphs_prop_win.show()
+        self._time.repaint()
 
-    def import_csv_file(self, filename):
-        with open(filename, 'r') as csvfile:
-            spamreader = csv.reader(csvfile, dialect='excel')
-            self._time.import_csv(spamreader)
+
+    def open_import_graph_win(self, filepath, frame_col=0, val_col=1):
+        """
+        Open a window to import a graph from a csv file.
+        :param str filepath: Path of the file to import.
+        :param int frame_col: Column corresponding to the frames number in the csv file.
+        :param int val_col: Column corresponding to the values in the csv file.
+        """
+        self.__open_import_win_evt()
+        self._importwin.import_chart(filepath, frame_col, val_col)
+
 
     ##########################################################################
     #### EVENTS ##############################################################
@@ -294,7 +278,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         for i in range(len(self._time.tracks) - 1, -1, -1):
             track = self._time.tracks[i]
             if len(track) == 0:
-                self._time.remove_track(track)
+                self._time -= track
             else:
                 break
 
@@ -305,7 +289,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         if len(self._time.tracks) > 0:
             track = self._time.tracks[-1]
             if len(track) == 0:
-                self._time.remove_track(track)
+                self._time -= track
 
     def __generate_graphs_events(self):
         self._graphsgenerator_win.show()
@@ -415,15 +399,16 @@ class ControlEventTimeline(ControlBase, QWidget):
         parent.color = timeline_default_color
 
     def __lockSelected(self):
-        self._time.lockSelected()
+        self._time.toggle_selected_event_lock()
 
     def __removeSelected(self):
         self._time.removeSelected()
 
-    def __import(self):
+    def __open_import_win_evt(self):
         """Import annotations from a file."""
-        if not hasattr(self, '_import_window'): self._import_window = ImportWindow(self)
-        self._import_window.show()
+        if self._importwin is None:
+            self._importwin = ImportWindow(self)
+        self._importwin.show()
 
     def __export(self):
         """Export annotations to a file."""
@@ -432,7 +417,7 @@ class ControlEventTimeline(ControlBase, QWidget):
                                                                  caption="Export annotations file",
                                                                  directory="untitled.csv",
                                                                  filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
-                                                                 options=QFileDialog.DontUseNativeDialog)
+                                                                 options=conf.PYFORMS_DIALOGS_OPTIONS)
 
         filename = str(filename)
         ffilter = str(ffilter)
@@ -440,9 +425,9 @@ class ControlEventTimeline(ControlBase, QWidget):
             with open(filename, 'w') as csvfile:
                 spamwriter = csv.writer(csvfile, dialect='excel')
                 if ffilter == 'CSV Files (*.csv)':
-                    self._time.export_csv(spamwriter)
+                    self._time.export_events_to_csvwriter(spamwriter)
                 elif ffilter == 'CSV Matrix Files (*.csv)':
-                    self._time.export_2_csv_matrix(spamwriter)
+                    self._time.exportmatrix_events_to_csvwriter(spamwriter)
 
     def __export_2_csv_matrix(self):
         QMessageBox.warning(
@@ -456,7 +441,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         if filename != "":
             with open(filename, 'w') as csvfile:
                 spamwriter = csv.writer(csvfile, dialect='excel')
-                self._time.export_2_csv_matrix(spamwriter)
+                self._time.exportmatrix_events_to_csvwriter(spamwriter)
 
     def __cleanLine(self):
         reply = QMessageBox.question(self, 'Confirm',
@@ -464,14 +449,14 @@ class ControlEventTimeline(ControlBase, QWidget):
                                      QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._time.cleanLine(self._time.current_mouseover_track)
+            self._time.clean_track(self._time.current_mouseover_track)
 
     def __cleanCharts(self):
         reply = QMessageBox.question(self, 'Confirm',
                                      "Are you sure you want to clean all the charts?", QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._time.cleanCharts()
+            self._time.clean_graphs()
 
     def clean(self):
         reply = QMessageBox.question(self, 'Confirm',

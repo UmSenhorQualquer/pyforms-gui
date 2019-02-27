@@ -41,7 +41,7 @@ class Track(object):
 
 	########################################################################
 
-	def add_period(self, period):
+	def add_event(self, period):
 		"""
 		The periods are added in a sorted way for rendering optimization
 		:param period: 
