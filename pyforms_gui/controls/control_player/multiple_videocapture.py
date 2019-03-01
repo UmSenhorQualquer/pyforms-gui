@@ -27,9 +27,12 @@ class MultipleVideoCapture(object):
         filename = os.path.basename(filepath)
         name, ext = os.path.splitext(filename)
 
-        names = name.rsplit('_', 1)
-        search_name = os.path.join(filedir, names[0] + '_*' + ext)
-        return sorted(glob.glob(search_name))
+        if name.endswith('_1') or name.endswith('_01'):
+            names = name.rsplit('_', 1)
+            search_name = os.path.join(filedir, names[0] + '_*' + ext)
+            return sorted(glob.glob(search_name))
+        else:
+            return []
 
     @property
     def capture(self):
