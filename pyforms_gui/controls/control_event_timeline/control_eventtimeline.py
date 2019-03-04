@@ -67,7 +67,7 @@ class ControlEventTimeline(ControlBase, QWidget):
 
         self.add_popup_menu_option('The current row', function_action=self.__cleanLine, menu=clean_menu)
         self.add_popup_menu_option('-')
-        self.add_popup_menu_option('All graphs', function_action=self.__cleanCharts, menu=clean_menu)
+        self.add_popup_menu_option('All graphs', function_action=self.__clean_graphs, menu=clean_menu)
         self.add_popup_menu_option('-')
         self.add_popup_menu_option('Everything', function_action=self.clean, menu=clean_menu)
 
@@ -203,8 +203,9 @@ class ControlEventTimeline(ControlBase, QWidget):
         with open(filepath, 'U') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=separator)
             for i in range(ignore_rows): next(spamreader, None)
-            chart = self._time.importchart_csv(spamreader)
-            chart.name = os.path.basename(filepath).replace('.csv', '').replace('.CSV', '')
+            name = os.path.basename(filepath).replace('.csv', '').replace('.CSV', '')
+            chart = self._time.add_graph(name, spamreader)
+            return chart
 
     def export_csv_file(self, filename):
         with open(filename, 'w') as csvfile:
@@ -414,10 +415,10 @@ class ControlEventTimeline(ControlBase, QWidget):
         """Export annotations to a file."""
 
         filename, ffilter = QFileDialog.getSaveFileName(parent=self,
-                                                                 caption="Export annotations file",
-                                                                 directory="untitled.csv",
-                                                                 filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
-                                                                 options=conf.PYFORMS_DIALOGS_OPTIONS)
+             caption="Export annotations file",
+             directory="untitled.csv",
+             filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
+             options=conf.PYFORMS_DIALOGS_OPTIONS)
 
         filename = str(filename)
         ffilter = str(ffilter)
@@ -451,9 +452,9 @@ class ControlEventTimeline(ControlBase, QWidget):
         if reply == QMessageBox.Yes:
             self._time.clean_track(self._time.current_mouseover_track)
 
-    def __cleanCharts(self):
+    def __clean_graphs(self):
         reply = QMessageBox.question(self, 'Confirm',
-                                     "Are you sure you want to clean all the charts?", QMessageBox.Yes |
+                                     "Are you sure you want to clean all the graphs?", QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
             self._time.clean_graphs()

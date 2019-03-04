@@ -116,7 +116,7 @@ class ImportWindow(BaseWidget):
                 self._timeline._time.import_events_from_csvreader(csvfile)
 
         elif self._filetype.value == 1:
-            self._timeline._time.importchart_csv(self._graphCsvParserDlg)
+            self._timeline._time.add_graph('Untitled graph', self._graphCsvParserDlg)
             self._timeline.open_graphs_properties()
 
         elif self._filetype.value == 2:

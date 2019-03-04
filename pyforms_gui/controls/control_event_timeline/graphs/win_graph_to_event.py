@@ -57,7 +57,7 @@ class Graph2Event(BaseWidget):
 
 	@property
 	def graphs(self):
-		return self._timeline._charts
+		return self._timeline._graphs
 
 
 	def __cell_double_clicked_evt(self, row, column):

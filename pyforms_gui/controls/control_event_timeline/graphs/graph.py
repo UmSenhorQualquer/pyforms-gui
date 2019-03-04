@@ -143,10 +143,14 @@ class Graph(object):
 
 	@name.setter
 	def name(self, value):
-		self._name = value
+		if value != self._name:
+			self._name = value
 
-		i = self._widget.graphs.index(self)
-		self._widget.rename_graph(i, value)
+			if not hasattr(self, 'renaming_graph_flag'):
+				self.renaming_graph_flag = True
+				i = self._widget.graphs.index(self)
+				self._widget.control.rename_graph(i, value)
+				del self.renaming_graph_flag
 		
 
 	def mouse_move_evt(self, event, top, bottom):

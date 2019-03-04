@@ -171,7 +171,7 @@ class TimelineWidget(QWidget):
         if track_index is not None and len(self._tracks) > track_index:
             track = self._tracks[track_index]
             # if the selected event is in the track to clear, then remove the selection.
-            if self._selected is None and track==self._selected.track:
+            if self._selected is not None and track==self._selected.track:
                 self._selected = None
             track.clear()
             self.repaint()
@@ -250,19 +250,6 @@ class TimelineWidget(QWidget):
     ##########################################################################
     #### IO Functions ########################################################
     ##########################################################################
-
-    def create_graph_from_data(self, data):
-        """
-        Create a graph based in the data array.
-		:param list(tuple(int,float)) data: List of coordinates (frame, value).
-        """
-        chart = Graph(self, color=self.GRAPHS_COLORS[len(self._graphs)])
-        chart.import_data([map(float, row) for row in data])
-        chart.name = "undefined name {0}".format(str(len(self._graphs)))
-        self += chart
-
-        self.repaint()
-        return chart
 
     def import_events_from_csvreader(self, csvreader):
         """

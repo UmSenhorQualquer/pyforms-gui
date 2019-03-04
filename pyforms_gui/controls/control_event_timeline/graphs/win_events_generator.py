@@ -65,7 +65,7 @@ class GraphsEventsGenerator(BaseWidget):
 
     @property
     def graphs(self):
-        return self._timeline._charts
+        return self._timeline._graphs
 
     def show(self):
         super(GraphsEventsGenerator, self).show()
