@@ -4,7 +4,7 @@
 import csv, os
 from confapp import conf
 from AnyQt import QtCore, _api
-from AnyQt.QtWidgets import QWidget, QScrollArea, QColorDialog, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
+from AnyQt.QtWidgets import QWidget, QScrollArea, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
 from pyforms_gui.controls.control_base import ControlBase
 from pyforms_gui.controls.control_event_timeline.utils.import_window import ImportWindow
 from pyforms_gui.controls.control_event_timeline.timeline_widget import TimelineWidget
@@ -30,10 +30,8 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._graph2event_win     = Graph2Event(self._time)
 
         # Popup menus that only show when clicking on a TIMELINEDELTA object
-        self._deltaLockAction = self.add_popup_menu_option("Lock", self.__lockSelected, key='L')
-        self._deltaColorAction = self.add_popup_menu_option("Pick a color", self.__pickColor)
         self._deltaRemoveAction = self.add_popup_menu_option("Remove", self.__removeSelected, key='Delete')
-        self._deltaActions = [self._deltaLockAction, self._deltaColorAction, self._deltaRemoveAction]
+        self._deltaActions = [self._deltaRemoveAction]
         for action in self._deltaActions:
             action.setVisible(False)
 
@@ -466,11 +464,6 @@ class ControlEventTimeline(ControlBase, QWidget):
         if reply == QMessageBox.Yes:
             self._time.clean()
 
-    def __pickColor(self):
-        self._time.color = QColorDialog.getColor(self._time.color)
-        if self._time._selected != None:
-            self._time._selected.color = self._time.color
-            self._time.repaint()
 
     def __scaleSliderChange(self, value):
         scale = 0.1 * value

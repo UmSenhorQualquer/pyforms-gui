@@ -2,66 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from AnyQt.QtGui import QColor
-from pyforms_gui.basewidget import BaseWidget
-from pyforms_gui.controls.control_button import ControlButton
-from pyforms_gui.controls.control_text import ControlText
-from pyforms_gui.controls.control_number import ControlNumber
-
-class DeltaEditWindow(BaseWidget):
-
-	def __init__(self, parent_win, label, begin, end):
-		BaseWidget.__init__(self, 'Edit frame', parent_win=parent_win)
-
-		self.set_margin(5)
-
-		self._label = ControlText('Label', 	 default=label)
-		self._begin = ControlNumber('Begin', default=begin, minimum=0, maximum=100000000000000)
-		self._end 	= ControlNumber('End',   default=end, 	minimum=0, maximum=100000000000000)
-
-		self._applybtn = ControlButton('Apply')
-
-		self.formset = [
-			'_label',
-			('_begin', '_end'),
-			'_applybtn'
-		]
-
-		self._begin.changed_event = self.__begin_changed_event
-		self._end.changed_event   = self.__end_changed_event
-
-	def __begin_changed_event(self):
-		if not hasattr(self, '_updating') and self._begin.value>=self._end.value:
-			self._updating = True
-			self._begin.value = self._end.value-1
-			del self._updating
-
-	def __end_changed_event(self):
-		if not hasattr(self, '_updating') and self._end.value<=self._begin.value:
-			self._updating = True
-			self._end.value = self._begin.value+1
-			del self._updating
-
-
-	@property
-	def comment(self): return self._label.value 
-	@comment.setter
-	def comment(self, value): self._label.value = value
-
-	@property
-	def begin(self): return self._begin.value 
-	@begin.setter
-	def begin(self, value): self._begin.value = value
-
-	@property
-	def end(self): return self._end.value 
-	@end.setter
-	def end(self, value): self._end.value = value
-
-	@property
-	def apply_function(self): return self._applybtn.value 
-	@apply_function.setter
-	def apply_function(self, value): self._applybtn.value = value
-
+from .win_event import EventWindow
 
 class Event(object):
 	"""
@@ -86,9 +27,10 @@ class Event(object):
 		self._lock 	 = lock
 		self._begin  = begin
 		self._end 	 = end
+		self._end 	 = end
 		self._color  = track.color if color is None else color
 		
-		track.periods.append(self)
+		track += self
 
 	##########################################################################
 	#### HELPERS/FUNCTIONS ###################################################
@@ -102,7 +44,7 @@ class Event(object):
 		:param int ycoord: Y coordinate in pixels.
 		:return: True if collide, False otherwise.
 		"""
-		return self.begin <= xcoord <= self.end and self.top_coordinate <= ycoord <= self.bottom_coordinate
+		return self.begin_coordinate <= xcoord <= self.end_coordinate and self.top_coordinate <= ycoord <= self.bottom_coordinate
 
 	def in_range(self, start, end):
 		"""
@@ -111,9 +53,9 @@ class Event(object):
 		:param int end: Final X coordinate
 		:return: True if in range, False otherwise
 		"""
-		return start <= self.begin and end >= self.end or \
-			   self.begin <= start <= self.end or \
-			   self.begin <= end <= self.end
+		return start <= self.begin_coordinate and end >= self.end_coordinate or \
+			   self.begin_coordinate <= start <= self.end_coordinate or \
+			   self.begin_coordinate <= end <= self.end_coordinate
 
 	def can_slide_begin(self, xcoord, ycoord):
 		"""
@@ -125,8 +67,8 @@ class Event(object):
 		# if locked does nothing
 		if self._lock: return
 
-		begin = int(round(self.begin))
-		end   = int(round(self.end))
+		begin = int(round(self.begin_coordinate))
+		end   = int(round(self.end_coordinate))
 		return begin <= xcoord <= (begin+10) and \
 			   self.top_coordinate <= ycoord <= self.bottom_coordinate and \
 			   (xcoord-end)**2 > (xcoord-begin)**2
@@ -162,7 +104,7 @@ class Event(object):
 		jump = xdelta / self._widget.scale
 
 		# Do nothing if trying to go over the pther edge
-		if (self.end+jump) <= self.begin and jump < 0:
+		if (self.end_coordinate+jump) <= self.begin_coordinate and jump < 0:
 			return
 
 		# Increment accordingly
@@ -205,11 +147,12 @@ class Event(object):
 
 		# if the new positions are within the 0 and maximum position,
 		# then update the period positions
-		if  (self.begin + xdelta) >= 0 and \
-			(self.end + xdelta) <= self._widget.width():
+		if  (self.begin_coordinate + xdelta) >= 0 and \
+			(self.end_coordinate + xdelta) <= self._widget.width():
 			# update the positions
-			self._begin += xdelta / self._widget.scale
-			self._end   += xdelta / self._widget.scale
+			delta = xdelta / self._widget.scale
+			self._begin += delta
+			self._end   += delta
 
 		if not (self.track.bottom_coordinate <= ycoord <= self.track.top_coordinate):
 			self.track = self._widget.find_track(ycoord)
@@ -228,7 +171,7 @@ class Event(object):
 		:param showvalues: 
 		:return: 
 		"""
-		start, end 	 = self.begin, self.end
+		start, end 	 = self.begin_coordinate, self.end_coordinate
 		transparency = 0.1 if self._lock else 0.5
 
 		painter.setPen(QColor(0, 0, 0))
@@ -240,14 +183,13 @@ class Event(object):
 		if showvalues:
 			painter.drawText(
 				start, self.top_coordinate + self._widget.EVENT_RANGE_TOP_POS,
-				"[{};{}] delta:{}".format( int(self.begin), int(self.end), int(self.end-self.begin) )
+				"[{};{}] delta:{}".format( int(self.begin_coordinate), int(self.end_coordinate), int(self.end_coordinate-self.begin_coordinate) )
 			)
 
 	def remove(self):
 		"""
 		Remove the period from the tracks
 		"""
-		self.track -= self
 		self.track = None
 
 	def open_properties(self):
@@ -255,12 +197,10 @@ class Event(object):
 		Open the properties window
 		"""
 		if hasattr(self, 'edit_form'):
-			self.edit_form.comment = self.title
-			self.edit_form.begin   = self.begin
-			self.edit_form.end 	   = self.end
+			self.edit_form.update_form(self)
 		else:
-			self.edit_form = DeltaEditWindow(self._widget, self.title, self.begin, self.end)
-			self.edit_form.apply_function = self.__apply_properties_evt
+			self.edit_form = EventWindow(self._widget, self)
+
 		self.edit_form.show()
 
 	def __apply_properties_evt(self):
@@ -282,6 +222,10 @@ class Event(object):
 	def title(self):
 		return self._title
 
+	@title.setter
+	def title(self, value):
+		self._title = value
+
 	@property
 	def lock(self):
 		return self._lock
@@ -292,24 +236,20 @@ class Event(object):
 
 	@property
 	def begin(self):
-		return self._begin * self._widget.scale
+		return self._begin
 
 	@begin.setter
 	def begin(self, value):
-		if self._lock: return
-		self._begin = value / self._widget.scale
-		if self._begin < 0: self._begin = 0
+		self._begin = value
 
 	@property
 	def end(self):
-		return self._end * self._widget.scale
+		return self._end
 
 	@end.setter
 	def end(self, value):
-		if self._lock: return
-		self._end = value / self._widget.scale
-		if self._end > (self._widget.width() / self._widget.scale):
-			self._end = (self._widget.width() / self._widget.scale)
+		self._end = value
+
 
 	@property
 	def track(self):
@@ -334,6 +274,8 @@ class Event(object):
 
 		self._track = value
 
+
+
 	@property
 	def top_coordinate(self):
 		return self._track.top_coordinate + 2
@@ -341,6 +283,30 @@ class Event(object):
 	@property
 	def bottom_coordinate(self):
 		return self._track.bottom_coordinate - 2
+
+	@property
+	def begin_coordinate(self):
+		return self._begin * self._widget.scale
+
+	@begin_coordinate.setter
+	def begin_coordinate(self, value):
+		if self._lock: return
+		self._begin = value / self._widget.scale
+		if self._begin < 0: self._begin = 0
+
+	@property
+	def end_coordinate(self):
+		return self._end * self._widget.scale
+
+	@end_coordinate.setter
+	def end_coordinate(self, value):
+		if self._lock: return
+		self._end = value / self._widget.scale
+		if self._end > (self._widget.width() / self._widget.scale):
+			self._end = (self._widget.width() / self._widget.scale)
+
+
+
 
 
 	@property

@@ -3,7 +3,7 @@
 
 import os
 from AnyQt.QtGui import QIcon, QPixmap
-from AnyQt.QtWidgets import QStyle, qApp, QFileDialog
+from AnyQt.QtWidgets import QStyle, qApp, QFileDialog, QColorDialog
 
 def path(filename):
 	"""	
@@ -68,3 +68,4 @@ PYFORMS_VISVIS_ENABLED 		= True
 
 
 PYFORMS_DIALOGS_OPTIONS = QFileDialog.DontUseNativeDialog
+PYFORMS_COLORDIALOGS_OPTIONS = QColorDialog.DontUseNativeDialog
