@@ -64,7 +64,6 @@ class ControlNumber(ControlBase):
 
     @value.setter
     def value(self, value):
-        print(self._value, value, '====', self.name)
         if value != self.value:
             self._update_slider = True
             self.form.spinBox.setValue(value)

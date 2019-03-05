@@ -372,7 +372,12 @@ class TimelineWidget(QWidget):
         self._pointer.draw(painter, highlight=self._creating_event)
         painter.end()
 
-        self.update()
+        if not hasattr(self, '_is_refreshing'):
+            self._is_refreshing = True
+            self.update()
+        else:
+            del self._is_refreshing
+
 
     def mouseDoubleClickEvent(self, event):
         """
