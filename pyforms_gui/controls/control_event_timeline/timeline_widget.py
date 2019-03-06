@@ -91,7 +91,11 @@ class TimelineWidget(QWidget):
 
     def __sub__(self, other):
         if isinstance(other, Track):
+            if self.selected_row == other:
+                self.selected_row = None
             self._tracks.remove( other )
+            for i, track in enumerate(self._tracks):
+                track.index = i
             self.setMinimumHeight(Track.which_top(len(self._tracks)))
         else:
             self.control.__sub__(other)
@@ -145,6 +149,40 @@ class TimelineWidget(QWidget):
             self._selected = None
             self.repaint()
 
+    def remove_selected_track(self):
+        """
+        Remove the selected track from the timeline.
+        """
+        if self._selected_track is not None:
+            self._selected_track.remove()
+            self.repaint()
+
+    def move_track_up(self, track):
+        """
+        Move a track up
+        :param Track track: Track to move
+        """
+        if track.index<=0: return
+
+        i = track.index
+        self._tracks[i-1], self._tracks[i] = self._tracks[i], self._tracks[i-1]
+        for i, track in enumerate(self._tracks):
+            track.index = i
+        self.repaint()
+
+    def move_track_down(self, track):
+        """
+        Move a track down
+        :param Track track: Track to move
+        """
+        if track.index>=(len(self.tracks)-1): return
+
+        i = track.index
+        self._tracks[i+1], self._tracks[i] = self._tracks[i], self._tracks[i+1]
+        for i, track in enumerate(self._tracks):
+            track.index = i
+        self.repaint()
+
     def toggle_selected_event_lock(self):
         """
         Toggle lock of the selected event.
@@ -153,41 +191,26 @@ class TimelineWidget(QWidget):
             self._selected.lock = not self._selected.lock
             self.repaint()
 
-    def clean_graphs(self):
-        """
-        Clean all the graphs in the timeline.
-        """
-        for graph in self.graphs: self -= 0
-        self._graphs = []
-        self.repaint()
 
-    def clean_track(self, track_index=None):
-        """
-        Clean all the events in a track.
-        :param int track_index: Index of the track to clean. By default use the selected track.
-        """
-        track_index = self._selected_track if track_index is None else track_index
 
-        if track_index is not None and len(self._tracks) > track_index:
-            track = self._tracks[track_index]
-            # if the selected event is in the track to clear, then remove the selection.
-            if self._selected is not None and track==self._selected.track:
-                self._selected = None
-            track.clear()
-            self.repaint()
-        else:
-            QMessageBox.about(self, "Error", "You must select a track first.")
-            return
 
     def clean(self):
         """
         Clean everything in the timeline
         """
-        self.clean_graphs()
-        for i in range(0, len(self._tracks)):
-            self.clean_track(i)
-        self._tracks = []
+        # remove tracks
+        for i in range( len(self.tracks)-1 , -1, -1):
+            track = self.tracks[i]
+            track.remove()
+
+        # remove graphs
+        for i in range( len(self.graphs)-1 , -1, -1):
+            graph = self.graphs[i]
+            graph.remove()
+
         self.repaint()
+
+
 
     def find_track(self, ycoord):
         """
@@ -220,7 +243,7 @@ class TimelineWidget(QWidget):
         if ycoord <= self.TOPTRACK_HEIGHT:
             return self._pointer if self._pointer.collide(xcoord, ycoord) else None
 
-        # Check if the timeline periods were selected
+        # Check if the timeline events were selected
         i = Track.whichTrack(ycoord)
         if i >= len(self._tracks):
             return None
@@ -303,7 +326,7 @@ class TimelineWidget(QWidget):
         """
         for index, track in enumerate(self._tracks):
             csvwriter.writerow(track.properties)
-            for delta in track.periods:
+            for delta in track.events:
                 csvwriter.writerow(delta.properties)
 
 
@@ -314,7 +337,7 @@ class TimelineWidget(QWidget):
         """
         for index, track in enumerate(self._tracks):
             _, track_title, _ = track.properties
-            for delta in track.periods:
+            for delta in track.events:
                 _, _, begin, end, delta_title, _, _ = delta.properties
                 row = [track_title, begin, end, delta_title]
                 csvwriter.writerow(row)
@@ -361,7 +384,7 @@ class TimelineWidget(QWidget):
             self._selected_track.draw_background(painter, start, end)
 
         for track in self.tracks:
-            track.draw_periods(painter, start, end)
+            track.draw_events(painter, start, end)
 
         # Draw the selected element
         if self._selected != None:
@@ -743,3 +766,21 @@ class TimelineWidget(QWidget):
         if self._mouse_current_pos is None:
             return None
         return (self._mouse_current_pos[1] - self.EVENT_HEIGHT) // self.TRACK_HEIGHT
+
+    @property
+    def selected_row(self):
+        """
+        Return the selected track
+        """
+        return self._selected_track
+
+    @selected_row.setter
+    def selected_row(self, value):
+        self._selected_track=value
+
+    @property
+    def selected_event(self):
+        """
+        Return the selected event.
+        """
+        return self._selected

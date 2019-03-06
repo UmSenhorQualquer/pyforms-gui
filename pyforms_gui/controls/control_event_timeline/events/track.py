@@ -18,19 +18,19 @@ class Track(object):
 		self._color   = self.DEFAULT_COLOR if color is None else color
 		self._widget  = widget
 		self._index   = len(widget.tracks)
-		self._periods = []
+		self._events = []
 
 	def __len__(self):
-		return len(self._periods)
+		return len(self._events)
 
 	def __add__(self, other):
 		if isinstance(other, Event):
-			self._periods.append(other)
+			self._events.append(other)
 		return self
 
 	def __sub__(self, other):
 		if isinstance(other, Event):
-			self._periods.remove(other)
+			self._events.remove(other)
 		return self
 
 	@staticmethod
@@ -42,8 +42,8 @@ class Track(object):
 		return track * 34 + 20
 
 	@property
-	def periods(self):
-		return self._periods
+	def events(self):
+		return self._events
 
 	@property
 	def color(self):
@@ -68,9 +68,31 @@ class Track(object):
 		"""
 		return self._index
 
+	@index.setter
+	def index(self, value):
+		self._index = value
+
 	@property
 	def events(self):
 		return self._events
+
+	def remove(self):
+		"""
+		Remove the track
+		"""
+		self._widget -= self
+
+	def move_up(self):
+		"""
+		Move the track up
+		"""
+		self._widget.move_track_up(self)
+
+	def move_down(self):
+		"""
+		Move the track down
+		"""
+		self._widget.move_track_down(self)
 
 	def draw_background(self, painter, start, end):
 		painter.setOpacity(0.1)
@@ -88,7 +110,7 @@ class Track(object):
 		"""
 		painter.drawLine(start, self.top_coordinate, end, self.top_coordinate)
 
-	def draw_periods(self, painter, start, end):
+	def draw_events(self, painter, start, end):
 		"""
 		
 		:param painter: 
@@ -96,7 +118,7 @@ class Track(object):
 		:param end: 
 		:return: 
 		"""
-		for time in self._periods:
+		for time in self._events:
 			painter.setBrush(time.color)
 			time.draw(painter)
 
@@ -119,17 +141,17 @@ class Track(object):
 		:param y: 
 		:return: 
 		"""
-		for delta in self._periods:
+		for delta in self._events:
 			if delta.collide(x, y): return delta
 		return None
 
 
 	def clear(self):
 		"""
-		
+		Clean all the events from the tracks.
 		"""
-		del self._periods[:]
-		self._periods = []
+		del self._events[:]
+		self._events = []
 
 	@property
 	def properties(self):

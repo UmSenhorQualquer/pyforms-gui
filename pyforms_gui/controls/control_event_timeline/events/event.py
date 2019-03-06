@@ -158,12 +158,6 @@ class Event(object):
 			self.track = self._widget.find_track(ycoord)
 
 
-
-
-		
-		
-
-
 	def draw(self, painter, showvalues=False):
 		"""
 		
@@ -265,7 +259,7 @@ class Event(object):
 		:param value:
 		"""
 		# check if the new track is different from the previous.
-		# if so update the tracks periods lists
+		# if so update the tracks events lists
 		if self._track != value:
 			self._track -= self
 

@@ -29,13 +29,55 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._graphsgenerator_win = GraphsEventsGenerator(self._time)
         self._graph2event_win     = Graph2Event(self._time)
 
-        # Popup menus that only show when clicking on a TIMELINEDELTA object
-        self._deltaRemoveAction = self.add_popup_menu_option("Remove", self.__removeSelected, key='Delete')
-        self._deltaActions = [self._deltaRemoveAction]
-        for action in self._deltaActions:
-            action.setVisible(False)
+        ###############################################################################################
+        ######## EVENTS ACTIONS #######################################################################
+        ###############################################################################################
 
-        self.add_popup_menu_option("-")
+        # Popup menus that only show when clicking on a TIMELINEDELTA object
+        event_remove_action = self.add_popup_menu_option("Remove event", self.__removeSelected, key='Delete')
+        separator_action = self.add_popup_menu_option("-")
+        self._events_actions = [event_remove_action, separator_action]
+        for action in self._events_actions: action.setVisible(False)
+
+        ###############################################################################################
+        ######## TRACKS ACTIONS #######################################################################
+        ###############################################################################################
+
+        # General right click popup menus
+        track_properties_action = self.add_popup_menu_option(
+            "Row properties",
+            self.__open_track_properties_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+        )
+
+        track_remove_action = self.add_popup_menu_option(
+            "Remove row",
+            self.__remove_current_track_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+        )
+
+        track_moveup_action = self.add_popup_menu_option(
+            "Move up",
+            self.__move_track_up_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+        )
+
+        track_movedown_action = self.add_popup_menu_option(
+            "Move down",
+            self.__move_track_down_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+        )
+
+        separator_action = self.add_popup_menu_option("-")
+
+        self._tracks_actions = [track_properties_action, track_remove_action, track_moveup_action, track_movedown_action, separator_action]
+        for action in self._tracks_actions: action.setVisible(False)
+
+
+
+        ###############################################################################################
+        ######## GRAPHS ACTIONS #######################################################################
+        ###############################################################################################
 
         self.add_popup_menu_option("Graphs", self.open_graphs_properties, icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         self.add_popup_menu_option("Apply a function to the graphs", self.__generate_graphs_events,
@@ -44,30 +86,17 @@ class ControlEventTimeline(ControlBase, QWidget):
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         
         self.add_popup_menu_option("-")
-
-        # General righ click popup menus
-        self.add_popup_menu_option("Row properties", self.__setLinePropertiesEvent,
-                                   icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE)
-        self.add_popup_menu_option("-")
-
-        
-
-        self.add_popup_menu_option("-")
         
         self.add_popup_menu_option("Auto adjust rows", self.__auto_adjust_tracks_evt,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_REFRESH)
         self.add_popup_menu_option("Add a row", self.__add_track_2_bottom_evt,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_ADD)
-        
-        self.add_popup_menu_option("-")
 
-        clean_menu = self.add_popup_submenu('Clean')
-
-        self.add_popup_menu_option('The current row', function_action=self.__cleanLine, menu=clean_menu)
-        self.add_popup_menu_option('-')
-        self.add_popup_menu_option('All graphs', function_action=self.__clean_graphs, menu=clean_menu)
-        self.add_popup_menu_option('-')
-        self.add_popup_menu_option('Everything', function_action=self.clean, menu=clean_menu)
+        self.add_popup_menu_option(
+            "Remove everything",
+            self.clean,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_ADD
+        )
 
         self._importwin = None # import window.
 
@@ -290,6 +319,12 @@ class ControlEventTimeline(ControlBase, QWidget):
             if len(track) == 0:
                 self._time -= track
 
+    def __move_track_up_evt(self):
+        self._time.selected_row.move_up()
+
+    def __move_track_down_evt(self):
+        self._time.selected_row.move_down()
+
     def __generate_graphs_events(self):
         self._graphsgenerator_win.show()
 
@@ -342,13 +377,23 @@ class ControlEventTimeline(ControlBase, QWidget):
     ##########################################################################
 
     def about_to_show_contextmenu_event(self):
-        for action in self._deltaActions:
+        """
+        Hide and show context menu options.
+        """
+        # Hide and show events actions.
+        for action in self._events_actions:
             action.setVisible(
-                True) if self._time._selected is not None else action.setVisible(False)
+                True if self._time._selected is not None else False
+            )
+        # Hide and show tracks actions.
+        for action in self._tracks_actions:
+            action.setVisible(
+                True if self._time._selected_track is not None else False
+            )
 
     
 
-    def __setLinePropertiesEvent(self):
+    def __open_track_properties_evt(self):
         """
         This controls makes possible the edition of a track in the
         timeline, based on the position of the mouse.
@@ -387,7 +432,7 @@ class ControlEventTimeline(ControlBase, QWidget):
 
             # Update color
             if self._time._tracks[i].color != dialog.color:
-                for delta in self._time._tracks[i].periods:
+                for delta in self._time._tracks[i].events:
                     delta.color = dialog.color
                 self._time._tracks[i].color = dialog.color
             self._time.repaint()
@@ -401,7 +446,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._time.toggle_selected_event_lock()
 
     def __removeSelected(self):
-        self._time.removeSelected()
+        self._time.remove_selected_event()
 
     def __open_import_win_evt(self):
         """Import annotations from a file."""
@@ -442,20 +487,14 @@ class ControlEventTimeline(ControlBase, QWidget):
                 spamwriter = csv.writer(csvfile, dialect='excel')
                 self._time.exportmatrix_events_to_csvwriter(spamwriter)
 
-    def __cleanLine(self):
+    def __remove_current_track_evt(self):
         reply = QMessageBox.question(self, 'Confirm',
-                                     "Are you sure you want to clean all the events on this track?",
+                                     "Are you sure you want to remove the row and its events?",
                                      QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._time.clean_track(self._time.current_mouseover_track)
+            self._time.remove_selected_track()
 
-    def __clean_graphs(self):
-        reply = QMessageBox.question(self, 'Confirm',
-                                     "Are you sure you want to clean all the graphs?", QMessageBox.Yes |
-                                     QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self._time.clean_graphs()
 
     def clean(self):
         reply = QMessageBox.question(self, 'Confirm',
