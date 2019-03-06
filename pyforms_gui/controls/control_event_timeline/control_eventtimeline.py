@@ -50,6 +50,12 @@ class ControlEventTimeline(ControlBase, QWidget):
             icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
         )
 
+        track_insert_action = self.add_popup_menu_option(
+            "Insert row",
+            self.__add_track_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+        )
+
         track_remove_action = self.add_popup_menu_option(
             "Remove row",
             self.__remove_current_track_evt,
@@ -70,7 +76,11 @@ class ControlEventTimeline(ControlBase, QWidget):
 
         separator_action = self.add_popup_menu_option("-")
 
-        self._tracks_actions = [track_properties_action, track_remove_action, track_moveup_action, track_movedown_action, separator_action]
+        self._tracks_actions = [
+            track_properties_action, track_insert_action,
+            track_remove_action, track_moveup_action,
+            track_movedown_action, separator_action
+        ]
         for action in self._tracks_actions: action.setVisible(False)
 
 
@@ -89,8 +99,6 @@ class ControlEventTimeline(ControlBase, QWidget):
         
         self.add_popup_menu_option("Auto adjust rows", self.__auto_adjust_tracks_evt,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_REFRESH)
-        self.add_popup_menu_option("Add a row", self.__add_track_2_bottom_evt,
-                                   icon=conf.PYFORMS_ICON_EVENTTIMELINE_ADD)
 
         self.add_popup_menu_option(
             "Remove everything",
@@ -310,7 +318,7 @@ class ControlEventTimeline(ControlBase, QWidget):
             else:
                 break
 
-    def __add_track_2_bottom_evt(self):
+    def __add_track_evt(self):
         self._time.add_track()
 
     def __remove_track_from_bottom_evt(self):

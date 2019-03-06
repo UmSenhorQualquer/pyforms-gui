@@ -126,7 +126,13 @@ class TimelineWidget(QWidget):
         :return: Return the added track.
         """
         t = Track(self, title=title, color=color)
-        self._tracks.append(t)
+        if self.selected_row is not None:
+            index = self.selected_row.index
+            self._tracks.insert(index, t)
+            for i, track in enumerate(self.tracks):
+                track.index = i
+        else:
+            self._tracks.append(t)
         self.setMinimumHeight(Track.which_top(len(self._tracks)))
         return t
 
