@@ -20,21 +20,21 @@ class ControlEventTimeline(ControlBase, QWidget):
     """
         Timeline events editor
 
-        *Short keys:*
+        **Short keys:**
 
-            - *Control + Left*: Move event to the left.
-            - *Control + Right*: Move event to the right.
-            - *Delete*: Delete an event.
-            - *L: Lock an event.
-            - *Control + Up*: Move an event up.
-            - *Control + Down*: Move an event down.
-            - *Shift + Control + Left*: Move an event end time to the left.
-            - *Shift + Control + Right*: Move an event end to the right.
-            - *Shift + Left*: Move an event beginning to the left.
-            - *Shift + Right*: Move an event beginning to the right.
-            - *S*: First press, mark the beginning of an event, Second press, create an event ending in the current cursor time.
-            - *A*: Move the cursor to the left.
-            - *D*: Move the cursor to the right.
+            - **Control + Left**: Move event to the left.
+            - **Control + Right**: Move event to the right.
+            - **Delete**: Delete an event.
+            - **L**: Lock an event.
+            - **Control + Up**: Move an event up.
+            - **Control + Down**: Move an event down.
+            - **Shift + Control + Left**: Move an event end time to the left.
+            - **Shift + Control + Right**: Move an event end to the right.
+            - **Shift + Left**: Move an event beginning to the left.
+            - **Shift + Right**: Move an event beginning to the right.
+            - **S**: First press, mark the beginning of an event, Second press, create an event ending in the current cursor time.
+            - **A**: Move the cursor to the left.
+            - **D**: Move the cursor to the right.
     """
 
     def __init__(self, label="", default=0, max=100):
