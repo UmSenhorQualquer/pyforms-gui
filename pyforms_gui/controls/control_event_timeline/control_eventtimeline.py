@@ -19,6 +19,22 @@ from pyforms_gui.controls.control_event_timeline.graphs.win_events_generator imp
 class ControlEventTimeline(ControlBase, QWidget):
     """
         Timeline events editor
+
+        Short keys:
+
+            - Control + Left: Move event to the left.
+            - Control + Right: Move event to the right.
+            - Delete: Delete an event.
+            - L: Lock an event.
+            - Control + Up: Move an event up.
+            - Control + Down: Move an event down.
+            - Shift + Control + Left: Move an event end time to the left.
+            - Shift + Control + Right: Move an event end to the right.
+            - Shift + Left: Move an event beginning to the left.
+            - Shift + Right: Move an event beginning to the right.
+            - S: First press, mark the beginning of an event, Second press, create an event ending in the current cursor time.
+            - A: Move the cursor to the left.
+            - D: Move the cursor to the right.
     """
 
     def __init__(self, label="", default=0, max=100):
@@ -302,6 +318,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._graphs_prop_win.mouse_moveover_timeline_event(event)
 
 
+
     @property
     def pointer_changed_event(self):
         return self._time._pointer.moveEvent
@@ -521,14 +538,20 @@ class ControlEventTimeline(ControlBase, QWidget):
     def __scrollAreaKeyReleaseEvent(self, event):
         modifiers = int(event.modifiers())
         self._time.keyReleaseEvent(event)
-        if modifiers is not QtCore.Qt.ControlModifier and \
-                        modifiers is not int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and \
-                        modifiers is not QtCore.Qt.ShiftModifier:
-            QScrollArea.keyReleaseEvent(self._scrollArea, event)
+
+        QScrollArea.keyReleaseEvent(self._scrollArea, event)
 
     def __scrollAreaKeyPressEvent(self, event):
         modifiers = int(event.modifiers())
-        if modifiers is not QtCore.Qt.ControlModifier and \
-                        modifiers is not int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and \
-                        modifiers is not QtCore.Qt.ShiftModifier:
+
+        if modifiers == QtCore.Qt.ControlModifier:
+            event.ignore()
+
+        if modifiers == QtCore.Qt.ShiftModifier:
+            event.ignore()
+
+        if modifiers == int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier):
+            event.ignore()
+
+        if event.isAccepted():
             QScrollArea.keyPressEvent(self._scrollArea, event)

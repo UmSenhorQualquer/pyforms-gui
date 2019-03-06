@@ -3,7 +3,7 @@
 
 from AnyQt import QtCore
 from AnyQt.QtWidgets import QWidget, QMessageBox
-from AnyQt.QtGui import QColor, QPainter, QFont, QCursor
+from AnyQt.QtGui import QColor, QPainter, QFont, QCursor, QKeyEvent
 from pyforms_gui.controls.control_event_timeline.events.track import Track
 from pyforms_gui.controls.control_event_timeline.events.event import Event
 from pyforms_gui.controls.control_event_timeline.graphs.graph import Graph
@@ -440,8 +440,7 @@ class TimelineWidget(QWidget):
     def key_release_event(self, event):
         pass
 
-    def keyReleaseEvent(self, event):
-        super(TimelineWidget, self).keyReleaseEvent(event)
+    def keyReleaseEvent(self, event:  QKeyEvent):
         self.key_release_event(event)
 
         if self._selected is not None:
@@ -450,11 +449,13 @@ class TimelineWidget(QWidget):
             # Move the event (or the pointer) left
             if modifier == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Left:
                 self._selected.move(-1, 0)
+                event.ignore()
                 self.repaint()
 
             # Move the event (or the pointer) right
             if modifier == QtCore.Qt.ControlModifier and event.key() == QtCore.Qt.Key_Right:
                 self._selected.move(1, 0)
+                event.ignore()
                 self.repaint()
 
             if self._selected != self._pointer:
@@ -479,23 +480,23 @@ class TimelineWidget(QWidget):
                 # Move the event end left
                 if modifier == int(
                         QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and event.key() == QtCore.Qt.Key_Left:
-                    self._selected.moveEnd(-1)
+                    self._selected.move_end(-1)
                     self.repaint()
 
                 # Move the event end right
                 if modifier == int(
                         QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and event.key() == QtCore.Qt.Key_Right:
-                    self._selected.moveEnd(1)
+                    self._selected.move_end(1)
                     self.repaint()
 
                 # Move the event begin left
                 if modifier == QtCore.Qt.ShiftModifier and event.key() == QtCore.Qt.Key_Left:
-                    self._selected.moveBegin(-1)
+                    self._selected.move_begin(-1)
                     self.repaint()
 
                 # Move the event begin right
                 if modifier == QtCore.Qt.ShiftModifier and event.key() == QtCore.Qt.Key_Right:
-                    self._selected.moveBegin(1)
+                    self._selected.move_begin(1)
                     self.repaint()
 
         else:
@@ -539,6 +540,9 @@ class TimelineWidget(QWidget):
             # forward 1 step
             elif event.key() == QtCore.Qt.Key_D:
                 self.position = self.position + 1
+
+        super(TimelineWidget, self).keyReleaseEvent(event)
+
 
 
     def mousePressEvent(self, event):
