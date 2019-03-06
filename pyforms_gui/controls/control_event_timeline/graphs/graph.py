@@ -56,6 +56,12 @@ class Graph(object):
 			self[int(x)] = y
 
 
+	def remove(self):
+		"""
+		Remove the graph from the timeline
+		"""
+		self._widget -= self
+
 
 	#####################################################################################
 	###### PROPERTIES ###################################################################

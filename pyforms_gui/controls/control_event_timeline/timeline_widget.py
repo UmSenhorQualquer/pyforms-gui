@@ -97,6 +97,9 @@ class TimelineWidget(QWidget):
             for i, track in enumerate(self._tracks):
                 track.index = i
             self.setMinimumHeight(Track.which_top(len(self._tracks)))
+        elif isinstance(other, Graph):
+            self._graphs.remove(other)
+            self.repaint()
         else:
             self.control.__sub__(other)
         return self

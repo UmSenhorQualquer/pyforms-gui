@@ -101,22 +101,22 @@ class AbstractGLWidget(object):
 
 
     def initializeGL(self):
-        '''
+        """
          Sets up the OpenGL rendering context, defines display lists, etc. 
          Gets called once before the first time resizeGL() or paintGL() is called.
-        '''
+        """
         GL.glClearDepth(1.0)
         GL.glClearColor(0, 0, 0, 1.0)
         GL.glEnable(GL.GL_DEPTH_TEST)
 
     def resizeGL(self, width, height):
-        '''
+        """
         Sets up the OpenGL viewport, projection, etc. 
         Gets called whenever the widget has been resized (and also when it is shown for 
         the first time because all newly created widgets get a resize event automatically).
         :param width:
         :param height:
-        '''
+        """
         GL.glViewport(0, 0, width, height)
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
@@ -157,9 +157,9 @@ class AbstractGLWidget(object):
         GL.glEnd()
 
     def paintGL(self):
-        '''
+        """
         Renders the OpenGL scene. Gets called whenever the widget needs to be updated.
-        '''
+        """
         GL.glClearColor(0.5, 0.5, 0.5, 1.0)
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glMatrixMode(GL.GL_MODELVIEW)
@@ -168,13 +168,11 @@ class AbstractGLWidget(object):
         # Correct a bug related with the overlap of contexts between simultaneous OpenGL windows.
         for index, frame in enumerate(self._pending_frames):
 
-            #if self.zoom>=0:
-            #   frame = cv2.resize(frame, (int(frame.shape[0]/(2*(1-self.zoom))),int( frame.shape[1]/(2*(1-self.zoom))) ))
-            
             color = GL.GL_LUMINANCE if len(frame.shape) == 2 else GL.GL_BGR
             w, h = len(frame[0]), len(frame) #Size of the image
 
-            if len(self.textures)<len(self.image_2_display): self.textures.append(GL.glGenTextures(1))
+            if len(self.textures)<len(self.image_2_display):
+                self.textures.append(GL.glGenTextures(1))
 
             #Load the textures to opengl
             GL.glEnable(GL.GL_TEXTURE_2D)
@@ -228,16 +226,20 @@ class AbstractGLWidget(object):
             winY = float(viewport[3] - self._mouseY)
             winZ = GL.glReadPixels( winX, winY, 1, 1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT)
             self._glX, self._glY, self._glZ = GLU.gluUnProject( winX, winY, winZ[0][0], modelview, projection, viewport)
-            
-            if not self._last_mouse_gl_pos: self._last_mouse_gl_pos = self._glX, self._glY, self._glZ
 
-            
+            if not self._last_mouse_gl_pos:
+                self._last_mouse_gl_pos = self._glX, self._glY, self._glZ
+
+
             #mouse click event
             if self._mouse_clicked_event is not None:
             
-                if hasattr(self, 'imgWidth'):
-                    print(self._mouse_clicked_event , self._get_current_x(), self._get_current_y())
-                    self.onClick(self._mouse_clicked_event , self._get_current_x(), self._get_current_y())
+                if hasattr(self, 'img_width'):
+                    self.onClick(
+                        self._mouse_clicked_event ,
+                        self._get_current_x(),
+                        self._get_current_y()
+                    )
 
                 if self._mouse_clicked_event.button == 1:
                     self._mouse_leftbtn_pressed = True
@@ -253,7 +255,7 @@ class AbstractGLWidget(object):
 
             #mouse double click event
             if self._mouse_dblclicked_event is not None:
-                if hasattr(self, 'imgWidth'):
+                if hasattr(self, 'img_width'):
                     self.onDoubleClick(self._mouse_dblclicked_event, self._get_current_x(), self._get_current_y())
                 self._mouse_dblclicked_event = None
 
@@ -377,7 +379,7 @@ class AbstractGLWidget(object):
         if event.button() == 4: self._move_img = False
             
         if event.button() == 1:
-            if hasattr(self, 'imgWidth') and self._mouse_leftbtn_pressed:
+            if hasattr(self, 'img_width') and self._mouse_leftbtn_pressed:
                 self.onEndDrag(self._mouseStartDragPoint, self._get_current_mouse_point())
                 self._mouseStartDragPoint = None
             self._mouse_leftbtn_pressed = False
@@ -530,14 +532,12 @@ class AbstractGLWidget(object):
         self.update()
 
     def _get_current_mouse_point(self):
-        '''
+        """
 
-        '''
+        """
         return self._get_current_x(), self._get_current_y()
 
     def _get_current_x(self):
-        print((self._glX , self._x) , float(self.img_width))
-        print((self._glX - self._x) * float(self.img_width))
         return (self._glX - self._x) * float(self.img_width)
 
     def _get_current_y(self):
@@ -548,7 +548,7 @@ class AbstractGLWidget(object):
 
     @point.setter
     def point(self, value):
-        if hasattr(self, 'imgWidth'):
+        if hasattr(self, 'img_width'):
             x = value[0] / float(self.img_width)  # +self._x
             y = -value[1] / float(self.img_width)  # -self._y-self._height)
             z = 0.1  # value[2]
