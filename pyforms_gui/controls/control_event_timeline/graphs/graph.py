@@ -3,7 +3,7 @@
 from AnyQt.QtGui import QColor
 
 
-class TimelineChart(object):
+class Graph(object):
 	"""
 	"""
 
@@ -46,23 +46,22 @@ class TimelineChart(object):
 	
 	def import_data(self, data):
 		"""
-		
-		:param data: 
-		:return: 
+		Import the data from an array
+		:param list(tuple(int,float)) data: List of coordinates (frame, value).
 		"""
 		self._graph_max = 0
 		self._graph_min = 100000000000
 		self._data 		= []
 		for x, y in data:
-			self[int(round(x))] = y
+			self[int(x)] = y
 
-	def import_csv(self, csvfileobject):
+
+	def remove(self):
 		"""
-		
-		:param csvfileobject: 
-		:return: 
+		Remove the graph from the timeline
 		"""
-		self.import_data([map(float, row) for row in csvfileobject])
+		self._widget -= self
+
 
 	#####################################################################################
 	###### PROPERTIES ###################################################################
@@ -150,10 +149,14 @@ class TimelineChart(object):
 
 	@name.setter
 	def name(self, value):
-		self._name = value
+		if value != self._name:
+			self._name = value
 
-		i = self._widget.graphs.index(self)
-		self._widget.rename_graph(i, value)
+			if not hasattr(self, 'renaming_graph_flag'):
+				self.renaming_graph_flag = True
+				i = self._widget.graphs.index(self)
+				self._widget.control.rename_graph(i, value)
+				del self.renaming_graph_flag
 		
 
 	def mouse_move_evt(self, event, top, bottom):

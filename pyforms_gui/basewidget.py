@@ -76,14 +76,16 @@ class BaseWidget(QFrame):
         """
         if not self._formLoaded:
 
+            allparams = self.controls
+            for key, param in allparams.items():
+                param.parent = self
+                param.name = key
+
             if self._formset is not None:
                 control = self.generate_panel(self._formset)
                 self.layout().addWidget(control)
             else:
-                allparams = self.controls
                 for key, param in allparams.items():
-                    param.parent = self
-                    param.name = key
                     self.layout().addWidget(param.form)
             self._formLoaded = True
 

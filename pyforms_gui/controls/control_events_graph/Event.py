@@ -76,7 +76,7 @@ class Event(object):
 		:return: 
 		"""
 		try:
-			self._parentWidget._tracks[self.track].periods.remove(self)
+			self._parentWidget._tracks[self.track].events.remove(self)
 		except:
 			pass
 

@@ -5,7 +5,7 @@ from AnyQt.QtGui import QColor
 from AnyQt import QtCore
 
 
-class TimelinePointer(object):
+class Pointer(object):
 	def __init__(self, position, parent):
 		"""
         		

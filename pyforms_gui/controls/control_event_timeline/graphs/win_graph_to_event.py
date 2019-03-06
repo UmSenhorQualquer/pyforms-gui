@@ -57,7 +57,7 @@ class Graph2Event(BaseWidget):
 
 	@property
 	def graphs(self):
-		return self._timeline._charts
+		return self._timeline._graphs
 
 
 	def __cell_double_clicked_evt(self, row, column):
@@ -102,12 +102,12 @@ class Graph2Event(BaseWidget):
 				
 				if last_value and not bool(value):
 					if (i-1-last_index)>=self._mindiff.value:
-						self._timeline.add_period(last_index, i-1, title=self._eventname.value, row=int(self._rownumber.value) )
+						self._timeline.add_event(last_index, i-1, title=self._eventname.value, row=int(self._rownumber.value) )
 					last_value = False
 					last_index = None
 
 			if last_value and (max_frame-last_index) >= self._mindiff.value:
-				self._timeline.add_period(last_index, max_frame, title=self._eventname.value, row=int(self._rownumber.value) )
+				self._timeline.add_event(last_index, max_frame, title=self._eventname.value, row=int(self._rownumber.value) )
 		except Exception as e:
 			QMessageBox.warning( self, "Error!", str(e) )
 			

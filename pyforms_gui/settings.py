@@ -3,8 +3,7 @@
 
 import os
 from AnyQt.QtGui import QIcon, QPixmap
-from AnyQt.QtWidgets import QStyle, qApp
-
+from AnyQt.QtWidgets import QStyle, qApp, QFileDialog, QColorDialog
 
 def path(filename):
 	"""	
@@ -67,3 +66,6 @@ PYFORMS_WEB_ENABLED 		= True
 PYFORMS_GL_ENABLED 			= True
 PYFORMS_VISVIS_ENABLED 		= True
 
+
+PYFORMS_DIALOGS_OPTIONS = QFileDialog.DontUseNativeDialog
+PYFORMS_COLORDIALOGS_OPTIONS = QColorDialog.DontUseNativeDialog

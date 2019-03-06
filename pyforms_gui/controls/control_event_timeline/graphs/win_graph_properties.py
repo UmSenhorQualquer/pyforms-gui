@@ -91,7 +91,7 @@ class GraphsProperties(BaseWidget):
 	@property
 	def selected_graph(self):
 		index = self._graphs_list.selected_row_index
-		return self._timeline._charts[index] if (index is not None) else None
+		return self._timeline._graphs[index] if (index is not None) else None
 	
 	@property
 	def coordinate_text(self): return self._value
@@ -117,7 +117,10 @@ class GraphsProperties(BaseWidget):
 		index = self._graphs_list.selected_row_index
 		if index is not None:
 			self._current_selected_graph = None
-			self._timeline._charts.pop(index)
+
+			graph = self._timeline.graphs[index]
+			graph.remove()
+
 			self._loaded 					= False
 			self._name.enabled          	= False
 			self._min_value.enabled     	= False
