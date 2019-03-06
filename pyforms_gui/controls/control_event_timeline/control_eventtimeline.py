@@ -35,6 +35,8 @@ class ControlEventTimeline(ControlBase, QWidget):
             - **S**: First press, mark the beginning of an event, Second press, create an event ending in the current cursor time.
             - **A**: Move the cursor to the left.
             - **D**: Move the cursor to the right.
+            - **Q**: Select the previous event in the selected row.
+            - **E**: Select the next event in the selected row.
     """
 
     def __init__(self, label="", default=0, max=100):

@@ -26,6 +26,7 @@ class Track(object):
 	def __add__(self, other):
 		if isinstance(other, Event):
 			self._events.append(other)
+			self._events = sorted(self._events, key=lambda e: e.begin)
 		return self
 
 	def __sub__(self, other):
