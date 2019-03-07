@@ -52,7 +52,10 @@ class ControlEventTimeline(ControlBase, QWidget):
         ###############################################################################################
 
         # Popup menus that only show when clicking on a TIMELINEDELTA object
-        event_remove_action = self.add_popup_menu_option("Remove event", self.__removeSelected, key='Delete')
+        event_remove_action = self.add_popup_menu_option(
+            "Remove event", self.__removeSelected, key='Delete',
+            icon=conf.ANNOTATOR_ICON_DELETE
+        )
         separator_action = self.add_popup_menu_option("-")
         self._events_actions = [event_remove_action, separator_action]
         for action in self._events_actions: action.setVisible(False)
@@ -65,31 +68,31 @@ class ControlEventTimeline(ControlBase, QWidget):
         track_properties_action = self.add_popup_menu_option(
             "Row properties",
             self.__open_track_properties_evt,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+            icon=conf.ANNOTATOR_ICON_INFO
         )
 
         track_insert_action = self.add_popup_menu_option(
             "Insert row",
             self.__add_track_evt,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+            icon=conf.ANNOTATOR_ICON_ADD
         )
 
         track_remove_action = self.add_popup_menu_option(
             "Remove row",
             self.__remove_current_track_evt,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+            icon=conf.ANNOTATOR_ICON_DELETE
         )
 
         track_moveup_action = self.add_popup_menu_option(
             "Move up",
             self.__move_track_up_evt,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_IMPORT
         )
 
         track_movedown_action = self.add_popup_menu_option(
             "Move down",
             self.__move_track_down_evt,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_EXPORT
         )
 
         separator_action = self.add_popup_menu_option("-")
@@ -121,7 +124,7 @@ class ControlEventTimeline(ControlBase, QWidget):
         self.add_popup_menu_option(
             "Remove everything",
             self.clean,
-            icon=conf.PYFORMS_ICON_EVENTTIMELINE_ADD
+            icon=conf.ANNOTATOR_ICON_DELETE
         )
 
         self._importwin = None # import window.

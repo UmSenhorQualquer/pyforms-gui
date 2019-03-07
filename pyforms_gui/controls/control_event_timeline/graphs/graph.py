@@ -37,13 +37,11 @@ class Graph(object):
 		if value is not None:
 			if value > self._graph_max: self._graph_max = value
 			if value < self._graph_min: self._graph_min = value
-			
 
 		if index is None or value is None: 
 			self._data[index] = None
 		else:
 			self._data[index] = value
-	
 	
 	def import_data(self, data):
 		"""
@@ -54,7 +52,7 @@ class Graph(object):
 		self._graph_min = 100000000000
 		self._data 		= []
 		for x, y in data:
-			self[int(x)] = y
+			self[int(x)] = float(y)
 
 
 	def remove(self):
@@ -123,34 +121,44 @@ class Graph(object):
 		end 		 = len(self) if end > len(self) else end #check if the end frame his higher than the available data
 		diff_max_min = (self._graph_max - self._graph_min) #calculate the difference bettween the lower and higher value
 
-		if self._graph_min==self._graph_max:
+		# in case the frames have always de same value
+		# set artificially a min and max to plot values at the middle
+		if diff_max_min == 0:
 			self._graph_min = self._graph_max - 1
 			self._graph_max = self._graph_max + 1
+			diff_max_min = 2
+		elif diff_max_min < 0:
+			diff_max_min = 1
 
 		top = (-self._graph_min if self._graph_min > 0 else abs(self._graph_min)) * self._zoom
-
-		if diff_max_min <= 0: diff_max_min = 1
 
 		last_coordinate   = None
 		last_real_x_coord = None
 
-		for i, y in enumerate(self._data[start:end]):
-			if y is not None:
-				x = i + start
-				if y == None: continue
-				y = self._top + ((top + y) * fov_height) // diff_max_min
-				if last_coordinate:
-					diff_frames = abs(x - last_real_x_coord)
-					draw_from_coord = last_coordinate if diff_frames == 1 else (self._widget.frame2x(x), fov_height - y)
-					painter.drawLine(draw_from_coord[0], draw_from_coord[1], self._widget.frame2x(x), fov_height - y)
-				else:
-					painter.drawEllipse( QPoint(self._widget.frame2x(x), fov_height - y), 2, 2)
+		data_len_minus1 = len(self)-1
 
-				last_coordinate = self._widget.frame2x(x), fov_height - y
-				last_real_x_coord = x
-			else:
+		for x in range(start, end+1):
+			y = self[x]
+			if y is None:
 				last_coordinate = None
 				last_real_x_coord = None
+			else:
+				y_pixel = self._top + ((top + y) * fov_height) // diff_max_min
+
+				if 0<x<data_len_minus1 and self[x-1] is None and self[x+1] is None:
+					painter.drawEllipse(
+						QPoint(self._widget.frame2x(x), fov_height - y_pixel),
+						2, 2
+					)
+				else:
+					if last_coordinate:
+						diff_frames = abs(x - last_real_x_coord)
+						draw_from_coord = last_coordinate if diff_frames == 1 else (self._widget.frame2x(x), fov_height - y_pixel)
+						painter.drawLine(draw_from_coord[0], draw_from_coord[1], self._widget.frame2x(x), fov_height - y_pixel)
+
+					last_coordinate = self._widget.frame2x(x), fov_height - y_pixel
+					last_real_x_coord = x
+
 
 		painter.setOpacity(1.0)
 
