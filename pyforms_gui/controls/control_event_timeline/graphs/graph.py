@@ -1,6 +1,7 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 from AnyQt.QtGui import QColor
+from PyQt5.QtCore import QPoint
 
 
 class Graph(object):
@@ -116,11 +117,15 @@ class Graph(object):
 		painter.setPen(self._color)
 		painter.setOpacity(0.7)
 
-		fov_height 	 = (bottom - top) * self.zoom  #calculate the height visible 
+		fov_height 	 = (bottom - top) * self.zoom  #calculate the height visible
 		start 		 = self._widget.x2frame(left)  #calculate the start frame to draw
 		end 		 = self._widget.x2frame(right) #calculate the end frame to draw
 		end 		 = len(self) if end > len(self) else end #check if the end frame his higher than the available data
 		diff_max_min = (self._graph_max - self._graph_min) #calculate the difference bettween the lower and higher value
+
+		if self._graph_min==self._graph_max:
+			self._graph_min = self._graph_max - 1
+			self._graph_max = self._graph_max + 1
 
 		top = (-self._graph_min if self._graph_min > 0 else abs(self._graph_min)) * self._zoom
 
@@ -138,9 +143,14 @@ class Graph(object):
 					diff_frames = abs(x - last_real_x_coord)
 					draw_from_coord = last_coordinate if diff_frames == 1 else (self._widget.frame2x(x), fov_height - y)
 					painter.drawLine(draw_from_coord[0], draw_from_coord[1], self._widget.frame2x(x), fov_height - y)
+				else:
+					painter.drawEllipse( QPoint(self._widget.frame2x(x), fov_height - y), 2, 2)
 
 				last_coordinate = self._widget.frame2x(x), fov_height - y
 				last_real_x_coord = x
+			else:
+				last_coordinate = None
+				last_real_x_coord = None
 
 		painter.setOpacity(1.0)
 
