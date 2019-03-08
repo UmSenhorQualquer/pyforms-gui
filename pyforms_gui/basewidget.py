@@ -15,7 +15,6 @@ from AnyQt.QtWidgets import QSizePolicy
 from AnyQt.QtWidgets import QLabel
 from AnyQt.QtGui     import QFont
 from AnyQt.QtWidgets import QFileDialog
-from AnyQt.QtWidgets import QApplication
 from AnyQt           import QtCore, _api
 
 from pyforms_gui.controls.control_base import ControlBase
@@ -40,6 +39,8 @@ class BaseWidget(QFrame):
         if parent_win is not None and win_flag is None: win_flag = QtCore.Qt.Dialog
 
         QFrame.__init__(self) if parent_win is None else QFrame.__init__(self, parent_win, win_flag)
+
+
 
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -424,7 +425,7 @@ class BaseWidget(QFrame):
         elif msg_type=='warning':
             m = QMessageBox(QMessageBox.Warning, title, msg) 
         elif msg_type=='error':
-            m = QMessageBox(QMessageBox.Critical, title, msg) 
+            m = QMessageBox(QMessageBox.Critical, title, msg)
         elif msg_type=='about':
             m = QMessageBox(QMessageBox.Question, title, msg) 
         elif msg_type=='aboutQt':
