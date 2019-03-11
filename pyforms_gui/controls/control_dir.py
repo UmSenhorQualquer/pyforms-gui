@@ -25,7 +25,10 @@ class ControlDir(ControlBase):
 
 
     def click(self):
-        value = QFileDialog.getExistingDirectory(self.parent, self._label, options=conf.PYFORMS_DIALOGS_OPTIONS)
+        if conf.PYFORMS_DIALOGS_OPTIONS:
+            value = QFileDialog.getExistingDirectory(self.parent, self._label, options=conf.PYFORMS_DIALOGS_OPTIONS)
+        else:
+            value = QFileDialog.getExistingDirectory(self.parent, self._label)
 
         if value and len(value)>0: 
             self.value = value

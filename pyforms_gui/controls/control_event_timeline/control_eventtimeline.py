@@ -487,11 +487,17 @@ class ControlEventTimeline(ControlBase, QWidget):
     def __export(self):
         """Export annotations to a file."""
 
-        filename, ffilter = QFileDialog.getSaveFileName(parent=self,
-             caption="Export annotations file",
-             directory="untitled.csv",
-             filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
-             options=conf.PYFORMS_DIALOGS_OPTIONS)
+        if conf.PYFORMS_DIALOGS_OPTIONS:
+            filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                 caption="Export annotations file",
+                 directory="untitled.csv",
+                 filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
+                 options=conf.PYFORMS_DIALOGS_OPTIONS)
+        else:
+            filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                                                            caption="Export annotations file",
+                                                            directory="untitled.csv",
+                                                            filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)")
 
         filename = str(filename)
         ffilter = str(ffilter)
