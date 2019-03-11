@@ -40,3 +40,9 @@ class VideoQt5GLWidget(AbstractGLWidget, QOpenGLWidget):
 		self.gl.glLoadIdentity()
 		self.perspective(40.0, float(width) / float(height), 0.01, 10.0)
 		self.gl.glMatrixMode(self.gl.GL_MODELVIEW)
+
+	def draw_helptext(self):
+		pass
+
+	def draw_message(self):
+		pass

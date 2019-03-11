@@ -294,23 +294,25 @@ class AbstractGLWidget(object):
 
         GL.glEnable(GL.GL_DEPTH_TEST)
 
+        self.draw_helptext()
+        self.draw_message()
+
+        if self._move_img: 
+            self._last_mouse_gl_pos = self._glX, self._glY, self._glZ
+
+    def draw_helptext(self):
         if self._helpText is not None:
             self.qglColor(QtCore.Qt.black)
             self.renderText(5, 31, self._helpText, font=self._font)
             self.qglColor(QtCore.Qt.white)
             self.renderText(4, 30, self._helpText, font=self._font)
-            
 
+    def draw_message(self):
         if self._tmp_msg is not None:
             self.qglColor(QtCore.Qt.black)
             self.renderText(5, self.height()-19, self._tmp_msg, font=self._font)
             self.qglColor(QtCore.Qt.white)
             self.renderText(4, self.height()-20, self._tmp_msg, font=self._font)
-
-        if self._move_img: 
-            self._last_mouse_gl_pos = self._glX, self._glY, self._glZ
-
-        
 
     def reset(self):
         self.textures = []
