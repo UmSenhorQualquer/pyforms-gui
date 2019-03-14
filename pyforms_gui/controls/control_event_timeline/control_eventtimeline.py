@@ -237,6 +237,16 @@ class ControlEventTimeline(ControlBase, QWidget):
         """
         self._time.add_graph(name, data)
 
+    def add_track(self, title='', color=None):
+        """
+        Add a new track.
+        :param str title: Title of the track.
+        :param QColor color: Default color of the events in the track.
+        :return: Return the added track.
+        """
+        return self._time.add_track(title=title, color=color)
+
+
     def rename_graph(self, graph_index, newname):
         """
         Rename a graph by index.
