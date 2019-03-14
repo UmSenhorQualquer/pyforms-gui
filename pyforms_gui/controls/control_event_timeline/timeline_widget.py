@@ -471,7 +471,7 @@ class TimelineWidget(QWidget):
                 if event.key() == QtCore.Qt.Key_L:
                     self.toggle_selected_event_lock()
 
-                # Lock or unlock an event
+                # Move to the next event
                 if event.key() == QtCore.Qt.Key_E:
                     index = self.selected_row.events.index(self._selected)
                     if index < len(self.selected_row.events)-1:
@@ -558,6 +558,16 @@ class TimelineWidget(QWidget):
             # forward 1 step
             elif event.key() == QtCore.Qt.Key_D:
                 self.position = self.position + 1
+
+            # Move to the first event
+            elif event.key() == QtCore.Qt.Key_E:
+                self._selected = self.selected_row.events[0]
+                self.position = self._selected.begin
+
+            # Move to the last event
+            elif event.key() == QtCore.Qt.Key_Q:
+                self._selected = self.selected_row.events[len(self.selected_row)-1]
+                self.position = self._selected.begin
 
         super(TimelineWidget, self).keyReleaseEvent(event)
 
