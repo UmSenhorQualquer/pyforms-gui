@@ -168,10 +168,11 @@ def execute_test_file(myapp):
         exec(code, global_vars, local_vars)
 
 
-def start_app(ClassObject, geometry=None, stylesheet=None, user_settings=None):
+def start_app(ClassObject, geometry=None, stylesheet=None, user_settings=None, parent_win=None):
     from confapp import conf
 
-    app = QApplication(sys.argv)
+    if parent_win is None:
+        app = QApplication(sys.argv)
 
     conf += 'pyforms_gui.settings'
     if user_settings:
@@ -211,6 +212,8 @@ def start_app(ClassObject, geometry=None, stylesheet=None, user_settings=None):
 
                 exec(code, global_vars, local_vars)
 
-    if stylesheet: app.setStyleSheet(stylesheet)
-    app.exec_()
+    if parent_win is None:
+        if stylesheet: app.setStyleSheet(stylesheet)
+        app.exec_()
+
     return myapp
