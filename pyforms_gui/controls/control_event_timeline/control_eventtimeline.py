@@ -487,41 +487,51 @@ class ControlEventTimeline(ControlBase, QWidget):
     def __export(self):
         """Export annotations to a file."""
 
-        if conf.PYFORMS_DIALOGS_OPTIONS:
-            filename, ffilter = QFileDialog.getSaveFileName(parent=self,
-                 caption="Export annotations file",
-                 directory="untitled.csv",
-                 filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
-                 options=conf.PYFORMS_DIALOGS_OPTIONS)
-        else:
-            filename, ffilter = QFileDialog.getSaveFileName(parent=self,
-                                                            caption="Export annotations file",
-                                                            directory="untitled.csv",
-                                                            filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)")
+        try:
 
-        filename = str(filename)
-        ffilter = str(ffilter)
-        if filename != "":
-            with open(filename, 'w') as csvfile:
-                spamwriter = csv.writer(csvfile, dialect='excel')
-                if ffilter == 'CSV Files (*.csv)':
-                    self._time.export_events_to_csvwriter(spamwriter)
-                elif ffilter == 'CSV Matrix Files (*.csv)':
-                    self._time.exportmatrix_events_to_csvwriter(spamwriter)
+            if conf.PYFORMS_DIALOGS_OPTIONS:
+                filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                     caption="Export annotations file",
+                     directory="untitled.csv",
+                     filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
+                     options=conf.PYFORMS_DIALOGS_OPTIONS)
+            else:
+                filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                                                                caption="Export annotations file",
+                                                                directory="untitled.csv",
+                                                                filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)")
+
+            filename = str(filename)
+            ffilter = str(ffilter)
+            if filename != "":
+                with open(filename, 'w') as csvfile:
+                    spamwriter = csv.writer(csvfile, dialect='excel')
+                    if ffilter == 'CSV Files (*.csv)':
+                        self._time.export_events_to_csvwriter(spamwriter)
+                    elif ffilter == 'CSV Matrix Files (*.csv)':
+                        self._time.exportmatrix_events_to_csvwriter(spamwriter)
+
+        except Exception as e:
+            m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
+            m.exec_()
 
     def __export_2_csv_matrix(self):
-        QMessageBox.warning(
-            self, "Important!", 'Please note that this file cannot be imported after.')
+        try:
+            QMessageBox.warning(
+                self, "Important!", 'Please note that this file cannot be imported after.')
 
-        filename, _ = QFileDialog.getSaveFileName(parent=self,
-                                               caption="Export matrix file",
-                                               directory="untitled.csv",
-                                               filter="CSV Files (*.csv)",
-                                               options=QFileDialog.DontUseNativeDialog)
-        if filename != "":
-            with open(filename, 'w') as csvfile:
-                spamwriter = csv.writer(csvfile, dialect='excel')
-                self._time.exportmatrix_events_to_csvwriter(spamwriter)
+            filename, _ = QFileDialog.getSaveFileName(parent=self,
+                                                   caption="Export matrix file",
+                                                   directory="untitled.csv",
+                                                   filter="CSV Files (*.csv)",
+                                                   options=QFileDialog.DontUseNativeDialog)
+            if filename != "":
+                with open(filename, 'w') as csvfile:
+                    spamwriter = csv.writer(csvfile, dialect='excel')
+                    self._time.exportmatrix_events_to_csvwriter(spamwriter)
+        except Exception as e:
+            m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
+            m.exec_()
 
     def __remove_current_track_evt(self):
         reply = QMessageBox.question(self, 'Confirm',
