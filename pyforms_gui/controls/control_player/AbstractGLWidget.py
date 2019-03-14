@@ -540,10 +540,17 @@ class AbstractGLWidget(object):
         return self._get_current_x(), self._get_current_y()
 
     def _get_current_x(self):
-        return (self._glX - self._x) * float(self.img_width)
+        if self.img_width>self.img_height:
+            return (self._glX - self._x) * float(self.img_width)
+        else:
+            return (self._glX - self._x) * float(self.img_height)
 
     def _get_current_y(self):
-        return (self._height - self._glY + self._y) * float(self.img_width) - self.img_height / 2.0
+        if self.img_width > self.img_height:
+            return (self._height - self._glY + self._y) * float(self.img_width) - self.img_height / 2.0
+        else:
+            return (self._height - self._glY + self._y) * float(self.img_height) - self.img_height / 2.0
+
 
     @property
     def point(self): return self._point
