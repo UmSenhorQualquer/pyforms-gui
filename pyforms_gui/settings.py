@@ -3,8 +3,7 @@
 
 import os
 from AnyQt.QtGui import QIcon, QPixmap
-from AnyQt.QtWidgets import QStyle, qApp
-
+from AnyQt.QtWidgets import QStyle, qApp, QFileDialog, QColorDialog
 
 def path(filename):
 	"""	
@@ -19,6 +18,9 @@ PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY.addPixmap(qApp.style().standardPixmap(QStyle
                                               state=QIcon.Off)
 PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY.addPixmap(qApp.style().standardPixmap(QStyle.SP_MediaPause), mode=QIcon.Normal,
                                               state=QIcon.On)
+
+PYFORMS_ICON_VIDEOPLAYER_DETACH = QIcon()
+PYFORMS_ICON_VIDEOPLAYER_DETACH.addPixmap(qApp.style().standardPixmap(QStyle.SP_TitleBarMaxButton), mode=QIcon.Normal )
 
 PYFORMS_ICON_CODEEDITOR_SAVE = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogSaveButton))
 PYFORMS_ICON_CODEEDITOR_DISCART = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogDiscardButton))
@@ -64,3 +66,7 @@ PYFORMS_WEB_ENABLED 		= True
 PYFORMS_GL_ENABLED 			= True
 PYFORMS_VISVIS_ENABLED 		= True
 
+
+PYFORMS_DIALOGS_OPTIONS = None
+#PYFORMS_DIALOGS_OPTIONS = QFileDialog.DontUseNativeDialog
+PYFORMS_COLORDIALOGS_OPTIONS = QColorDialog.DontUseNativeDialog

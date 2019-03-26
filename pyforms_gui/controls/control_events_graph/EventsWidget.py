@@ -98,7 +98,7 @@ class EventsWidget(QWidget):
 		if end_pixel > self._scroll.maximum():
 			self._scroll.setMaximum(end_pixel)
 
-		self._tracks[track].add_period(period)
+		self._tracks[track].add_event(period)
 		return period
 
 	def __check_current_time_is_visible(self, current_time):
@@ -155,7 +155,7 @@ class EventsWidget(QWidget):
 		for i, track in enumerate(self._tracks):
 			if self._break_draw:
 				break
-			track.draw_periods(painter, start, end, track_index=i, left_shift=-self._scroll.sliderPosition(),
+			track.draw_events(painter, start, end, track_index=i, left_shift=-self._scroll.sliderPosition(),
 			                   scale=self._scale)
 
 		# Draw only from pixel start to end
@@ -312,5 +312,5 @@ class EventsWidget(QWidget):
 		"""
 		for index, track in enumerate(self._tracks):
 			csvfileobject.writerow(track.properties)
-			for delta in track.periods:
+			for delta in track.events:
 				csvfileobject.writerow(delta.properties)

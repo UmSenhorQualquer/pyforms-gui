@@ -33,16 +33,19 @@ class ControlNumber(ControlBase):
         self.min = self._min
         self.max = self._max
         self.label = self._label
-        self.value = self._value
         self.form.label.setAccessibleName('ControlNumber-label')
         self.form.spinBox.valueChanged.connect(self.update_event)
+
+        self._update_slider = True
+        self.form.spinBox.setValue(self._value)
+        del self._update_slider
+
         super(ControlNumber, self).init_form()
 
         
     def update_event(self, value):
-        self._updateSlider = False
-        self.value = value
-        self._updateSlider = True
+        if not hasattr(self, '_update_slider'):
+            self.value = value
 
     ############################################################################
     ############ Properties ####################################################
@@ -56,13 +59,17 @@ class ControlNumber(ControlBase):
 
     @property
     def value(self):
-        self._value = self.form.spinBox.value()
         return self._value
+        return self.form.spinBox.value()
 
     @value.setter
     def value(self, value):
-        self.form.spinBox.setValue(value)
-        ControlBase.value.fset(self, value)
+        if value != self.value:
+            self._update_slider = True
+            self.form.spinBox.setValue(value)
+            del self._update_slider
+
+        ControlBase.value.fset(self, self.form.spinBox.value())
 
     @property
     def min(self): return self.form.spinBox.minimum()

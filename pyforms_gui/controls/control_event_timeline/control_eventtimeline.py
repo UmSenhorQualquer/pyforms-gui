@@ -1,30 +1,42 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import csv
-import os
-
+import csv, os
 from confapp import conf
-
-
-from AnyQt.QtWidgets import QWidget, QScrollArea, QColorDialog, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
 from AnyQt import QtCore, _api
-
-from pyforms_gui.controls.control_event_timeline.TimelineChart import TimelineChart
+from AnyQt.QtWidgets import QWidget, QScrollArea, QFileDialog, QMessageBox, QPushButton, QLabel, QSlider, QHBoxLayout, QVBoxLayout
 from pyforms_gui.controls.control_base import ControlBase
-from pyforms_gui.controls.control_event_timeline.TimelineWidget import TimelineWidget
-from pyforms_gui.controls.control_event_timeline.TimelinePopupWindow import TimelinePopupWindow
-from pyforms_gui.controls.control_event_timeline.import_window import ImportWindow
-
-from pyforms_gui.controls.control_event_timeline.graphs_graph2event import Graph2Event
-from pyforms_gui.controls.control_event_timeline.graphs_properties  import GraphsProperties
-from pyforms_gui.controls.control_event_timeline.graphs_eventsgenerator import GraphsEventsGenerator
+from pyforms_gui.controls.control_event_timeline.utils.import_window import ImportWindow
+from pyforms_gui.controls.control_event_timeline.timeline_widget import TimelineWidget
+from pyforms_gui.controls.control_event_timeline.events.win_track import TimelinePopupWindow
+from pyforms_gui.controls.control_event_timeline.graphs.graph import Graph
+from pyforms_gui.controls.control_event_timeline.graphs.win_graph_to_event import Graph2Event
+from pyforms_gui.controls.control_event_timeline.graphs.win_graph_properties  import GraphsProperties
+from pyforms_gui.controls.control_event_timeline.graphs.win_events_generator import GraphsEventsGenerator
 
 
 
 class ControlEventTimeline(ControlBase, QWidget):
     """
         Timeline events editor
+
+        **Short keys:**
+
+            - **Control + Left**: Move event to the left.
+            - **Control + Right**: Move event to the right.
+            - **Delete**: Delete an event.
+            - **L**: Lock an event.
+            - **Control + Up**: Move an event up.
+            - **Control + Down**: Move an event down.
+            - **Shift + Control + Left**: Move an event end time to the left.
+            - **Shift + Control + Right**: Move an event end to the right.
+            - **Shift + Left**: Move an event beginning to the left.
+            - **Shift + Right**: Move an event beginning to the right.
+            - **S**: First press, mark the beginning of an event, Second press, create an event ending in the current cursor time.
+            - **A**: Move the cursor to the left.
+            - **D**: Move the cursor to the right.
+            - **Q**: Select the previous event in the selected row.
+            - **E**: Select the next event in the selected row.
     """
 
     def __init__(self, label="", default=0, max=100):
@@ -35,47 +47,90 @@ class ControlEventTimeline(ControlBase, QWidget):
         self._graphsgenerator_win = GraphsEventsGenerator(self._time)
         self._graph2event_win     = Graph2Event(self._time)
 
+        ###############################################################################################
+        ######## EVENTS ACTIONS #######################################################################
+        ###############################################################################################
+
         # Popup menus that only show when clicking on a TIMELINEDELTA object
-        self._deltaLockAction = self.add_popup_menu_option("Lock", self.__lockSelected, key='L')
-        self._deltaColorAction = self.add_popup_menu_option("Pick a color", self.__pickColor)
-        self._deltaRemoveAction = self.add_popup_menu_option("Remove", self.__removeSelected, key='Delete')
-        self._deltaActions = [self._deltaLockAction, self._deltaColorAction, self._deltaRemoveAction]
-        for action in self._deltaActions:
-            action.setVisible(False)
+        event_remove_action = self.add_popup_menu_option(
+            "Remove event", self.__removeSelected, key='Delete',
+            icon=conf.ANNOTATOR_ICON_DELETE
+        )
+        separator_action = self.add_popup_menu_option("-")
+        self._events_actions = [event_remove_action, separator_action]
+        for action in self._events_actions: action.setVisible(False)
 
-        self.add_popup_menu_option("-")
+        ###############################################################################################
+        ######## TRACKS ACTIONS #######################################################################
+        ###############################################################################################
 
-        self.add_popup_menu_option("Graphs", self.show_graphs_properties, icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
+        # General right click popup menus
+        track_properties_action = self.add_popup_menu_option(
+            "Row properties",
+            self.__open_track_properties_evt,
+            icon=conf.ANNOTATOR_ICON_INFO
+        )
+
+        track_insert_action = self.add_popup_menu_option(
+            "Insert row",
+            self.__add_track_evt,
+            icon=conf.ANNOTATOR_ICON_ADD
+        )
+
+        track_remove_action = self.add_popup_menu_option(
+            "Remove row",
+            self.__remove_current_track_evt,
+            icon=conf.ANNOTATOR_ICON_DELETE
+        )
+
+        track_moveup_action = self.add_popup_menu_option(
+            "Move up",
+            self.__move_track_up_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_IMPORT
+        )
+
+        track_movedown_action = self.add_popup_menu_option(
+            "Move down",
+            self.__move_track_down_evt,
+            icon=conf.PYFORMS_ICON_EVENTTIMELINE_EXPORT
+        )
+
+        separator_action = self.add_popup_menu_option("-")
+
+        self._tracks_actions = [
+            track_properties_action, track_insert_action,
+            track_remove_action, track_moveup_action,
+            track_movedown_action, separator_action
+        ]
+        for action in self._tracks_actions: action.setVisible(False)
+
+
+
+        ###############################################################################################
+        ######## GRAPHS ACTIONS #######################################################################
+        ###############################################################################################
+
+        self.add_popup_menu_option("Graphs", self.open_graphs_properties, icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         self.add_popup_menu_option("Apply a function to the graphs", self.__generate_graphs_events,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         self.add_popup_menu_option("Convert graph to events", self.__graph2event_event,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_GRAPH)
         
         self.add_popup_menu_option("-")
-
-        # General righ click popup menus
-        self.add_popup_menu_option("Row properties", self.__setLinePropertiesEvent,
-                                   icon=conf.PYFORMS_ICON_EVENTTIMELINE_REMOVE)
-        self.add_popup_menu_option("-")
-
-        
-
-        self.add_popup_menu_option("-")
         
         self.add_popup_menu_option("Auto adjust rows", self.__auto_adjust_tracks_evt,
                                    icon=conf.PYFORMS_ICON_EVENTTIMELINE_REFRESH)
-        self.add_popup_menu_option("Add a row", self.__add_track_2_bottom_evt,
-                                   icon=conf.PYFORMS_ICON_EVENTTIMELINE_ADD)
-        
-        self.add_popup_menu_option("-")
 
-        clean_menu = self.add_popup_submenu('Clean')
+        self.add_popup_menu_option(
+            "Remove everything",
+            self.clean,
+            icon=conf.ANNOTATOR_ICON_DELETE
+        )
 
-        self.add_popup_menu_option('The current row', function_action=self.__cleanLine, menu=clean_menu)
-        self.add_popup_menu_option('-')
-        self.add_popup_menu_option('All graphs', function_action=self.__cleanCharts, menu=clean_menu)
-        self.add_popup_menu_option('-')
-        self.add_popup_menu_option('Everything', function_action=self.clean, menu=clean_menu)
+        self._importwin = None # import window.
+
+    def __repr__(self):
+        return "Timeline "+str(self.name)
 
     def init_form(self):
         # Get the current path of the file
@@ -90,36 +145,23 @@ class ControlEventTimeline(ControlBase, QWidget):
         elif _api.USED_API == _api.QT_API_PYQT4:
             hlayout.setMargin(0)
             vlayout.setMargin(0)
-        
-        
-            
 
         self.setLayout(vlayout)
 
         # Add scroll area
         scrollarea = QScrollArea()
+        self._scrollArea = scrollarea
         scrollarea.setMinimumHeight(140)
         scrollarea.setWidgetResizable(True)
         scrollarea.keyPressEvent = self.__scrollAreaKeyPressEvent
         scrollarea.keyReleaseEvent = self.__scrollAreaKeyReleaseEvent
+
         vlayout.addWidget(scrollarea)
-        # vlayout.setContentsMargins(5, 5, 5, 5)
 
         # The timeline widget
-        widget = TimelineWidget(self)
+        self._time = widget = TimelineWidget(self)
         widget._scroll = scrollarea
-        # widget.setMinimumHeight(1000)
         scrollarea.setWidget(widget)
-
-        # TODO Options buttons
-        # btn_1 = QtGui.QPushButton("?")
-        # btn_2 = QtGui.QPushButton("?")
-        # vlayout_options = QtGui.QVBoxLayout()
-        # vlayout_options.addWidget(btn_1)
-        # vlayout_options.addWidget(btn_2)
-        # hlayout.addLayout(vlayout_options)
-        # hlayout.addWidget(btn_1)
-        # hlayout.addWidget(btn_2)
 
         # Timeline zoom slider
         slider = QSlider(QtCore.Qt.Horizontal)
@@ -141,34 +183,28 @@ class ControlEventTimeline(ControlBase, QWidget):
         hlayout.addWidget(slider_label_zoom_out)
         hlayout.addWidget(slider)
         hlayout.addWidget(slider_label_zoom_in)
-        # hlayout.setContentsMargins(5, 0, 5, 5)
+
         # Import/Export Buttons
         btn_import = QPushButton("Import")
 
         btn_import.setIcon(conf.PYFORMS_ICON_EVENTTIMELINE_IMPORT)
-        btn_import.clicked.connect(self.__import)
+        btn_import.clicked.connect(self.__open_import_win_evt)
         btn_export = QPushButton("Export")
 
         btn_export.setIcon(conf.PYFORMS_ICON_EVENTTIMELINE_EXPORT)
         btn_export.clicked.connect(self.__export)
-        # importexport_vlayout = QtGui.QVBoxLayout()
-        # importexport_vlayout.adimdWidget(btn_import)
-        # importexport_vlayout.addWidget(btn_export)
-        # hlayout.addLayout(importexport_vlayout)
         hlayout.addWidget(btn_import)
         hlayout.addWidget(btn_export)
 
         vlayout.addLayout(hlayout)
 
-        self._time = widget
-        self._scrollArea = scrollarea
 
     ##########################################################################
     #### HELPERS/PUBLIC FUNCTIONS ############################################
     ##########################################################################
 
     def __add__(self, other):
-        if isinstance(other, TimelineChart): 
+        if isinstance(other, Graph):
             self._graphs_prop_win     += other
             self._graphsgenerator_win += other
             self._graph2event_win     += other
@@ -181,20 +217,14 @@ class ControlEventTimeline(ControlBase, QWidget):
             self._graph2event_win     -= other
         return self
 
-    def rename_graph(self, graph_index, newname):
-        self._graphs_prop_win.rename_graph(graph_index, newname)
-        self._graphsgenerator_win.rename_graph(graph_index, newname)
-        self._graph2event_win.rename_graph(graph_index, newname)
-
-    def add_period(self, value, row=0, color=None):
+    def add_event(self, begin, end, title='', row=0):
         """
-        
-        :param value: 
-        :param row: 
-        :param color: 
-        :return: 
+        :param begin: Initial frame
+        :param end: Last frame
+        :param title: Event title
+        :param row: Row to which the event should be added.
         """
-        self._time.add_period(value, row, color)
+        self._time.add_event(begin, end, title=title, row=row)
         self._time.repaint()
 
     def add_graph(self, name, data):
@@ -204,45 +234,49 @@ class ControlEventTimeline(ControlBase, QWidget):
         :param data: 
         :return: 
         """
-        self._time.add_chart(name, data)
+        self._time.add_graph(name, data)
 
-    def import_graph(self, filename, frame_col=0, val_col=1):
+    def rename_graph(self, graph_index, newname):
         """
-        
-        :param filename: 
-        :param frame_col: 
-        :param val_col: 
-        :return: 
+        Rename a graph by index.
+        :param int graph_index: Index of the graph to rename.
+        :param str newname: New name
         """
-        self.__import()
-        self._import_window.import_chart(filename, frame_col, val_col)
+        self._time.graphs[graph_index].name = newname
+        self._graphs_prop_win.rename_graph(graph_index, newname)
+        self._graphsgenerator_win.rename_graph(graph_index, newname)
+        self._graph2event_win.rename_graph(graph_index, newname)
 
-    def import_graph_file(self, filename, separator=';', ignore_rows=0):
+
+    def import_graph_csv(self, filepath, separator=';', ignore_rows=0):
         """
-        
+        Import a new graph from a csv file.
         :param filename: 
         :param separator: 
         :param ignore_rows: 
         :return: 
         """
-        csvfile = open(filename, 'U')
-        spamreader = csv.reader(csvfile, delimiter=separator)
-        for i in range(ignore_rows): next(spamreader, None)
-        chart = self._time.importchart_csv(spamreader)
-        chart.name = os.path.basename(filename).replace('.csv', '').replace('.CSV', '')
-        csvfile.close()
+        with open(filepath, 'U') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=separator)
+            for i in range(ignore_rows): next(spamreader, None)
+            name = os.path.basename(filepath).replace('.csv', '').replace('.CSV', '')
+            chart = self._time.add_graph(name, spamreader)
+            return chart
 
-    def show_graphs_properties(self):
-        """
-        
-        """
-        self._graphs_prop_win.show()
-        self._time.repaint()
+    def export_csv_file(self, filename):
+        with open(filename, 'w') as csvfile:
+            spamwriter = csv.writer(csvfile, dialect='excel')
+            self._time.export_events_to_csvwriter(spamwriter)
+
+    def import_csv_file(self, filename):
+        with open(filename, 'r') as csvfile:
+            spamreader = csv.reader(csvfile, dialect='excel')
+            self._time.import_events_from_csvreader(spamreader)
 
     def import_csv(self, csvfile):
         """
-        
-        :param csvfile: 
+
+        :param csvfile:
         """
         # If there are annotation in the timeline, show a warning
         if len(self._time._tracks) > 0:  # dict returns True if not empty
@@ -260,17 +294,26 @@ class ControlEventTimeline(ControlBase, QWidget):
             if reply != QMessageBox.Yes:
                 return
 
-        self._time.import_csv(csvfile)
+        self._time.import_events_from_csvreader(csvfile)
 
-    def export_csv_file(self, filename):
-        with open(filename, 'w') as csvfile:
-            spamwriter = csv.writer(csvfile, dialect='excel')
-            self._time.export_csv(spamwriter)
+    def open_graphs_properties(self):
+        """
+        Opens the graphs properties.
+        """
+        self._graphs_prop_win.show()
+        self._time.repaint()
 
-    def import_csv_file(self, filename):
-        with open(filename, 'r') as csvfile:
-            spamreader = csv.reader(csvfile, dialect='excel')
-            self._time.import_csv(spamreader)
+
+    def open_import_graph_win(self, filepath, frame_col=0, val_col=1):
+        """
+        Open a window to import a graph from a csv file.
+        :param str filepath: Path of the file to import.
+        :param int frame_col: Column corresponding to the frames number in the csv file.
+        :param int val_col: Column corresponding to the values in the csv file.
+        """
+        self.__open_import_win_evt()
+        self._importwin.import_chart(filepath, frame_col, val_col)
+
 
     ##########################################################################
     #### EVENTS ##############################################################
@@ -278,6 +321,7 @@ class ControlEventTimeline(ControlBase, QWidget):
 
     def mouse_moveover_timeline_event(self, event):
         self._graphs_prop_win.mouse_moveover_timeline_event(event)
+
 
 
     @property
@@ -292,18 +336,24 @@ class ControlEventTimeline(ControlBase, QWidget):
         for i in range(len(self._time.tracks) - 1, -1, -1):
             track = self._time.tracks[i]
             if len(track) == 0:
-                self._time.remove_track(track)
+                self._time -= track
             else:
                 break
 
-    def __add_track_2_bottom_evt(self):
+    def __add_track_evt(self):
         self._time.add_track()
 
     def __remove_track_from_bottom_evt(self):
         if len(self._time.tracks) > 0:
             track = self._time.tracks[-1]
             if len(track) == 0:
-                self._time.remove_track(track)
+                self._time -= track
+
+    def __move_track_up_evt(self):
+        self._time.selected_row.move_up()
+
+    def __move_track_down_evt(self):
+        self._time.selected_row.move_down()
 
     def __generate_graphs_events(self):
         self._graphsgenerator_win.show()
@@ -357,13 +407,23 @@ class ControlEventTimeline(ControlBase, QWidget):
     ##########################################################################
 
     def about_to_show_contextmenu_event(self):
-        for action in self._deltaActions:
+        """
+        Hide and show context menu options.
+        """
+        # Hide and show events actions.
+        for action in self._events_actions:
             action.setVisible(
-                True) if self._time._selected is not None else action.setVisible(False)
+                True if self._time._selected is not None else False
+            )
+        # Hide and show tracks actions.
+        for action in self._tracks_actions:
+            action.setVisible(
+                True if self._time._selected_track is not None else False
+            )
 
     
 
-    def __setLinePropertiesEvent(self):
+    def __open_track_properties_evt(self):
         """
         This controls makes possible the edition of a track in the
         timeline, based on the position of the mouse.
@@ -402,7 +462,7 @@ class ControlEventTimeline(ControlBase, QWidget):
 
             # Update color
             if self._time._tracks[i].color != dialog.color:
-                for delta in self._time._tracks[i].periods:
+                for delta in self._time._tracks[i].events:
                     delta.color = dialog.color
                 self._time._tracks[i].color = dialog.color
             self._time.repaint()
@@ -413,63 +473,74 @@ class ControlEventTimeline(ControlBase, QWidget):
         parent.color = timeline_default_color
 
     def __lockSelected(self):
-        self._time.lockSelected()
+        self._time.toggle_selected_event_lock()
 
     def __removeSelected(self):
-        self._time.removeSelected()
+        self._time.remove_selected_event()
 
-    def __import(self):
+    def __open_import_win_evt(self):
         """Import annotations from a file."""
-        if not hasattr(self, '_import_window'): self._import_window = ImportWindow(self)
-        self._import_window.show()
+        if self._importwin is None:
+            self._importwin = ImportWindow(self)
+        self._importwin.show()
 
     def __export(self):
         """Export annotations to a file."""
 
-        filename, ffilter = QFileDialog.getSaveFileName(parent=self,
-                                                                 caption="Export annotations file",
-                                                                 directory="untitled.csv",
-                                                                 filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
-                                                                 options=QFileDialog.DontUseNativeDialog)
+        try:
 
-        filename = str(filename)
-        ffilter = str(ffilter)
-        if filename != "":
-            with open(filename, 'w') as csvfile:
-                spamwriter = csv.writer(csvfile, dialect='excel')
-                if ffilter == 'CSV Files (*.csv)':
-                    self._time.export_csv(spamwriter)
-                elif ffilter == 'CSV Matrix Files (*.csv)':
-                    self._time.export_2_csv_matrix(spamwriter)
+            if conf.PYFORMS_DIALOGS_OPTIONS:
+                filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                     caption="Export annotations file",
+                     directory="untitled.csv",
+                     filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)",
+                     options=conf.PYFORMS_DIALOGS_OPTIONS)
+            else:
+                filename, ffilter = QFileDialog.getSaveFileName(parent=self,
+                                                                caption="Export annotations file",
+                                                                directory="untitled.csv",
+                                                                filter="CSV Files (*.csv);;CSV Matrix Files (*.csv)")
+
+            filename = str(filename)
+            ffilter = str(ffilter)
+            if filename != "":
+                with open(filename, 'w') as csvfile:
+                    spamwriter = csv.writer(csvfile, dialect='excel')
+                    if ffilter == 'CSV Files (*.csv)':
+                        self._time.export_events_to_csvwriter(spamwriter)
+                    elif ffilter == 'CSV Matrix Files (*.csv)':
+                        self._time.exportmatrix_events_to_csvwriter(spamwriter)
+
+        except Exception as e:
+            m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
+            m.exec_()
 
     def __export_2_csv_matrix(self):
-        QMessageBox.warning(
-            self, "Important!", 'Please note that this file cannot be imported after.')
+        try:
+            QMessageBox.warning(
+                self, "Important!", 'Please note that this file cannot be imported after.')
 
-        filename, _ = QFileDialog.getSaveFileName(parent=self,
-                                               caption="Export matrix file",
-                                               directory="untitled.csv",
-                                               filter="CSV Files (*.csv)",
-                                               options=QFileDialog.DontUseNativeDialog)
-        if filename != "":
-            with open(filename, 'w') as csvfile:
-                spamwriter = csv.writer(csvfile, dialect='excel')
-                self._time.export_2_csv_matrix(spamwriter)
+            filename, _ = QFileDialog.getSaveFileName(parent=self,
+                                                   caption="Export matrix file",
+                                                   directory="untitled.csv",
+                                                   filter="CSV Files (*.csv)",
+                                                   options=QFileDialog.DontUseNativeDialog)
+            if filename != "":
+                with open(filename, 'w') as csvfile:
+                    spamwriter = csv.writer(csvfile, dialect='excel')
+                    self._time.exportmatrix_events_to_csvwriter(spamwriter)
+        except Exception as e:
+            m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
+            m.exec_()
 
-    def __cleanLine(self):
+    def __remove_current_track_evt(self):
         reply = QMessageBox.question(self, 'Confirm',
-                                     "Are you sure you want to clean all the events on this track?",
+                                     "Are you sure you want to remove the row and its events?",
                                      QMessageBox.Yes |
                                      QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._time.cleanLine(self._time.current_mouseover_track)
+            self._time.remove_selected_track()
 
-    def __cleanCharts(self):
-        reply = QMessageBox.question(self, 'Confirm',
-                                     "Are you sure you want to clean all the charts?", QMessageBox.Yes |
-                                     QMessageBox.No, QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            self._time.cleanCharts()
 
     def clean(self):
         reply = QMessageBox.question(self, 'Confirm',
@@ -478,11 +549,6 @@ class ControlEventTimeline(ControlBase, QWidget):
         if reply == QMessageBox.Yes:
             self._time.clean()
 
-    def __pickColor(self):
-        self._time.color = QColorDialog.getColor(self._time.color)
-        if self._time._selected != None:
-            self._time._selected.color = self._time.color
-            self._time.repaint()
 
     def __scaleSliderChange(self, value):
         scale = 0.1 * value
@@ -493,14 +559,20 @@ class ControlEventTimeline(ControlBase, QWidget):
     def __scrollAreaKeyReleaseEvent(self, event):
         modifiers = int(event.modifiers())
         self._time.keyReleaseEvent(event)
-        if modifiers is not QtCore.Qt.ControlModifier and \
-                        modifiers is not int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and \
-                        modifiers is not QtCore.Qt.ShiftModifier:
-            QScrollArea.keyReleaseEvent(self._scrollArea, event)
+
+        QScrollArea.keyReleaseEvent(self._scrollArea, event)
 
     def __scrollAreaKeyPressEvent(self, event):
         modifiers = int(event.modifiers())
-        if modifiers is not QtCore.Qt.ControlModifier and \
-                        modifiers is not int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier) and \
-                        modifiers is not QtCore.Qt.ShiftModifier:
+
+        if modifiers == QtCore.Qt.ControlModifier:
+            event.ignore()
+
+        if modifiers == QtCore.Qt.ShiftModifier:
+            event.ignore()
+
+        if modifiers == int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier):
+            event.ignore()
+
+        if event.isAccepted():
             QScrollArea.keyPressEvent(self._scrollArea, event)

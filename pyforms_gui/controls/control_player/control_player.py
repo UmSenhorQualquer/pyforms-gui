@@ -13,6 +13,7 @@ __email__ = "ricardojvr@gmail.com"
 __status__ = "Development"
 
 import logging, platform, os, math
+from .multiple_videocapture import MultipleVideoCapture
 
 try:
     import cv2
@@ -25,6 +26,9 @@ from AnyQt 			 import uic, _api
 from AnyQt 			 import QtCore
 from AnyQt.QtWidgets import QFrame	
 from AnyQt.QtWidgets import QApplication
+from AnyQt.QtWidgets import QMainWindow
+from AnyQt.QtWidgets import QMessageBox
+
 from pyforms_gui.controls.control_base import ControlBase
 
 if _api.USED_API == _api.QT_API_PYQT5:
@@ -38,6 +42,7 @@ elif _api.USED_API == _api.QT_API_PYQT4:
 	from pyforms_gui.controls.control_player.VideoGLWidget 		 import VideoGLWidget
 
 
+logger = logging.getLogger(__name__)
 
 class ControlPlayer(ControlBase, QFrame):
 
@@ -46,6 +51,8 @@ class ControlPlayer(ControlBase, QFrame):
 
 		QFrame.__init__(self)
 		ControlBase.__init__(self, *args, **kwargs)
+
+		self._multiple_files = kwargs.get('multiple_files', False)
 
 		self._current_frame = None  # current frame image
 		self._current_frame_index = None # current frame index
@@ -69,8 +76,10 @@ class ControlPlayer(ControlBase, QFrame):
 
 
 		# Define the icon for the Play button
-		
 		self.videoPlay.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_PAUSE_PLAY)
+		self.detach_btn.setIcon(conf.PYFORMS_ICON_VIDEOPLAYER_DETACH)
+
+		self.detach_btn.clicked.connect(self.__detach_player_evt)
 
 		self._video_widget = VideoGLWidget()
 		self._video_widget._control = self
@@ -93,9 +102,13 @@ class ControlPlayer(ControlBase, QFrame):
 	############ FUNCTIONS ###################################################
 	##########################################################################
 
-	def play(self): 
-		self.videoPlay.setChecked(True)
-		self._timer.start( 1000.0/float(self.fps+1) )
+	def play(self):
+		try:
+			self.videoPlay.setChecked(True)
+			self._timer.start( 1000.0/float(self.fps+1) )
+		except Exception as e:
+			self.videoPlay.setChecked(False)
+			logger.error(e, exc_info=True)
 
 	def stop(self):
 		self.videoPlay.setChecked(False)
@@ -181,7 +194,10 @@ class ControlPlayer(ControlBase, QFrame):
 	def video_index(self, value): self._value.set(1, value)
 
 	@property
-	def max(self): return int(self._value.get(7))
+	def max(self):
+		if self._value is None or self._value=='':
+			return 0
+		return int(self._value.get(7))
 
 	@property
 	def frame(self): return self._current_frame
@@ -236,7 +252,33 @@ class ControlPlayer(ControlBase, QFrame):
 		if value == 0:
 			self._value = cv2.VideoCapture(0)
 		elif isinstance(value, str) and value:
-			self._value = cv2.VideoCapture(value)
+
+			open_multiplefiles = self._multiple_files
+
+			if open_multiplefiles:
+				open_multiplefiles = len(MultipleVideoCapture.search_files(value))>0
+
+			if open_multiplefiles:
+				msg = "Multiple files were found with the same name, do you wish to combine then in a single video?\n\n"
+				for filepath in MultipleVideoCapture.search_files(value):
+					msg += "- {filename}\n".format(filename=os.path.basename(filepath))
+
+				reply = QMessageBox(
+					QMessageBox.Question,
+					'Open multiple files',
+					msg,
+					QMessageBox.No | QMessageBox.Yes
+				).exec_()
+
+				if reply == QMessageBox.Yes:
+					open_multiplefiles = True
+				else:
+					open_multiplefiles = False
+
+			if open_multiplefiles:
+				self._value = MultipleVideoCapture(value)
+			else:
+				self._value = cv2.VideoCapture(value)
 		else:
 			self._value = value
 
@@ -329,6 +371,27 @@ class ControlPlayer(ControlBase, QFrame):
 		self.form.setUpdatesEnabled(True)
 
 
+	def __detach_player_evt(self):
+		"""
+		Called by the detach button
+		"""
+		self._old_layout = self.parentWidget().layout()
+		self._old_layout_index = self._old_layout.indexOf(self)
+		self._detach_win = QMainWindow(parent=self.parent)
+		self._detach_win.setWindowTitle('Player')
+		self._detach_win.setCentralWidget(self)
+		self.detach_btn.hide()
+		self._detach_win.closeEvent = self.__detach_win_closed_evt
+		self._detach_win.show()
+
+	def __detach_win_closed_evt(self, event):
+		"""
+		Called when the detached window is closed
+		"""
+		self._old_layout.insertWidget(self._old_layout_index, self)
+		self.detach_btn.show()
+		self._detach_win.close()
+		del self._detach_win
 
 	def videoPlay_clicked(self):
 		"""Slot for Play/Pause functionality."""

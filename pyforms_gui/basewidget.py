@@ -15,7 +15,6 @@ from AnyQt.QtWidgets import QSizePolicy
 from AnyQt.QtWidgets import QLabel
 from AnyQt.QtGui     import QFont
 from AnyQt.QtWidgets import QFileDialog
-from AnyQt.QtWidgets import QApplication
 from AnyQt           import QtCore, _api
 
 from pyforms_gui.controls.control_base import ControlBase
@@ -41,6 +40,8 @@ class BaseWidget(QFrame):
 
         QFrame.__init__(self) if parent_win is None else QFrame.__init__(self, parent_win, win_flag)
 
+
+
         layout = QVBoxLayout()
         self.setLayout(layout)
         
@@ -57,6 +58,8 @@ class BaseWidget(QFrame):
         self.toolbar    = []
         self._mainmenu  = []
         self._splitters = []
+        self.vlayouts   = []
+        self.hlayouts   = []
         self._tabs = []
         self._formset = None
         self._formLoaded = False
@@ -74,14 +77,16 @@ class BaseWidget(QFrame):
         """
         if not self._formLoaded:
 
+            allparams = self.controls
+            for key, param in allparams.items():
+                param.parent = self
+                param.name = key
+
             if self._formset is not None:
                 control = self.generate_panel(self._formset)
                 self.layout().addWidget(control)
             else:
-                allparams = self.controls
                 for key, param in allparams.items():
-                    param.parent = self
-                    param.name = key
                     self.layout().addWidget(param.form)
             self._formLoaded = True
 
@@ -143,6 +148,7 @@ class BaseWidget(QFrame):
         layout = None
         if isinstance(formset, (tuple, no_columns)):
             layout = QHBoxLayout()
+            self.hlayouts.append(layout)
             for row in formset:
                 if isinstance(row, (list, tuple, vsplitter, hsplitter, no_columns, segment) ):
                     panel = self.generate_panel(row)
@@ -216,6 +222,7 @@ class BaseWidget(QFrame):
                         layout.addWidget(param.form)
         elif isinstance(formset, (list, segment)):
             layout = QVBoxLayout()
+            self.vlayouts.append(layout)
             for row in formset:
                 if isinstance(row, (list, tuple, vsplitter, hsplitter, segment, no_columns) ):
                     panel = self.generate_panel(row)
@@ -418,7 +425,7 @@ class BaseWidget(QFrame):
         elif msg_type=='warning':
             m = QMessageBox(QMessageBox.Warning, title, msg) 
         elif msg_type=='error':
-            m = QMessageBox(QMessageBox.Critical, title, msg) 
+            m = QMessageBox(QMessageBox.Critical, title, msg)
         elif msg_type=='about':
             m = QMessageBox(QMessageBox.Question, title, msg) 
         elif msg_type=='aboutQt':

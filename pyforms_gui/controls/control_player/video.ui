@@ -25,6 +25,13 @@
   <property name="windowTitle">
    <string>Frame</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #666;
+color: #FFF;</string>
+  </property>
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
   </property>
@@ -35,7 +42,16 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
     <number>0</number>
    </property>
    <item>
@@ -76,13 +92,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>40</height>
+       <height>24</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>38</height>
+       <height>30</height>
       </size>
      </property>
      <property name="frameShape">
@@ -95,15 +111,24 @@
       <property name="spacing">
        <number>6</number>
       </property>
-      <property name="margin">
-       <number>0</number>
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>3</number>
       </property>
       <item>
        <widget class="QPushButton" name="videoPlay">
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>31</height>
+          <height>21</height>
          </size>
         </property>
         <property name="focusPolicy">
@@ -139,7 +164,7 @@
         <property name="minimumSize">
          <size>
           <width>80</width>
-          <height>0</height>
+          <height>24</height>
          </size>
         </property>
         <property name="sizeIncrement">
@@ -175,6 +200,9 @@
         </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="pageStep">
          <number>0</number>
@@ -212,6 +240,19 @@
         </property>
         <property name="margin">
          <number>5</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="detach_btn">
+        <property name="toolTip">
+         <string extracomment="Detach the player">Detach the player</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

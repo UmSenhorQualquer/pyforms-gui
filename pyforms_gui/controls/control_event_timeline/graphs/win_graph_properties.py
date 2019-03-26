@@ -49,7 +49,7 @@ class GraphsProperties(BaseWidget):
 					('_min_value', '_max_value', ' '),
 					('_values_top', '_pickcolor'),
 					'_values_zoom',
-					'info:Choose one graph and move the mouse over \nthe timeline to visualize the coordenates.',
+					'info:Choose one graph and move the mouse over \nthe timeline to visualize the coordinates.',
 					'_value'
 				]),
 			]
@@ -91,12 +91,13 @@ class GraphsProperties(BaseWidget):
 	@property
 	def selected_graph(self):
 		index = self._graphs_list.selected_row_index
-		return self._timeline._charts[index] if (index is not None) else None
+		return self._timeline._graphs[index] if (index is not None) else None
 	
 	@property
-	def coordenate_text(self): return self._value
-	@coordenate_text.setter
-	def coordenate_text(self, value): self._value.value = str(value) if value else ''
+	def coordinate_text(self): return self._value
+	@coordinate_text.setter
+	def coordinate_text(self, value):
+		self._value.value = str(value) if value else ''
 	
 
 
@@ -116,7 +117,10 @@ class GraphsProperties(BaseWidget):
 		index = self._graphs_list.selected_row_index
 		if index is not None:
 			self._current_selected_graph = None
-			self._timeline._charts.pop(index)
+
+			graph = self._timeline.graphs[index]
+			graph.remove()
+
 			self._loaded 					= False
 			self._name.enabled          	= False
 			self._min_value.enabled     	= False

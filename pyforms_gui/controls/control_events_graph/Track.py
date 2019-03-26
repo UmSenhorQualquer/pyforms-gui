@@ -19,16 +19,16 @@ class Track(object):
 		self._title = ''
 		self._color = self.DEFAULT_COLOR
 		self._parent = parent
-		self._periods = []
+		self._events = []
 
 	# Functions needed for the bisect insertion ############################
 	def __len__(self):
-		return len(self._periods)
+		return len(self._events)
 
 	def __getitem__(self, index):
 		if isinstance(index, slice):
-			return [self._periods[x] for x in range(*index.indices(len(self)))]
-		return self._periods[index]
+			return [self._events[x] for x in range(*index.indices(len(self)))]
+		return self._events[index]
 
 	def insert(self, item, index):
 		"""
@@ -37,13 +37,13 @@ class Track(object):
 		:param index: 
 		:return: 
 		"""
-		self._periods.insert(item, index)
+		self._events.insert(item, index)
 
 	########################################################################
 
-	def add_period(self, period):
+	def add_event(self, period):
 		"""
-		The periods are added in a sorted way for rendering optimization
+		The events are added in a sorted way for rendering optimization
 		:param period: 
 		:return: 
 		"""
@@ -62,7 +62,7 @@ class Track(object):
 		y = (track_index * self._parent.tracks_height) + 18
 		painter.drawLine(start, y, end, y)
 
-	def draw_periods(self, painter, start, end, track_index, left_shift=0, scale=1.0):
+	def draw_events(self, painter, start, end, track_index, left_shift=0, scale=1.0):
 		"""
 		
 		:param painter: 
@@ -77,7 +77,7 @@ class Track(object):
 
 		first_index = bisect.bisect(self, start)
 
-		for period in self._periods[first_index:]:
+		for period in self._events[first_index:]:
 			if period.begin > end:
 				continue
 			painter.setBrush(period.color)
@@ -88,12 +88,12 @@ class Track(object):
 		
 		:return: 
 		"""
-		del self._periods[:]
-		self._periods = []
+		del self._events[:]
+		self._events = []
 
 	@property
-	def periods(self):
-		return self._periods
+	def events(self):
+		return self._events
 
 	@property
 	def color(self):

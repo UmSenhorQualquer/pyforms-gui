@@ -12,7 +12,6 @@ class VideoQt5GLWidget(AbstractGLWidget, QOpenGLWidget):
 		self.gl = self.context().versionFunctions()
 		self.gl.initializeOpenGLFunctions()
 
-		
 		'''
 		 Sets up the OpenGL rendering context, defines display lists, etc. 
 		 Gets called once before the first time resizeGL() or paintGL() is called.
@@ -39,6 +38,11 @@ class VideoQt5GLWidget(AbstractGLWidget, QOpenGLWidget):
 
 		self.gl.glMatrixMode(self.gl.GL_PROJECTION)
 		self.gl.glLoadIdentity()
-		#self.gl.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
 		self.perspective(40.0, float(width) / float(height), 0.01, 10.0)
 		self.gl.glMatrixMode(self.gl.GL_MODELVIEW)
+
+	def draw_helptext(self):
+		pass
+
+	def draw_message(self):
+		pass
