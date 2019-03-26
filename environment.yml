@@ -17,6 +17,7 @@ dependencies:
     - Pillow
     - anyqt
     - pyqt5
+    - PyQtWebEngine
     - QScintilla
     - visvis
     - matplotlib
