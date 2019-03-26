@@ -97,12 +97,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="discart_button">
+      <widget class="QToolButton" name="discard_button">
        <property name="autoFillBackground">
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Discart</string>
+        <string>Discard</string>
        </property>
        <property name="popupMode">
         <enum>QToolButton::InstantPopup</enum>

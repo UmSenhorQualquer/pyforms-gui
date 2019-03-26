@@ -40,9 +40,8 @@ class ControlCodeEditor(ControlBase):
 		self._changed_func = None
 		super(ControlCodeEditor, self).__init__(*args, **kwargs)
 
-		self.discart_event = kwargs.get('discart_event', self.discart_event)
+		self.discard_event = kwargs.get('discard_event', self.discard_event)
 		
-
 	def init_form(self):
 		"""
 		
@@ -51,19 +50,17 @@ class ControlCodeEditor(ControlBase):
 		control_path = tools.getFileInSameDirectory(__file__, "code_editor.ui")
 		self._form = uic.loadUi(control_path)
 
-
 		self._code_editor = self._form.code_editor
 		self._save_button = self._form.save_button
-		self._discart_button = self._form.discart_button
+		self._discard_button = self._form.discard_button
 
 		self._save_button.clicked[bool].connect(self.on_save_changes)
-		self._discart_button.clicked[bool].connect(self.on_discart_changes)
-
+		self._discard_button.clicked[bool].connect(self.on_discard_changes)
 
 		if self._read_only:
 			self._code_editor.setReadOnly(True)
 			self._save_button.setVisible(False)
-			self._discart_button.setVisible(False)
+			self._discard_button.setVisible(False)
 
 		self.form.font_size.addItem('9')
 		self.form.font_size.addItem('10')
@@ -80,7 +77,7 @@ class ControlCodeEditor(ControlBase):
 		self.form.font_size.currentIndexChanged.connect(self.__font_size_index_changed)
 
 		self.form.save_button.setIcon(QIcon(conf.PYFORMS_ICON_CODEEDITOR_SAVE))
-		self.form.discart_button.setIcon(QIcon(conf.PYFORMS_ICON_CODEEDITOR_DISCART))
+		self.form.discard_button.setIcon(QIcon(conf.PYFORMS_ICON_CODEEDITOR_DISCARD))
 
 		self.lexer = QsciLexerPython
 
@@ -188,7 +185,7 @@ class ControlCodeEditor(ControlBase):
 		"""
 		if self._changed_func: 
 			self._save_button.setEnabled(True)
-			self._discart_button.setEnabled(True)
+			self._discard_button.setEnabled(True)
 
 	def on_save_changes(self):
 		"""
@@ -197,16 +194,16 @@ class ControlCodeEditor(ControlBase):
 		if self.changed_event():
 			self._code_editor.setModified(False)
 			self._save_button.setEnabled(False)
-			self._discart_button.setEnabled(False)
+			self._discard_button.setEnabled(False)
 
-	def on_discart_changes(self):
+	def on_discard_changes(self):
 
-		if self.discart_event():
+		if self.discard_event():
 			self._code_editor.setModified(False)
 			self._save_button.setEnabled(False)
-			self._discart_button.setEnabled(False)
+			self._discard_button.setEnabled(False)
 
-	def discart_event(self):
+	def discard_event(self):
 
 		return True
 
@@ -260,7 +257,7 @@ class ControlCodeEditor(ControlBase):
 			self._code_editor.setText(str(value))
 			self._code_editor.setModified(False)
 			self._save_button.setEnabled(False)
-			self._discart_button.setEnabled(False)
+			self._discard_button.setEnabled(False)
 
 	@property
 	def changed_event(self):
