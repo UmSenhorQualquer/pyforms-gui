@@ -9,6 +9,7 @@ from pyforms_gui.controls.control_text import ControlText
 from pyforms_gui.controls.control_number import ControlNumber
 from pyforms_gui.controls.control_label import ControlLabel
 from AnyQt.QtWidgets  import QMessageBox
+import traceback
 
 class Graph2Event(BaseWidget):
 
@@ -109,6 +110,7 @@ class Graph2Event(BaseWidget):
 			if last_value and (max_frame-last_index) >= self._mindiff.value:
 				self._timeline.add_event(last_index, max_frame, title=self._eventname.value, row=int(self._rownumber.value) )
 		except Exception as e:
+			traceback.print_exc()
 			QMessageBox.warning( self, "Error!", str(e) )
 			
 

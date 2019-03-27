@@ -13,7 +13,7 @@ from pyforms_gui.controls.control_event_timeline.graphs.graph import Graph
 from pyforms_gui.controls.control_event_timeline.graphs.win_graph_to_event import Graph2Event
 from pyforms_gui.controls.control_event_timeline.graphs.win_graph_properties  import GraphsProperties
 from pyforms_gui.controls.control_event_timeline.graphs.win_events_generator import GraphsEventsGenerator
-
+import traceback
 
 
 class ControlEventTimeline(ControlBase, QWidget):
@@ -217,14 +217,15 @@ class ControlEventTimeline(ControlBase, QWidget):
             self._graph2event_win     -= other
         return self
 
-    def add_event(self, begin, end, title='', row=0):
+    def add_event(self, begin, end, title='', row=0, track=None):
         """
         :param begin: Initial frame
         :param end: Last frame
         :param title: Event title
         :param row: Row to which the event should be added.
         """
-        self._time.add_event(begin, end, title=title, row=row)
+
+        self._time.add_event(begin, end, title=title, track=track, row=row)
         self._time.repaint()
 
     def add_graph(self, name, data):
@@ -512,6 +513,7 @@ class ControlEventTimeline(ControlBase, QWidget):
                         self._time.exportmatrix_events_to_csvwriter(spamwriter)
 
         except Exception as e:
+            traceback.print_exc()
             m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
             m.exec_()
 
@@ -530,6 +532,7 @@ class ControlEventTimeline(ControlBase, QWidget):
                     spamwriter = csv.writer(csvfile, dialect='excel')
                     self._time.exportmatrix_events_to_csvwriter(spamwriter)
         except Exception as e:
+            traceback.print_exc()
             m = QMessageBox(QMessageBox.Critical, 'Error', str(e))
             m.exec_()
 

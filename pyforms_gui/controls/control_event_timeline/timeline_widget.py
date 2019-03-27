@@ -136,7 +136,7 @@ class TimelineWidget(QWidget):
         self.setMinimumHeight(Track.which_top(len(self._tracks)))
         return t
 
-    def add_event(self, begin, end, title='', track=None, lock=False, color=None):
+    def add_event(self, begin, end, title='', track=None, lock=False, color=None, row=0):
         """
         Add a new event to the timeline.
         :param int begin: Initial frame of the event.
@@ -147,6 +147,10 @@ class TimelineWidget(QWidget):
         :param QColor color: Color of the event.
         :return: Return the created Event object.
         """
+        if track is None:
+            for i in range( len(self._tracks), row+1):
+                self.add_track()
+            track = self._tracks[row]
         return Event( begin, end, title=title, lock=lock, color=color, track=track, widget=self)
 
     def remove_selected_event(self):
