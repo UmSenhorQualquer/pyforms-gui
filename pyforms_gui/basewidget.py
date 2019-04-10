@@ -210,9 +210,6 @@ class BaseWidget(QFrame):
                             label.setAccessibleName('h5')
                         else:
                             label.setText(row)
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
                             label.setAccessibleName('msg')
                         label.setToolTip(label.text())
                         layout.addWidget(label)
@@ -286,9 +283,6 @@ class BaseWidget(QFrame):
                             label.setAccessibleName('h5')
                         else:
                             label.setText(row)
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
                             label.setAccessibleName('msg')
 
                         label.setToolTip(label.text())
