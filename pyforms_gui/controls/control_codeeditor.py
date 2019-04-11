@@ -103,7 +103,7 @@ class ControlCodeEditor(ControlBase):
 
 		# Set the default font
 		font = QFont()
-		font.setFamily('Courier')
+		font.setFamily('Courier New')
 		font.setFixedPitch(True)
 		font.setPointSize(size)
 		self._code_editor.setFont(font)
