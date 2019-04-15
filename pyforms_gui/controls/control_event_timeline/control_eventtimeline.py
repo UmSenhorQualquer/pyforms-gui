@@ -246,6 +246,14 @@ class ControlEventTimeline(ControlBase, QWidget):
         """
         return self._time.add_track(title=title, color=color)
 
+    def get_track(self, title):
+        """
+        Get a track by its title
+        :param str title: Title of the track.
+        :return: Return the track with the matching title.
+        """
+        return self._time.get_track(title)
+
 
     def rename_graph(self, graph_index, newname):
         """

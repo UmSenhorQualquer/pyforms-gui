@@ -136,6 +136,17 @@ class TimelineWidget(QWidget):
         self.setMinimumHeight(Track.which_top(len(self._tracks)))
         return t
 
+    def get_track(self, title):
+        """
+        Get a track by its title
+        :param str title: Title of the track.
+        :return: Return the track with the matching title.
+        """
+        for track in self.tracks:
+            if track.title==title:
+                return track
+        return None
+
     def add_event(self, begin, end, title='', track=None, lock=False, color=None, row=0):
         """
         Add a new event to the timeline.
