@@ -572,13 +572,13 @@ class TimelineWidget(QWidget):
 
             # Move to the first event
             elif event.key() == QtCore.Qt.Key_E:
-                if len(self.selected_row)>0:
+                if self.selected_row is not None and len(self.selected_row)>0:
                     self._selected = self.selected_row.events[0]
                     self.position = self._selected.begin
 
             # Move to the last event
             elif event.key() == QtCore.Qt.Key_Q:
-                if len(self.selected_row)>0:
+                if self.selected_row is not None and len(self.selected_row)>0:
                     self._selected = self.selected_row.events[len(self.selected_row)-1]
                     self.position = self._selected.begin
 
