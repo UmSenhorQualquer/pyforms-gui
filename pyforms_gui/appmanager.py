@@ -79,6 +79,7 @@ class StandAloneContainer(QMainWindow):
                         widget.form.layout().setMargin(widget.margin)
 
                     # print dock.objectName(),1
+                    #widget.parent = self
                     dock.setWidget(widget.form)
                     dock.setWindowTitle(widget.label)
                     widget.dock = dock
@@ -95,6 +96,8 @@ class StandAloneContainer(QMainWindow):
                     widget.form.layout().setContentsMargins(widget.margin,widget.margin,widget.margin,widget.margin)
                 elif _api.USED_API == _api.QT_API_PYQT5:
                     widget.form.layout().setMargin(widget.margin)
+
+                #widget.parent = self
 
                 # print dock.objectName(), 2
                 dock.setObjectName(name)
@@ -119,8 +122,32 @@ class StandAloneContainer(QMainWindow):
             logger.debug('Import stylesheets: {0}'.format(stylesheet_files))
             self.loadStyleSheetFile(stylesheet_files)
 
+    def keyReleaseEvent(self, evt):
+        super().keyReleaseEvent(evt)
+        self._widget.keyReleaseEvent(evt)
+
+    def keyPressEvent(self, evt):
+        super().keyPressEvent(evt)
+        self._widget.keyPressEvent(evt)
+
+    def mousePressEvent(self, evt):
+        super().mousePressEvent(evt)
+        self._widget.mousePressEvent(evt)
+
+    def mouseReleaseEvent(self, evt):
+        super().mouseReleaseEvent(evt)
+        self._widget.mouseReleaseEvent(evt)
+
+    def mouseMoveEvent(self, evt):
+        super().mouseMoveEvent(evt)
+        self._widget.mouseMoveEvent(evt)
+
+    def mouseDoubleClickEvent(self, evt):
+        super().mouseDoubleClickEvent(evt)
+        self._widget.mouseDoubleClickEvent(evt)
 
     def closeEvent(self, event):
+        super().closeEvent(event)
         self._widget.closeEvent(event)
 
     def __initMainMenu(self, options, keys={}):
