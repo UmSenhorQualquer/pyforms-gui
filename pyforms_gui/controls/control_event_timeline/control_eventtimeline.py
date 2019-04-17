@@ -385,6 +385,10 @@ class ControlEventTimeline(ControlBase, QWidget):
     ##########################################################################
 
     @property
+    def timeline_widget(self):
+        return self._time
+
+    @property
     def value(self):
         return self._time.position
 
