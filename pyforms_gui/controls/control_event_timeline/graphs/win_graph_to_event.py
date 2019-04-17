@@ -94,9 +94,12 @@ class Graph2Event(BaseWidget):
 		last_value = False
 
 		try:		
-			for i in range(max_frame):			
-				value = eval(equation)
-				
+			for i in range(max_frame):
+				try:
+					value = eval(equation)
+				except:
+					value = False
+
 				if not last_value and bool(value):
 					last_index = i
 					last_value = True
