@@ -1,12 +1,12 @@
-******************
-The basic
-******************
+==========
+The basics
+==========
 
 This page was based on the examples available at the github folder: `Tutorial - SimpleExamples <https://github.com/UmSenhorQualquer/pyforms/tree/master/tutorials/1.SimpleExamples>`_
 
 
 Prepare the application class
-==================================
+-----------------------------
 
 Create the Python file that will store your applications. 
 
@@ -14,7 +14,7 @@ Example: **SimpleExample.py**
 
 
 Import the library
-____________________
+__________________
 
 
 Import the pyforms library, the BaseWidget and the Controls classes that you will need:
@@ -27,8 +27,8 @@ Import the pyforms library, the BaseWidget and the Controls classes that you wil
     from   pyforms.controls import ControlButton
 
 
-Create your application class.
-________________________________
+Create your application class
+_____________________________
 
 
 This class should inherit from the class BaseWidget.
@@ -60,10 +60,10 @@ SimpleExample1
 
 
 Add an action to the button
-***************************
+---------------------------
 
 Create the action
-===================
+_________________
 
 Create the class function that will work as the button action.
 
@@ -75,7 +75,7 @@ Create the class function that will work as the button action.
 
 
 Set the button action
-======================
+_____________________
 
 Configure the button to execute your function when pressed.  
 Inside the class constructor add the code:
@@ -125,7 +125,7 @@ The previous code produces the next window, after you had pressed the button:
 
 
 Organize your form Controls
-***************************
+---------------------------
 
 Use the BaseWidget.formset variable to organize the Controls inside the Window.  
 `Find here more details about the formset variable <http://pyforms.readthedocs.org/en/latest/api-documentation/basewidget/#important-variables>`_
@@ -179,8 +179,8 @@ Try now:
         }
 
 
-## **Add a main menu**
-***************************
+Add a main menu
+---------------
 
 To add a main menu to your application, first you need to define the functions that will work as the options actions.
 
@@ -234,7 +234,7 @@ After you just need to set the BaseWidget.mainmenu property inside your applicat
 
 
 Add popup menu to the Controls
-******************************
+------------------------------
 
 Create the functions that will work as the popup menu options actions, as you have than in the main menu chapter. After use the functions **add_popup_menu_option** or **add_popup_sub_menu_option** to add a popup menu or a popup submenu to your Control.
 
@@ -263,8 +263,9 @@ Result:
 .. image:: /_static/imgs/getting-started-4.png
 
 
-What next?
-***********
+
+What's next?
+------------
 
 Move to the `next chapter <http://pyforms.readthedocs.org/en/latest/getting-started/multiple-windows/>`_.
 _____________________________________________________________________________________________________________
