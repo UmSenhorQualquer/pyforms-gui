@@ -30,7 +30,7 @@ try:
     from .controls.control_opengl import ControlOpenGL
 except Exception as e:
     logger.error( e )
-    logger.error('ControlOpenGL will not be work')
+    logger.error('ControlOpenGL will not work')
 from .controls.control_progress import ControlProgress
 from .controls.control_slider import ControlSlider
 from .controls.control_tableview import ControlTableView
@@ -47,7 +47,7 @@ try:
     from .controls.control_web import ControlWeb
 except Exception as e:
     logger.error( e )
-    logger.error('ControlWeb will not be work')
+    logger.error('ControlWeb will not work')
     logger.error('QtWebEngine may be missing')
 from .controls.control_event_timeline.control_eventtimeline import ControlEventTimeline
 from .controls.control_events_graph.control_eventsgraph import ControlEventsGraph
