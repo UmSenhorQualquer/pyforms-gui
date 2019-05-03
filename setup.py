@@ -42,7 +42,7 @@ setup(
         'matplotlib',
         'python-dateutil',
         'numpy',
-        'opencv-python',
+        'opencv-python==3.4.5.20',
         'confapp'
     ],
     packages=find_packages(),

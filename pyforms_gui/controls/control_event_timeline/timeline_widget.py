@@ -136,7 +136,18 @@ class TimelineWidget(QWidget):
         self.setMinimumHeight(Track.which_top(len(self._tracks)))
         return t
 
-    def add_event(self, begin, end, title='', track=None, lock=False, color=None):
+    def get_track(self, title):
+        """
+        Get a track by its title
+        :param str title: Title of the track.
+        :return: Return the track with the matching title.
+        """
+        for track in self.tracks:
+            if track.title==title:
+                return track
+        return None
+
+    def add_event(self, begin, end, title='', track=None, lock=False, color=None, row=0):
         """
         Add a new event to the timeline.
         :param int begin: Initial frame of the event.
@@ -147,6 +158,10 @@ class TimelineWidget(QWidget):
         :param QColor color: Color of the event.
         :return: Return the created Event object.
         """
+        if track is None:
+            for i in range( len(self._tracks), row+1):
+                self.add_track()
+            track = self._tracks[row]
         return Event( begin, end, title=title, lock=lock, color=color, track=track, widget=self)
 
     def remove_selected_event(self):
@@ -438,11 +453,6 @@ class TimelineWidget(QWidget):
             self.repaint()
 
     def key_release_event(self, event):
-        pass
-
-    def keyReleaseEvent(self, event:  QKeyEvent):
-        self.key_release_event(event)
-
         if self._selected is not None:
             modifier = int(event.modifiers())
 
@@ -467,7 +477,7 @@ class TimelineWidget(QWidget):
                 if event.key() == QtCore.Qt.Key_L:
                     self.toggle_selected_event_lock()
 
-                # Lock or unlock an event
+                # Move to the next event
                 if event.key() == QtCore.Qt.Key_E:
                     index = self.selected_row.events.index(self._selected)
                     if index < len(self.selected_row.events)-1:
@@ -555,8 +565,22 @@ class TimelineWidget(QWidget):
             elif event.key() == QtCore.Qt.Key_D:
                 self.position = self.position + 1
 
+            # Move to the first event
+            elif event.key() == QtCore.Qt.Key_E:
+                if self.selected_row is not None and len(self.selected_row)>0:
+                    self._selected = self.selected_row.events[0]
+                    self.position = self._selected.begin
+
+            # Move to the last event
+            elif event.key() == QtCore.Qt.Key_Q:
+                if self.selected_row is not None and len(self.selected_row)>0:
+                    self._selected = self.selected_row.events[len(self.selected_row)-1]
+                    self.position = self._selected.begin
+
+    def keyReleaseEvent(self, event:  QKeyEvent):
         super(TimelineWidget, self).keyReleaseEvent(event)
 
+        self.key_release_event(event)
 
 
     def mousePressEvent(self, event):
@@ -708,8 +732,6 @@ class TimelineWidget(QWidget):
     #### PROPERTIES ##########################################################
     ##########################################################################
 
-
-
     @property
     def scrollbar(self):
         """
@@ -793,6 +815,88 @@ class TimelineWidget(QWidget):
         if self._mouse_current_pos is None:
             return None
         return (self._mouse_current_pos[1] - self.EVENT_HEIGHT) // self.TRACK_HEIGHT
+
+        self._moving = False          # flag: moving an event.
+        self._resizing_began = False  # flag: resize of an event is active.
+        self._resizing_ended = False  # flag: resize of an event ended.
+        self._creating_event = False  # flag: event is being created
+        self._creating_event_start = None  # flag: the S key pressed to create an event is active
+        self._creating_event_end = None    # flag: the S key was pressed to finish the event
+
+        self._selected = None             # selected event.
+        self._selected_track = None       # selected track.
+        self._pointer = Pointer(0, self)  # timeline pointer.
+
+        # Video playback controls
+        self._video_playing = False
+        self._video_fps = None
+        self._video_fps_min = None
+        self._video_fps_max = None
+        self._video_fps_inc = None
+
+    @property
+    def selected(self):
+        return self._selected
+
+    @selected.setter
+    def selected(self, value):
+        self._selected = value
+
+    @property
+    def pointer(self):
+        return self._pointer
+
+    @pointer.setter
+    def pointer(self, value):
+        self._pointer = value
+    
+    @property
+    def moving(self):
+        return self._moving
+
+    @moving.setter
+    def moving(self, value):
+        self._moving = value
+
+    @property
+    def resizing_began(self):
+        return self._resizing_began
+
+    @resizing_began.setter
+    def resizing_began(self, value):
+        self._resizing_began = value
+
+    @property
+    def resizing_ended(self):
+        return self._resizing_ended
+
+    @resizing_ended.setter
+    def resizing_ended(self, value):
+        self._resizing_ended = value
+
+    @property
+    def creating_event(self):
+        return self._creating_event
+
+    @creating_event.setter
+    def creating_event(self, value):
+        self._creating_event = value
+
+    @property
+    def creating_event_start(self):
+        return self._creating_event_start
+
+    @creating_event_start.setter
+    def creating_event_start(self, value):
+        self._creating_event_start = value
+
+    @property
+    def creating_event_end(self):
+        return self._creating_event_end
+
+    @creating_event_end.setter
+    def creating_event_end(self, value):
+        self._creating_event_end = value
 
     @property
     def selected_row(self):

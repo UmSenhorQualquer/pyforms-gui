@@ -29,7 +29,8 @@ class Graph(object):
 	def __str__(self):     return self._name
 
 	def __len__(self): 					 return len(self._data)
-	def __getitem__(self, index): 		 return self._data[index] if index<len(self) else None
+	def __getitem__(self, index):
+		return self._data[index] if index<len(self) else None
 	def __setitem__(self, index, value): 
 		if index >= len(self):
 			for i in range(len(self), index + 1): self._data.append(None)

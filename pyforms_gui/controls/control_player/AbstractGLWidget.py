@@ -432,6 +432,22 @@ class AbstractGLWidget(object):
     def keyReleaseEvent(self, event):
         super(AbstractGLWidget, self).keyReleaseEvent(event)
 
+        self.on_key_release(event)
+
+
+    def __hide_tmp_msg(self): 
+        self._tmp_msg = None
+        self.update()
+
+    def onDoubleClick(self, event, x, y): pass
+
+    def onClick(self, event, x, y): pass
+
+    def onDrag(self, startPoint, endPoint): pass
+
+    def onEndDrag(self, startPoint, endPoint): pass
+
+    def on_key_release(self, event):
         # Control video playback using the space bar to Play/Pause
         if event.key() == QtCore.Qt.Key_Space:
 
@@ -498,24 +514,15 @@ class AbstractGLWidget(object):
             self._control.next_frame_step = 9
             self.show_tmp_msg('Speed: 9x')
 
-        self.on_key_release(event)
-
-
-    def __hide_tmp_msg(self): 
-        self._tmp_msg = None
-        self.update()
-
-    def onDoubleClick(self, event, x, y): pass
-
-    def onClick(self, event, x, y): pass
-
-    def onDrag(self, startPoint, endPoint): pass
-
-    def onEndDrag(self, startPoint, endPoint): pass
-
-    def on_key_release(self, event): pass
-
     def on_key_press(self, event): pass
+
+
+    ##########################################################################
+    ############ PROPERTIES ##################################################
+    ##########################################################################
+
+    @property
+    def control(self): return self._control
 
     @property
     def rotateX(self): return self._rotateX

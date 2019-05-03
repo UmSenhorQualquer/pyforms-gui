@@ -176,6 +176,9 @@ class ControlPlayer(ControlBase, QFrame):
 	##########################################################################
 
 	@property
+	def video_widget(self): return self._video_widget
+
+	@property
 	def next_frame_step(self): return self._speed
 	@next_frame_step.setter
 	def next_frame_step(self, value): self._speed = value
