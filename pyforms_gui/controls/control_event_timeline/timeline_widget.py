@@ -104,6 +104,41 @@ class TimelineWidget(QWidget):
             self.control.__sub__(other)
         return self
 
+    def open_and_close_event(self):
+
+        if not self._creating_event:
+            # Start
+            self._creating_event_start = self._pointer.frame
+            self._creating_event = True
+
+            # TODO Add some indicator that an event is being recorded, like
+            # using the track selector circle to become red
+
+        elif self._creating_event:
+            # End, must be followed right after Start key and have no
+            # effect otherwise
+            self._creating_event_end = self._pointer.frame
+
+            start = self._creating_event_start
+            end   = self._creating_event_end
+            comment = ""
+
+            if end > start:
+                track = self._selected_track
+                if track is None and len(self.tracks) > 0:
+                    track = self.tracks[0]
+                if track is None:
+                    track = self.add_track()
+
+                self.add_event(start, end, comment, track=track)
+                self.repaint()
+
+            self._creating_event = False
+
+
+    def close_event(self):
+        pass
+
 
     def add_graph(self, name, data):
         """
@@ -525,37 +560,9 @@ class TimelineWidget(QWidget):
 
         else:
             # Keybinds to create an event at current frame
-            if event.key() == QtCore.Qt.Key_S and not self._creating_event:
-                # Start
-                self._creating_event_start = self._pointer.frame
-                self._creating_event = True
+            if event.key() == QtCore.Qt.Key_S:
+                self.open_and_close_event()
 
-                # TODO Add some indicator that an event is being recorded, like
-                # using the track selector circle to become red
-
-                return
-
-            elif event.key() == QtCore.Qt.Key_S and self._creating_event:
-                # End, must be followed right after Start key and have no
-                # effect otherwise
-                self._creating_event_end = self._pointer.frame
-
-                start = self._creating_event_start
-                end = self._creating_event_end
-                comment = ""
-
-                if end > start:
-                    track = self._selected_track
-                    if track is None and len(self.tracks)>0:
-                        track = self.tracks[0]
-                    if track is None:
-                        track = self.add_track()
-
-                    self.add_event(start, end, comment, track=track )
-                    self.repaint()
-                    self._creating_event = False
-                else:
-                    self._creating_event = False
 
             # walk backwards 1 step
             elif event.key() == QtCore.Qt.Key_A:
@@ -582,12 +589,17 @@ class TimelineWidget(QWidget):
 
         self.key_release_event(event)
 
+    def keyPressEvent(self, event: QKeyEvent):
+        event.ignore()
+        pass
+
 
     def mousePressEvent(self, event):
         """
         Event called when the mouse buttons are pressed
         :param event: Mouse event
         """
+
         xcoord = event.x()
         ycoord = event.y()
 

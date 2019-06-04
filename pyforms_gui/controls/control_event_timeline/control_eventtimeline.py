@@ -217,6 +217,179 @@ class ControlEventTimeline(ControlBase, QWidget):
             self._graph2event_win     -= other
         return self
 
+    def move_selected_event_or_pointer_left(self):
+        """
+        Move the selected event or pointer to the left.
+        :return:
+        """
+        if self.timeline_widget.selected:
+            self.timeline_widget.selected.move(-1, 0)
+            self.timeline_widget.repaint()
+
+    def move_selected_event_or_pointer_right(self):
+        """
+        Move the selected event or pointer to the right.
+        :return:
+        """
+        if self.timeline_widget.selected:
+            self.timeline_widget.selected.move(1, 0)
+            self.timeline_widget.repaint()
+
+    def remove_selected_event(self):
+        """
+        Remove the selected event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.remove_selected_event()
+
+    def toggle_selected_event_lock(self):
+        """
+        Toggle the lock of the selected event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.toggle_selected_event_lock()
+
+
+    def select_next_event(self):
+        """
+        Select the next event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        index = self.timeline_widget.selected_row.events.index(self.timeline_widget.selected)
+        if index < len(self.timeline_widget.selected_row.events) - 1:
+            self.timeline_widget.selected = self.timeline_widget.selected_row.events[index + 1]
+            self.timeline_widget.position = self.timeline_widget.selected.begin
+
+    def select_previous_event(self):
+        """
+        Select the previous event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        index = self.timeline_widget.selected_row.events.index(self.timeline_widget.selected)
+        if index > 0:
+            self.timeline_widget.selected = self.timeline_widget.selected_row.events[index - 1]
+            self.timeline_widget.position = self.timeline_widget.selected.begin
+
+    def select_first_event(self):
+        """
+        Select the first event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        if self.timeline_widget.selected_row is not None and len(
+                self.timeline_widget.selected_row) > 0:
+            self.timeline_widget.selected = self.timeline_widget.selected_row.events[0]
+            self.timeline_widget.position = self.timeline_widget.selected.begin
+
+    def select_last_event(self):
+        """
+        Select the last event.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        if self.timeline_widget.selected_row is not None and len(
+                self.timeline_widget.selected_row) > 0:
+            self.timeline_widget.selected = self.timeline_widget.selected_row.events[
+                len(self.timeline_widget.selected_row) - 1]
+            self.timeline_widget.position = self.timeline_widget.selected.begin
+
+
+    def move_selected_event_up(self):
+        """
+        Move the selected event to the track above.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move(
+            0,
+            self.timeline_widget.selected.top_coordinate - self.timeline_widget.TRACK_HEIGHT
+        )
+        self.timeline_widget.repaint()
+
+    def move_selected_event_down(self):
+        """
+        Move the selected event to the track bellow.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move(
+            0,
+            self.timeline_widget.selected.top_coordinate + self.timeline_widget.TRACK_HEIGHT
+        )
+        self.timeline_widget.repaint()
+
+    def move_selected_event_end_left(self):
+        """
+        Move the selected event end to the left.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move_end(-1)
+        self.timeline_widget.repaint()
+
+    def move_selected_event_end_right(self):
+        """
+        Move the selected event end to the right.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move_end(1)
+        self.timeline_widget.repaint()
+
+    def move_selected_event_begin_left(self):
+        """
+        Move the selected event begin to the left.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move_begin(-1)
+        self.timeline_widget.repaint()
+
+    def move_selected_event_begin_right(self):
+        """
+        Move the selected event begin to the right.
+        :return:
+        """
+        if self.timeline_widget.selected == self.timeline_widget.pointer or self.timeline_widget.selected is None:
+            return
+
+        self.timeline_widget.selected.move_begin(1)
+        self.timeline_widget.repaint()
+
+    def open_and_close_event(self):
+        """
+        Open and close and event. The first time the function is called an event is opened.
+        On the second call the event is closed and added to the timeline.
+        :return:
+        """
+        self.timeline_widget.open_and_close_event()
+
     def add_event(self, begin, end, title='', row=0, track=None):
         """
         :param begin: Initial frame
@@ -588,15 +761,15 @@ class ControlEventTimeline(ControlBase, QWidget):
         QScrollArea.keyReleaseEvent(self._scrollArea, event)
 
     def __scrollAreaKeyPressEvent(self, event):
-        modifiers = int(event.modifiers())
+        modifiers = event.modifiers()
 
-        if modifiers == QtCore.Qt.ControlModifier:
+        if modifiers & QtCore.Qt.ControlModifier:
             event.ignore()
 
-        if modifiers == QtCore.Qt.ShiftModifier:
+        if modifiers &  QtCore.Qt.ShiftModifier:
             event.ignore()
 
-        if modifiers == int(QtCore.Qt.ShiftModifier | QtCore.Qt.ControlModifier):
+        if modifiers &  QtCore.Qt.AltModifier:
             event.ignore()
 
         if event.isAccepted():

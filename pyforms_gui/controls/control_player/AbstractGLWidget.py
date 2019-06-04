@@ -432,6 +432,9 @@ class AbstractGLWidget(object):
     def keyReleaseEvent(self, event):
         super(AbstractGLWidget, self).keyReleaseEvent(event)
 
+        if event.key() == QtCore.Qt.Key_M:
+            self._move_img = False
+
         self.on_key_release(event)
 
 
@@ -474,9 +477,6 @@ class AbstractGLWidget(object):
         elif event.key() == QtCore.Qt.Key_C:
             self._control.jump_forward()
             self._control.call_next_frame()
-
-        elif event.key() == QtCore.Qt.Key_M:
-            self._move_img = False
 
         elif event.key() == QtCore.Qt.Key_1:
             self._control.next_frame_step = 1
