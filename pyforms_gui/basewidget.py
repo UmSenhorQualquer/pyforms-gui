@@ -1,9 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import json, AnyQt
-
-from confapp import conf
+import json
+import AnyQt
 
 from AnyQt.QtWidgets import QFrame
 from AnyQt.QtWidgets import QVBoxLayout
@@ -13,9 +12,9 @@ from AnyQt.QtWidgets import QHBoxLayout
 from AnyQt.QtWidgets import QSpacerItem
 from AnyQt.QtWidgets import QSizePolicy
 from AnyQt.QtWidgets import QLabel
-from AnyQt.QtGui     import QFont
+from AnyQt.QtGui import QFont
 from AnyQt.QtWidgets import QFileDialog
-from AnyQt           import QtCore, _api
+from AnyQt import QtCore, _api
 
 from pyforms_gui.controls.control_base import ControlBase
 
@@ -23,30 +22,30 @@ from AnyQt.QtWidgets import QMessageBox, QInputDialog
 
 from .organizers import *
 
+
 class BaseWidget(QFrame):
     """
     The class implements the most basic widget or window.
     """
 
     def __init__(self, *args, **kwargs):
-        title = kwargs.get('title', args[0] if len(args)>0 else '')
+        title = kwargs.get('title', args[0] if len(args) > 0 else '')
 
         parent_win = kwargs.get('parent_win', kwargs.get('parent_widget', None))
-        win_flag   = kwargs.get('win_flag', None)
+        win_flag = kwargs.get('win_flag', None)
 
         self._parent_widget = parent_win
 
-        if parent_win is not None and win_flag is None: win_flag = QtCore.Qt.Dialog
+        if parent_win is not None and win_flag is None:
+            win_flag = QtCore.Qt.Dialog
 
         QFrame.__init__(self) if parent_win is None else QFrame.__init__(self, parent_win, win_flag)
-
-
 
         layout = QVBoxLayout()
         self.setLayout(layout)
         
         if _api.USED_API == _api.QT_API_PYQT5:
-            layout.setContentsMargins(0,0,0,0)
+            layout.setContentsMargins(0, 0, 0, 0)
         elif _api.USED_API == _api.QT_API_PYQT4:
             layout.setMargin(0)
 
@@ -55,11 +54,11 @@ class BaseWidget(QFrame):
         self.title = title
         self.has_progress = False
 
-        self.toolbar    = []
-        self._mainmenu  = []
+        self.toolbar = []
+        self._mainmenu = []
         self._splitters = []
-        self.vlayouts   = []
-        self.hlayouts   = []
+        self.vlayouts = []
+        self.hlayouts = []
         self._tabs = []
         self._formset = None
         self._formLoaded = False
@@ -96,7 +95,6 @@ class BaseWidget(QFrame):
         elif _api.USED_API == _api.QT_API_PYQT4:
             self.layout().setMargin(margin)
 
-
     def generate_tabs(self, formsetdict):
         """
         Generate QTabWidget for the module form
@@ -116,30 +114,30 @@ class BaseWidget(QFrame):
         tuple: will display the controls in the same horizontal line
         list: will display the controls in the same vertical line
         dict: will display the controls in a tab widget
-        '||': will plit the controls in a horizontal line
-        '=': will plit the controls in a vertical line
+        '||': will split the controls in a horizontal line
+        '=': will split the controls in a vertical line
         @param formset: Form configuration
         @type formset: list
         """
         control = None
-        if '=' in formset or isinstance( formset, hsplitter ):
-            control      = QSplitter(QtCore.Qt.Vertical)
-            index        = list(formset).index('=')
-            first_panel  = self.generate_panel(formset[0:index])
+        if '=' in formset or isinstance( formset, hsplitter):
+            control = QSplitter(QtCore.Qt.Vertical)
+            index = list(formset).index('=')
+            first_panel = self.generate_panel(formset[0:index])
             second_panel = self.generate_panel(formset[index+1:])
             control.addWidget(first_panel)
             control.addWidget(second_panel)
             self._splitters.append(control)
             return control
-        elif '||' in formset or isinstance( formset, vsplitter ):
-            control      = QSplitter(QtCore.Qt.Horizontal)
-            index        = list(formset).index('||')
-            first_panel  = self.generate_panel(formset[0:index])
+        elif '||' in formset or isinstance( formset, vsplitter):
+            control = QSplitter(QtCore.Qt.Horizontal)
+            index = list(formset).index('||')
+            first_panel = self.generate_panel(formset[0:index])
             second_panel = self.generate_panel(formset[index+1:])
             control.addWidget(first_panel)
             control.addWidget(second_panel)
 
-            if isinstance( formset, vsplitter ):
+            if isinstance(formset, vsplitter):
                 sizes = [formset.left_width, formset.right_width]
                 control.setSizes(sizes)
             self._splitters.append(control)
@@ -150,7 +148,7 @@ class BaseWidget(QFrame):
             layout = QHBoxLayout()
             self.hlayouts.append(layout)
             for row in formset:
-                if isinstance(row, (list, tuple, vsplitter, hsplitter, no_columns, segment) ):
+                if isinstance(row, (list, tuple, vsplitter, hsplitter, no_columns, segment)):
                     panel = self.generate_panel(row)
                     layout.addWidget(panel)
                 elif row == " ":
@@ -161,65 +159,7 @@ class BaseWidget(QFrame):
                     layout.addWidget(c)
                     self._tabs.append(c)
                 else:
-                    param = self.controls.get(row, None)
-                    if param is None:
-                        label = QLabel()
-                        label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-                        # layout.addWidget( label )
-
-                        if row.startswith('info:'):
-                            label.setText(row[5:])
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
-                            label.setAccessibleName('info')
-                        elif row.startswith('h1:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(17)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h1')
-                        elif row.startswith('h2:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(16)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h2')
-                        elif row.startswith('h3:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(15)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h3')
-                        elif row.startswith('h4:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(14)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h4')
-                        elif row.startswith('h5:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(12)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h5')
-                        else:
-                            label.setText(row)
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
-                            label.setAccessibleName('msg')
-                        label.setToolTip(label.text())
-                        layout.addWidget(label)
-                    else:
-                        param.parent = self
-                        param.name = row
-                        layout.addWidget(param.form)
+                    self._handle_text(layout, row)
         elif isinstance(formset, (list, segment)):
             layout = QVBoxLayout()
             self.vlayouts.append(layout)
@@ -236,76 +176,72 @@ class BaseWidget(QFrame):
                     layout.addWidget(c)
                     self._tabs.append(c)
                 else:
-                    param = self.controls.get(row, None)
-                    if param is None:
-                        label = QLabel()
-                        label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-                        label.resize(30, 30)
-                        # layout.addWidget( label )
+                    self._handle_text(layout, row)
 
-                        if row.startswith('info:'):
-                            label.setText(row[5:])
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
-                            label.setAccessibleName('info')
-                        elif row.startswith('h1:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(17)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h1')
-                        elif row.startswith('h2:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(16)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h2')
-                        elif row.startswith('h3:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(15)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h3')
-                        elif row.startswith('h4:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(14)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h4')
-                        elif row.startswith('h5:'):
-                            label.setText(row[3:])
-                            font = QFont()
-                            font.setPointSize(12)
-                            font.setBold(True)
-                            label.setFont(font)
-                            label.setAccessibleName('h5')
-                        else:
-                            label.setText(row)
-                            font = QFont()
-                            font.setPointSize(10)
-                            label.setFont(font)
-                            label.setAccessibleName('msg')
-
-                        label.setToolTip(label.text())
-
-                        layout.addWidget(label)
-                    else:
-                        param.parent = self
-                        param.name = row
-                        layout.addWidget(param.form)
-        
         if _api.USED_API == _api.QT_API_PYQT5:
-            layout.setContentsMargins(0,0,0,0)
+            layout.setContentsMargins(0, 0, 0, 0)
         elif _api.USED_API == _api.QT_API_PYQT4:
             layout.setMargin(0)
             
         control.setLayout(layout)
         return control
+
+    def _handle_text(self, layout, row):
+        param = self.controls.get(row, None)
+        if param is None:
+            label = QLabel()
+            label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+
+            if row.startswith('info:'):
+                label.setText(row[5:])
+                font = QFont()
+                font.setPointSize(10)
+                label.setFont(font)
+                label.setAccessibleName('info')
+            elif row.startswith('h1:'):
+                label.setText(row[3:])
+                font = QFont()
+                font.setPointSize(17)
+                font.setBold(True)
+                label.setFont(font)
+                label.setAccessibleName('h1')
+            elif row.startswith('h2:'):
+                label.setText(row[3:])
+                font = QFont()
+                font.setPointSize(16)
+                font.setBold(True)
+                label.setFont(font)
+                label.setAccessibleName('h2')
+            elif row.startswith('h3:'):
+                label.setText(row[3:])
+                font = QFont()
+                font.setPointSize(15)
+                font.setBold(True)
+                label.setFont(font)
+                label.setAccessibleName('h3')
+            elif row.startswith('h4:'):
+                label.setText(row[3:])
+                font = QFont()
+                font.setPointSize(14)
+                font.setBold(True)
+                label.setFont(font)
+                label.setAccessibleName('h4')
+            elif row.startswith('h5:'):
+                label.setText(row[3:])
+                font = QFont()
+                font.setPointSize(12)
+                font.setBold(True)
+                label.setFont(font)
+                label.setAccessibleName('h5')
+            else:
+                label.setText(row)
+                label.setAccessibleName('msg')
+            label.setToolTip(label.text())
+            layout.addWidget(label)
+        else:
+            param.parent = self
+            param.name = row
+            layout.addWidget(param.form)
 
     def show(self):
         self.init_form()
@@ -362,7 +298,6 @@ class BaseWidget(QFrame):
     def close(self):
         super(BaseWidget, self).close()
 
-
     def input_text(self, msg, title='', default=None):
         text, ok = QInputDialog.getText(self, title, msg, text=default)
         if ok:
@@ -370,7 +305,7 @@ class BaseWidget(QFrame):
         else:
             return None
 
-    def input_double(self, msg, title='', default=0,  min=-2147483647, max=2147483647, decimals=1):
+    def input_double(self, msg, title='', default=0, min=-2147483647, max=2147483647, decimals=1):
         text, ok = QInputDialog.getDouble(self, title, msg, value=default, min=min, max=max, decimals=decimals)
         if ok:
             return float(text)
@@ -420,17 +355,17 @@ class BaseWidget(QFrame):
         return None
 
     def message(self, msg, title=None, msg_type=None):
-        if msg_type=='success':
+        if msg_type == 'success':
             m = QMessageBox(QMessageBox.NoIcon, title, msg) 
-        elif msg_type=='info':
+        elif msg_type == 'info':
             m = QMessageBox(QMessageBox.Information, title, msg)    
-        elif msg_type=='warning':
+        elif msg_type == 'warning':
             m = QMessageBox(QMessageBox.Warning, title, msg) 
-        elif msg_type=='error':
+        elif msg_type == 'error':
             m = QMessageBox(QMessageBox.Critical, title, msg)
-        elif msg_type=='about':
+        elif msg_type == 'about':
             m = QMessageBox(QMessageBox.Question, title, msg) 
-        elif msg_type=='aboutQt':
+        elif msg_type == 'aboutQt':
             m = QMessageBox(QMessageBox.Question, title, msg)
         else:
             m = QMessageBox(QMessageBox.NoIcon, title, msg)
@@ -447,25 +382,26 @@ class BaseWidget(QFrame):
 
     def message_popup(self, msg, title='', buttons=None, handler=None, msg_type='success'):
         pass
+
     def success_popup(self, msg, title='', buttons=None, handler=None):
         return self.message_popup(msg, title, buttons, handler, msg_type='success')
+
     def info_popup(self, msg, title='', buttons=None, handler=None):
         return self.message_popup(msg, title, buttons, handler, msg_type='info')
+
     def warning_popup(self, msg, title='', buttons=None, handler=None):
         return self.message_popup(msg, title, buttons, handler, msg_type='warning')
+
     def alert_popup(self, msg, title='', buttons=None, handler=None):
         return self.message_popup(msg, title, buttons, handler, msg_type='alert')
-
-
-
 
     ##########################################################################
     ############ GUI functions ###############################################
     ##########################################################################
 
     def set_margin(self, margin):
-        if AnyQt.USED_API=='pyqt5':
-            self.layout().setContentsMargins(margin,margin,margin,margin)
+        if AnyQt.USED_API == 'pyqt5':
+            self.layout().setContentsMargins(margin, margin, margin, margin)
         else:
             self.layout().setMargin(margin)
 
@@ -502,12 +438,10 @@ class BaseWidget(QFrame):
     ############ GUI Properties ################################################
     ############################################################################
 
-
     @property
     def form_has_loaded(self):
         return self._formLoaded
 
-    
     @property 
     def form(self): 
         return self 
@@ -519,10 +453,10 @@ class BaseWidget(QFrame):
     @property
     def mainmenu(self):
         return self._mainmenu
+
     @mainmenu.setter
     def mainmenu(self, value):
         self._mainmenu = value
-
 
     @property
     def controls(self):
@@ -541,7 +475,6 @@ class BaseWidget(QFrame):
     ############################################################################
     ############ GUI Properties ################################################
     ############################################################################
-
 
     @property
     def form_has_loaded(self):
@@ -563,7 +496,6 @@ class BaseWidget(QFrame):
     def title(self, value):
         self.setWindowTitle(value)
 
-    
     @property
     def formset(self):
         return self._formset
@@ -580,12 +512,9 @@ class BaseWidget(QFrame):
     def uid(self, value):
         self._uid = value
 
-    
     @property
     def visible(self):
         return self.isVisible()
-
-    
 
     ##########################################################################
     ############ PRIVATE FUNCTIONS ###########################################

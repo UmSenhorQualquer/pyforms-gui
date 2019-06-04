@@ -35,6 +35,7 @@ setup(
     install_requires=[
         'anyqt',
         "pyqt5; python_version>='3'",
+        "PyQtWebEngine",
         'pyopengl',
         "QScintilla; python_version>='3'",
         'visvis',

@@ -23,7 +23,7 @@ PYFORMS_ICON_VIDEOPLAYER_DETACH = QIcon()
 PYFORMS_ICON_VIDEOPLAYER_DETACH.addPixmap(qApp.style().standardPixmap(QStyle.SP_TitleBarMaxButton), mode=QIcon.Normal )
 
 PYFORMS_ICON_CODEEDITOR_SAVE = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogSaveButton))
-PYFORMS_ICON_CODEEDITOR_DISCART = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogDiscardButton))
+PYFORMS_ICON_CODEEDITOR_DISCARD = QIcon(qApp.style().standardPixmap(QStyle.SP_DialogDiscardButton))
 
 PYFORMS_PIXMAP_EVENTTIMELINE_ZOOM_IN = QPixmap(path(os.path.join("Controls", "uipics", "zoom_in.png")))
 PYFORMS_PIXMAP_EVENTTIMELINE_ZOOM_OUT = QPixmap(path(os.path.join("Controls", "uipics", "zoom_in.png")))
