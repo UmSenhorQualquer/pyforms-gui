@@ -40,6 +40,5 @@ PYFORMS_COLORDIALOGS_OPTIONS = None
 #PYFORMS_COLORDIALOGS_OPTIONS = QColorDialog.DontUseNativeDialog
 
 import logging
-PYFORMS_LOG_HANDLER_FILE = None
 PYFORMS_LOG_HANDLER_LEVEL = logging.INFO
 PYFORMS_LOG_FORMAT = '[%(levelname)-7s] %(name)-40s %(message)s'

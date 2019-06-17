@@ -21,10 +21,9 @@ from . import settings as pyforms_settings
 conf += pyforms_settings
 
 import logging
+
 logging.basicConfig(
     level=conf.PYFORMS_LOG_HANDLER_LEVEL,
     format=conf.PYFORMS_LOG_FORMAT,
-    handlers=[] + \
-        [logging.FileHandler(conf.APP_LOG_HANDLER_FILE)] if conf.PYFORMS_LOG_HANDLER_FILE else [] + \
-        [logging.StreamHandler()]
+    handlers=[logging.StreamHandler()]
 )
