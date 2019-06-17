@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 from pyforms_gui.controls.control_dockwidget import ControlDockWidget
 from AnyQt.QtWidgets import QMainWindow, QDockWidget, QAction, QApplication, QToolBar
 from AnyQt           import QtCore, _api
 from AnyQt.QtGui     import QIcon
-
-from confapp import conf
+from confapp         import conf
 import sys, os, platform, logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -196,17 +197,17 @@ def execute_test_file(myapp):
 
 
 def start_app(ClassObject, geometry=None, stylesheet=None, user_settings=None, parent_win=None):
-    from confapp import conf
 
     if parent_win is None:
         app = QApplication(sys.argv)
 
-    conf += 'pyforms_gui.settings'
+    from confapp import conf
+    conf += 'pyforms_gui.resources_settings'
     if user_settings:
         conf += user_settings
 
     mainwindow = StandAloneContainer(ClassObject)
-    
+
     if hasattr( conf, 'PYFORMS_MAIN_WINDOW_ICON_PATH'):
         mainwindow.setWindowIcon(QIcon(conf.PYFORMS_MAIN_WINDOW_ICON_PATH))
 

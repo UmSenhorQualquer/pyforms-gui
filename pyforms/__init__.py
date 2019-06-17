@@ -12,13 +12,15 @@ __status__      = "Production"
 
 from confapp import conf
 
-conf += 'pyforms.settings'
-
 try:
     import local_settings
     conf += local_settings
 except:
     pass
+
+conf += 'pyforms.settings'
+
+
 
 
 if conf.PYFORMS_MODE == 'GUI':

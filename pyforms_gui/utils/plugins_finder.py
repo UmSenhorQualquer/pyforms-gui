@@ -34,7 +34,6 @@ class PluginsFinder(object):
         res = []
         for plugin in self._plugins:
             try:
-                logger.debug("package: {0}: plugin: {1}".format(package_name, plugin))
                 values = class_full_name.split('.')
 
                 class_name = values[-1]
@@ -43,17 +42,19 @@ class PluginsFinder(object):
                 try:
                     class_def = getattr(module, class_name)
                     res.append(class_def)
+                    logger.debug("FOUND: {0:20} IN PLUGIN:   {1:50}".format(package_name, plugin))
+
                 except AttributeError:
                     if not conf.PYFORMS_SILENT_PLUGINS_FINDER:
-                        logger.error('Error importing model {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),  exc_info=True)
+                        logger.debug('Importing setting {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),  exc_info=True)
                         
             except ImportError:
                 if not conf.PYFORMS_SILENT_PLUGINS_FINDER:
-                    logger.error('Error importing model {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),  exc_info=True)
-                        
+                    logger.debug('Importing setting {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),  exc_info=True)
+
             except:
-                logger.error(
-                    'Error importing model {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),
+                logger.debug(
+                    'Importing model {0} {1} {2}'.format(str(plugin), str(package_name), str(class_name)),
                     exc_info=True)
                 pass
 
