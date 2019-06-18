@@ -41,4 +41,4 @@ PYFORMS_COLORDIALOGS_OPTIONS = None
 
 import logging
 PYFORMS_LOG_HANDLER_LEVEL = logging.INFO
-PYFORMS_LOG_FORMAT = '[%(levelname)-7s] %(name)-40s %(message)s'
+PYFORMS_LOG_FORMAT = '[%(levelname)-7s] %(name)-60s %(message)s'

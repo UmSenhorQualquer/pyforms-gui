@@ -164,6 +164,7 @@ class ControlPlayer(ControlBase, QFrame):
         :return:
         """
         self.video_index += 20 * self.fps
+        self.call_next_frame()
 
     def jump_backward(self):
         """
@@ -171,44 +172,30 @@ class ControlPlayer(ControlBase, QFrame):
         :return:
         """
         self.video_index -= 20 * self.fps
+        self.call_next_frame()
 
     def back_one_frame(self):
         """
         Back one frame.
         :return:
         """
-        self.video_widget.control.video_index -= 2
-        self.video_widget.control.call_next_frame()
+        self.video_index -= 2
+        self.call_next_frame()
 
     def forward_one_frame(self):
         """
         Forward one frame.
         :return:
         """
-        self.video_widget.control.call_next_frame()
+        self.call_next_frame()
 
-    def jump_backward(self):
-        """
-        Jump backward 20 seconds.
-        :return:
-        """
-        self.video_widget.control.jump_backward()
-        self.video_widget.control.call_next_frame()
-
-    def jump_forward(self):
-        """
-        Jump forward 20 seconds.
-        :return:
-        """
-        self.video_widget.control.jump_forward()
-        self.video_widget.control.call_next_frame()
 
     def set_speed_1x(self):
         """
         Set video playing speed 1x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 1
+        self.next_frame_step = 1
         self.video_widget.show_tmp_msg('Speed: 1x')
 
     def set_speed_2x(self):
@@ -216,7 +203,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 2x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 2
+        self.next_frame_step = 2
         self.video_widget.show_tmp_msg('Speed: 2x')
 
     def set_speed_3x(self):
@@ -224,7 +211,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 3x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 3
+        self.next_frame_step = 3
         self.video_widget.show_tmp_msg('Speed: 3x')
 
     def set_speed_4x(self):
@@ -232,7 +219,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 4x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 4
+        self.next_frame_step = 4
         self.video_widget.show_tmp_msg('Speed: 4x')
 
     def set_speed_5x(self):
@@ -240,7 +227,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 5x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 5
+        self.next_frame_step = 5
         self.video_widget.show_tmp_msg('Speed: 5x')
 
     def set_speed_6x(self):
@@ -248,7 +235,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 6x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 6
+        self.next_frame_step = 6
         self.video_widget.show_tmp_msg('Speed: 6x')
 
     def set_speed_7x(self):
@@ -256,7 +243,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 7x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 7
+        self.next_frame_step = 7
         self.video_widget.show_tmp_msg('Speed: 7x')
 
     def set_speed_8x(self):
@@ -264,7 +251,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 8x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 8
+        self.next_frame_step = 8
         self.video_widget.show_tmp_msg('Speed: 8x')
 
     def set_speed_9x(self):
@@ -272,7 +259,7 @@ class ControlPlayer(ControlBase, QFrame):
         Set video playing speed 9x.
         :return:
         """
-        self.video_widget.control.next_frame_step = 9
+        self.next_frame_step = 9
         self.video_widget.show_tmp_msg('Speed: 9x')
 
     ##########################################################################
@@ -336,7 +323,10 @@ class ControlPlayer(ControlBase, QFrame):
     def video_index(self): return int(self._value.get(1)) if self._value else None
 
     @video_index.setter
-    def video_index(self, value): self._value.set(1, value)
+    def video_index(self, value):
+        if value<0: value = 0
+        if value>=self.max: value = self.max-1
+        self._value.set(1, value)
 
     @property
     def max(self):
