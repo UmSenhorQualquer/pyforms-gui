@@ -190,6 +190,7 @@ class BaseWidget(QFrame):
         param = self.controls.get(row, None)
         if param is None:
             label = QLabel()
+            label.setOpenExternalLinks(True)
             label.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
 
             if row.startswith('info:'):
