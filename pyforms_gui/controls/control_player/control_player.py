@@ -394,7 +394,7 @@ class ControlPlayer(ControlBase, QFrame):
                 open_multiplefiles = len(MultipleVideoCapture.search_files(value))>0
 
             if open_multiplefiles:
-                msg = "Multiple files were found with the same name, do you wish to combine then in a single video?\n\n"
+                msg = "Multiple files were found with the same folder, do you wish to combine then in a single video with the following order?\n\n"
                 for filepath in MultipleVideoCapture.search_files(value):
                     msg += "- {filename}\n".format(filename=os.path.basename(filepath))
 

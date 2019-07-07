@@ -1,5 +1,7 @@
 import glob, os, cv2
 
+from natsort import natsorted
+
 class MultipleVideoCapture(object):
 
 
@@ -21,16 +23,29 @@ class MultipleVideoCapture(object):
             nframes = self.frames_ranges[-1]+int(cap.get(7))
             self.frames_ranges.append(nframes)
 
+    # @classmethod
+    # def search_files(cls, filepath):
+    #     filedir = os.path.dirname(filepath)
+    #     filename = os.path.basename(filepath)
+    #     name, ext = os.path.splitext(filename)
+    #
+    #     if name.endswith('_1') or name.endswith('_01'):
+    #         names = name.rsplit('_', 1)
+    #         search_name = os.path.join(filedir, names[0] + '_*' + ext)
+    #         print(sorted(glob.glob(search_name)))
+    #         return sorted(glob.glob(search_name))
+    #     else:
+    #         return []
+
     @classmethod
     def search_files(cls, filepath):
         filedir = os.path.dirname(filepath)
         filename = os.path.basename(filepath)
         name, ext = os.path.splitext(filename)
+        paths = glob.glob(os.path.join(filedir, '*' + ext))
 
-        if name.endswith('_1') or name.endswith('_01'):
-            names = name.rsplit('_', 1)
-            search_name = os.path.join(filedir, names[0] + '_*' + ext)
-            return sorted(glob.glob(search_name))
+        if len(paths) > 1:
+            return natsorted(paths)
         else:
             return []
 
@@ -39,7 +54,8 @@ class MultipleVideoCapture(object):
         return self.captures[self.capture_index]
 
     def read(self):
-        next_capture = self.capture.get(1)==self.n_frames[self.capture_index]
+        next_capture = self.capture.get(1)==self.n_frames[self.capture_index] \
+                    and self.capture_index < len(self.captures)-1
         if next_capture:
             self.capture_index += 1
             self.capture.set(1,0)
