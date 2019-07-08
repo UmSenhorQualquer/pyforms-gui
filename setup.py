@@ -44,7 +44,8 @@ setup(
         'python-dateutil',
         'numpy',
         'opencv-python==3.4.5.20',
-        'confapp'
+        'confapp',
+        'natsort'
     ],
     packages=find_packages(),
     package_data={'pyforms_gui': [

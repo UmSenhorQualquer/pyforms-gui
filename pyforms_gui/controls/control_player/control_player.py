@@ -375,6 +375,10 @@ class ControlPlayer(ControlBase, QFrame):
     @property
     def value(self): return ControlBase.value.fget(self)
 
+    @property
+    def multiple_files(self):
+        return isinstance(self._value, MultipleVideoCapture)
+
     @value.setter
     def value(self, value):
         self.form.setUpdatesEnabled(False)
