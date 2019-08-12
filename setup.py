@@ -37,7 +37,6 @@ setup(
         "pyqt5; python_version>='3'",
         "PyQtWebEngine",
         'pyopengl',
-        'PyOpenGL_accelerate',
         "QScintilla; python_version>='3'",
         'visvis',
         'matplotlib',
