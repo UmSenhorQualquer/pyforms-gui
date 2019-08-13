@@ -18,6 +18,9 @@ class ControlFile(ControlBase):
         super(ControlFile, self).__init__(*args, **kwargs)
         self.use_save_dialog = kwargs.get('use_save_dialog', False)
 
+        # used to avoid triggering the finnishEditing when the input loses the focus
+        self._value_before_finishEditing = None
+
     def init_form(self):
         control_path = tools.getFileInSameDirectory(__file__, "fileInput.ui")
         self._form = uic.loadUi(control_path)
@@ -29,7 +32,8 @@ class ControlFile(ControlBase):
 
     def finishEditing(self):
         """Function called when the lineEdit widget is edited"""
-        if self.__exec_changed_event:
+        if self.__exec_changed_event and self._value_before_finishEditing!=self.value:
+            self._value_before_finishEditing = self.value
             self.changed_event()
 
     def click(self):
@@ -48,7 +52,9 @@ class ControlFile(ControlBase):
         elif _api.USED_API == _api.QT_API_PYQT4:
             value = str(value)
 
-        if value and len(value)>0: self.value = value
+        if value and len(value)>0:
+            self.value = value
+            self._value_before_finishEditing = value
 
 
     @property
