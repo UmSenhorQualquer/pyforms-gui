@@ -12,7 +12,8 @@ __maintainer__ = "Ricardo Ribeiro"
 __email__ = "ricardojvr@gmail.com"
 __status__ = "Development"
 
-import logging, platform, os, math
+import logging, os, math
+from AnyQt.QtWidgets import QStyle
 from .multiple_videocapture import MultipleVideoCapture
 
 try:
@@ -65,7 +66,12 @@ class ControlPlayer(ControlBase, QFrame):
         self._update_video_frame  = True # if true update the spinbox with the current frame
         self._update_video_slider = True  # if true update the slider with the current frame
 
+        self._scroll_frames_action = self.add_popup_menu_option('Use scroll to move between frames', lambda x: x)
+        self._scroll_frames_action.setCheckable(True)
 
+    def __scroll_move_between_frames_evt(self):
+        pass
+        #self._scroll_frames_action.setIcon(QStyle.SP_DesktopIcon)
 
     def init_form(self):
         # Get the current path of the file
@@ -97,6 +103,8 @@ class ControlPlayer(ControlBase, QFrame):
         self._current_frame = None
 
         self.view_in_3D = False
+
+
 
     ##########################################################################
     ############ FUNCTIONS ###################################################
@@ -353,6 +361,10 @@ class ControlPlayer(ControlBase, QFrame):
             Return the video frames per second
         """
         return self._value.get(5)
+
+    @property
+    def scroll_frames(self):
+        return self._scroll_frames_action.isChecked()
 
     @property
     def help_text(self): return self._video_widget._helpText

@@ -348,30 +348,36 @@ class AbstractGLWidget(object):
         self.update()
 
     def wheelEvent(self, event):
-        
-        if not self._move_img:
-            # Zoom the video
-            self._mouseX = event.x()
-            self._mouseY = event.y()
 
-            if _api.USED_API == _api.QT_API_PYQT5:
-                p = event.angleDelta()
-                delta = p.y()
-            elif _api.USED_API == _api.QT_API_PYQT4:
-                delta = event.delta()
-        
-            zoom_factor = delta / float(1500)
+        if _api.USED_API == _api.QT_API_PYQT5:
+            p = event.angleDelta()
+            delta = p.y()
+        elif _api.USED_API == _api.QT_API_PYQT4:
+            delta = event.delta()
 
-            self.zoom += zoom_factor
+        if self.control.scroll_frames:
+            if delta<0:
+                self.control.back_one_frame()
+            else:
+                self.control.forward_one_frame()
+        else:
+            if not self._move_img:
+                # Zoom the video
+                self._mouseX = event.x()
+                self._mouseY = event.y()
 
-            if self.zoom < -.98 and delta < 0:
-                self.zoom = -0.98
+                zoom_factor = delta / float(1500)
 
-            if self.zoom > 7 and delta > 0: # zoom limits
-                self.zoom = 7
+                self.zoom += zoom_factor
 
-            # self.logger.debug("Wheel event | Current zoom: %s | Delta: %s | Zoom factor: %s", self.zoom, event.delta(), zoom_factor)
-            self.update()
+                if self.zoom < -.98 and delta < 0:
+                    self.zoom = -0.98
+
+                if self.zoom > 7 and delta > 0: # zoom limits
+                    self.zoom = 7
+
+                # self.logger.debug("Wheel event | Current zoom: %s | Delta: %s | Zoom factor: %s", self.zoom, event.delta(), zoom_factor)
+                self.update()
 
     
     def mouseReleaseEvent(self, event):
