@@ -32,26 +32,27 @@ class ControlList(ControlBase, QWidget):
 
         self._plusFunction  = kwargs.get('add_function', None)
         self._minusFunction = kwargs.get('remove_function', None)
+        self._autoscroll = kwargs.get('autoscroll', True)
+        self._resizecolumns = kwargs.get('resizecolumns', True)
+
         ControlBase.__init__(self, *args, **kwargs)
 
-        self.autoscroll         = kwargs.get('autoscroll',          True)
-        self.resizecolumns      = kwargs.get('resizecolumns',       True)
-        self.select_entire_row  = kwargs.get('select_entire_row',   False)
-        self.horizontal_headers = kwargs.get('horizontal_headers',  None)
+        self.select_entire_row = kwargs.get('select_entire_row', False)
+        self.horizontal_headers = kwargs.get('horizontal_headers', None)
 
-
-        self.item_selection_changed_event   = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
-        self.data_changed_event             = kwargs.get('data_changed_event', self.data_changed_event)
-        self.item_selection_changed_event   = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
-        self.current_cell_changed_event     = kwargs.get('current_cell_changed_event', self.current_cell_changed_event)
-        self.current_item_changed_event     = kwargs.get('current_item_changed_event', self.current_item_changed_event)
-        self.cell_double_clicked_event      = kwargs.get('cell_double_clicked_event', self.cell_double_clicked_event)
+        self.item_selection_changed_event = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
+        self.data_changed_event           = kwargs.get('data_changed_event', self.data_changed_event)
+        self.item_selection_changed_event = kwargs.get('item_selection_changed_event', self.item_selection_changed_event)
+        self.current_cell_changed_event   = kwargs.get('current_cell_changed_event', self.current_cell_changed_event)
+        self.current_item_changed_event   = kwargs.get('current_item_changed_event', self.current_item_changed_event)
+        self.cell_double_clicked_event    = kwargs.get('cell_double_clicked_event', self.cell_double_clicked_event)
 
     ##########################################################################
     ############ FUNCTIONS ###################################################
     ##########################################################################
 
     def init_form(self):
+
         plusFunction  = self._plusFunction
         minusFunction = self._minusFunction
 
@@ -64,6 +65,9 @@ class ControlList(ControlBase, QWidget):
             self.height = self._height
 
         self.label = self._label
+
+        if self._value is not None:
+            self.value = self._value
 
         self.tableWidget.currentCellChanged.connect(self.tableWidgetCellChanged)
         self.tableWidget.currentItemChanged.connect(self.tableWidgetItemChanged)
@@ -142,7 +146,6 @@ class ControlList(ControlBase, QWidget):
         row_index = self.tableWidget.rowCount()
 
         self.tableWidget.insertRow(row_index)
-
         #increase the number of columns if necessary ####
         if self.tableWidget.currentColumn() < len(other):
             self.tableWidget.setColumnCount(len(other))
@@ -330,8 +333,10 @@ class ControlList(ControlBase, QWidget):
 
     @value.setter
     def value(self, value):
+        self._run_has_changed = True
         self.clear()
         for row in value: self += row
+        del self._run_has_changed
 
     # TODO: implement += on self.value? I want to add a list of tuples to
     # self.value
@@ -407,7 +412,9 @@ class ControlList(ControlBase, QWidget):
 
     def _dataChangedEvent(self, item):
         self.data_changed_event(item.row(), item.column(), self.tableWidget.model().data(item))
-        self.changed_event()
+        if not hasattr(self, '_run_has_changed'):
+            self.changed_event()
+
 
     def tableWidgetCellChanged(self, nextRow, nextCol, previousRow,
                                previousCol):
