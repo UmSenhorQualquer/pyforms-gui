@@ -42,7 +42,7 @@ setup(
         'matplotlib',
         'python-dateutil',
         'numpy',
-        'opencv-python==3.4.5.20',
+        'opencv-python>=3.4.5.20,<4',
         'confapp',
         'natsort'
     ],
