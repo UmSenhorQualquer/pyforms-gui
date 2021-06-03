@@ -17,7 +17,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: Configure PyPI deploy
+    runs-on: PyPI deploy
 
     steps:
     - uses: actions/checkout@v2
