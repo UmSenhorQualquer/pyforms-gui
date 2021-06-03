@@ -30,6 +30,10 @@ class ControlTree(ControlBase, QTreeWidget):
     def __repr__(self):
         return QTreeWidget.__repr__(self)
 
+    def mousePressEvent(self, event):
+        self.clearSelection()
+        QTreeView.mousePressEvent(self, event)
+
     ##########################################################################
     ############ FUNCTIONS ###################################################
     ##########################################################################
