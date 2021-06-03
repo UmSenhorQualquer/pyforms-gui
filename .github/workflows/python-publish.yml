@@ -11,6 +11,9 @@ name: Upload Python Package
 on:
   release:
     types: [published]
+  push:
+    branches:
+      - pypi-deploy
 
 jobs:
   deploy:
