@@ -17,7 +17,7 @@ on:
 
 jobs:
   deploy:
-
+    environment: Configure PyPI deploy
     runs-on: ubuntu-latest
 
     steps:
