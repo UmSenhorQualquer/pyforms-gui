@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import setup, find_packages
-import os, fnmatch, re
+import re
 
 version = ''
 license = ''
@@ -42,9 +42,10 @@ setup(
         'matplotlib',
         'python-dateutil',
         'numpy',
-        'opencv-python==3.4.5.20',
+        'opencv-python==4.5.*',
         'confapp',
-        'natsort'
+        'natsort',
+        'coloredlogs'
     ],
     packages=find_packages(),
     package_data={'pyforms_gui': [

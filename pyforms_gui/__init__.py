@@ -20,10 +20,12 @@ except:
 from . import settings as pyforms_settings
 conf += pyforms_settings
 
-import logging
+import coloredlogs, logging
 
 logging.basicConfig(
     level=conf.PYFORMS_LOG_HANDLER_LEVEL,
     format=conf.PYFORMS_LOG_FORMAT,
     handlers=[logging.StreamHandler()]
 )
+
+coloredlogs.install(level=conf.PYFORMS_LOG_HANDLER_LEVEL)
