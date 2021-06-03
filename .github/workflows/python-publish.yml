@@ -26,11 +26,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
-    - name: Set pyforms-gui version
+    - name: Get tag
+      id: tag
+      uses: dawidd6/action-get-tag@v1
+    - name: Use tag
       run: |
-        export TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
-        echo $TAG
-        echo "$(echo -n '__version__ = "${$TAG}"'; cat pyforms_gui/__init__.py)" > pyforms_gui/__init__.py
+        echo ${{steps.tag.outputs.tag}}
+        echo "$(echo -n '__version__ = "${{steps.tag.outputs.tag}}"'; cat pyforms_gui/__init__.py)" > pyforms_gui/__init__.py
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
