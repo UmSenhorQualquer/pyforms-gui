@@ -47,6 +47,10 @@ setup(
         'natsort',
         'coloredlogs'
     ],
+    dependency_links=[
+        'https://github.com/Vykstorm/confapp/tarball/master#egg=confapp'
+    ],
+
     packages=find_packages(),
     package_data={'pyforms_gui': [
         'controls/uipics/*.png',
