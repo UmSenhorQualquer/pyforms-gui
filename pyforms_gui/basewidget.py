@@ -284,7 +284,7 @@ class BaseWidget(QFrame):
         filename, _ = QFileDialog.getSaveFileName(self, 'Select file')
         if filename:
             with open(filename, 'w') as output_file:
-                json.dump(data, output_file)
+                json.dump(data, output_file, indent = 4)
 
     def load_form_filename(self, filename):
         with open(filename, 'r') as pkl_file:
